@@ -9,13 +9,17 @@ export class UserController {
 
   getUsers = async (_req: Request, res: Response) => {
     const users = await this.usersService.getUsers();
-    return res.json(users);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
+    const safeUsers = users.map(({ password, ...user }) => user);
+    return res.json(safeUsers);
   };
 
   getUser = async (req: Request<GetUserParams>, res: Response) => {
     const user = await this.usersService.getUserById(req.params["id"]);
     if (!user) return res.status(404).json({ message: "User not found" });
-    return res.json(user);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
+    const { password, ...safeUser } = user;
+    return res.json(safeUser);
   };
 
   createUser = async (
@@ -23,6 +27,8 @@ export class UserController {
     res: Response,
   ) => {
     const user = await this.usersService.createUser(req.body);
-    res.status(201).json(user);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
+    const { password, ...safeUser } = user;
+    res.status(201).json(safeUser);
   };
 }
