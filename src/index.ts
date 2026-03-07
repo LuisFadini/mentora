@@ -1,4 +1,5 @@
 import "dotenv/config";
+import "reflect-metadata";
 
 import { createApp } from "./app.ts";
 import { config } from "./config/env.ts";

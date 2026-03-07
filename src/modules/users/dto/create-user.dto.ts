@@ -1,4 +1,13 @@
-export interface CreateUserDTO {
-  name: string;
-  password: string;
+import { IsDefined, IsString, MinLength } from "class-validator";
+
+export class CreateUserDTO {
+  @IsDefined()
+  @IsString()
+  @MinLength(4)
+  name!: string;
+
+  @IsDefined()
+  @IsString()
+  @MinLength(8)
+  password!: string;
 }
