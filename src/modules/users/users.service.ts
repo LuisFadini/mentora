@@ -15,4 +15,16 @@ export class UsersService {
   async createUser(user: User) {
     return this.userRepository.create(user);
   }
+
+  async updateUser(id: string, user: Partial<User>) {
+    const existingUser = await this.userRepository.findById(id);
+
+    if (!existingUser) return null;
+
+    return this.userRepository.update({
+      ...existingUser,
+      ...user,
+      id: existingUser.id!,
+    });
+  }
 }
