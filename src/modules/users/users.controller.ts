@@ -1,5 +1,6 @@
 import { type Request, type Response } from "express";
 
+import { omit } from "../../shared/utils/omit.ts";
 import type { CreateUserDTO } from "./dto/create-user.dto.ts";
 import type { UpdateUserDTO } from "./dto/update-user.dto.ts";
 import { type GetUserParams } from "./params/get-user.params.ts";
@@ -10,16 +11,14 @@ export class UserController {
 
   getUsers = async (_req: Request, res: Response) => {
     const users = await this.usersService.getUsers();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
-    const safeUsers = users.map(({ password, ...user }) => user);
+    const safeUsers = users.map((user) => omit(user, ["password"]));
     return res.json(safeUsers);
   };
 
   getUser = async (req: Request<GetUserParams>, res: Response) => {
     const user = await this.usersService.getUserById(req.params.id);
     if (!user) return res.status(404).json({ message: "User not found" });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
-    const { password, ...safeUser } = user;
+    const safeUser = omit(user, ["password"]);
     return res.json(safeUser);
   };
 
@@ -28,8 +27,7 @@ export class UserController {
     res: Response,
   ) => {
     const user = await this.usersService.createUser(req.body);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
-    const { password, ...safeUser } = user;
+    const safeUser = omit(user, ["password"]);
     res.status(201).json(safeUser);
   };
 
@@ -43,8 +41,7 @@ export class UserController {
     );
     if (!updatedUser)
       return res.status(404).json({ message: "User not found" });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
-    const { password, ...safeUser } = updatedUser;
+    const safeUser = omit(updatedUser, ["password"]);
     return res.status(201).json(safeUser);
   };
 }
