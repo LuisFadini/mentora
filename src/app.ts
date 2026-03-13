@@ -8,6 +8,7 @@ import { UserController } from "./modules/users/users.controller.ts";
 import { createUsersRoutes } from "./modules/users/users.routes.ts";
 import { UsersService } from "./modules/users/users.service.ts";
 import { InMemoryRepository } from "./shared/infrastructure/in-memory.repository.ts";
+import { Argon2idPasswordHasher } from "./shared/infrastructure/security/argon2-password-hasher.ts";
 
 export function createApp(): Express {
   const app = express();
@@ -21,7 +22,9 @@ export function createApp(): Express {
 
   const userRepository = new InMemoryRepository<User>();
 
-  const usersService = new UsersService(userRepository);
+  const passwordHasher = new Argon2idPasswordHasher();
+
+  const usersService = new UsersService(userRepository, passwordHasher);
   const usersController = new UserController(usersService);
   app.use("/users", createUsersRoutes(usersController));
 

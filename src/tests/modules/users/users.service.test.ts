@@ -3,11 +3,13 @@ import { beforeEach, describe, expect, it, type Mocked, vi } from "vitest";
 
 import { type User } from "../../../modules/users/user.types.ts";
 import { UsersService } from "../../../modules/users/users.service.ts";
+import { type IPasswordHasher } from "../../../shared/interfaces/password-hasher.interface.ts";
 import { type IRepository } from "../../../shared/interfaces/repository.interface.ts";
 
 describe("UsersService", () => {
   let usersService: UsersService;
   let mockUserRepository: Mocked<IRepository<User>>;
+  let mockPasswordHasher: Mocked<IPasswordHasher>;
 
   const mockUsers: User[] = [
     { id: "1", name: "John Doe", password: "john1234" } as User,
@@ -20,8 +22,12 @@ describe("UsersService", () => {
       findById: vi.fn(),
       create: vi.fn(),
     } as unknown as Mocked<IRepository<User>>;
+    mockPasswordHasher = {
+      hash: vi.fn((pass) => Promise.resolve(pass)),
+      compare: vi.fn((pass, hash) => Promise.resolve(pass === hash)),
+    };
 
-    usersService = new UsersService(mockUserRepository);
+    usersService = new UsersService(mockUserRepository, mockPasswordHasher);
   });
 
   describe("getUsers", () => {
