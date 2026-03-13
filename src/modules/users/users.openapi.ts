@@ -1,0 +1,74 @@
+import {
+  jsonBody,
+  jsonContent,
+  schemaRef,
+} from "../../shared/utils/openapi/helpers.ts";
+import { OpenAPIMethodBuilder } from "../../shared/utils/openapi/method-builder.ts";
+import { OpenAPIPathBuilder } from "../../shared/utils/openapi/path-builder.ts";
+import { OpenAPIResponseBuilder } from "../../shared/utils/openapi/response-builder.ts";
+
+export const usersPaths = new OpenAPIPathBuilder()
+  .addPath(
+    "/users",
+    new OpenAPIMethodBuilder()
+      .addMethod("get", {
+        summary: "List users",
+        operationId: "getUsers",
+        responses: new OpenAPIResponseBuilder().addResponse(
+          "200",
+          "List of users",
+          jsonContent(schemaRef("User")),
+        ),
+        tags: ["Users"],
+      })
+      .addMethod("post", {
+        summary: "Create user",
+        operationId: "createUser",
+        responses: new OpenAPIResponseBuilder()
+          .addResponse("201", "User created", jsonContent(schemaRef("User")))
+          .addResponse("400", "Invalid request body"),
+        tags: ["Users"],
+        requestBody: jsonBody(schemaRef("CreateUserDTO")),
+      }),
+  )
+  .addPath(
+    "/users/{id}",
+    new OpenAPIMethodBuilder()
+      .addMethod("get", {
+        summary: "Get user by ID",
+        operationId: "getUser",
+        responses: new OpenAPIResponseBuilder()
+          .addResponse("200", "User found", jsonContent(schemaRef("User")))
+          .addResponse("404", "User not found"),
+        tags: ["Users"],
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            description: "User UUID",
+            schema: { type: "string", format: "uuid" },
+          },
+        ],
+      })
+      .addMethod("patch", {
+        summary: "Update user",
+        operationId: "updateUser",
+        responses: new OpenAPIResponseBuilder()
+          .addResponse("200", "User updated", jsonContent(schemaRef("User")))
+          .addResponse("400", "Invalid request body")
+          .addResponse("404", "User not found"),
+        tags: ["Users"],
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            description: "User UUID",
+            schema: { type: "string", format: "uuid" },
+          },
+        ],
+        requestBody: jsonBody(schemaRef("UpdateUserDTO")),
+      }),
+  )
+  .build();
