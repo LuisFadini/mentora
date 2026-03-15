@@ -8,6 +8,7 @@ import { UserController } from "./modules/users/users.controller.ts";
 import { createUsersRoutes } from "./modules/users/users.routes.ts";
 import { UsersService } from "./modules/users/users.service.ts";
 import { InMemoryRepository } from "./shared/infrastructure/in-memory.repository.ts";
+import { createOpenAPiRoutes } from "./shared/infrastructure/openapi/openapi.routes.ts";
 import { Argon2idPasswordHasher } from "./shared/infrastructure/security/argon2-password-hasher.ts";
 
 export function createApp(): Express {
@@ -16,9 +17,7 @@ export function createApp(): Express {
   if (!config.isTest) app.use(pinoHttp({ logger }));
   app.use(express.json());
 
-  app.get("/", (_req, res) => {
-    res.status(200).send("Hello world");
-  });
+  app.use("/", createOpenAPiRoutes());
 
   const userRepository = new InMemoryRepository<User>();
 
