@@ -24,8 +24,8 @@ export class InMemoryRepository<
   async update(entity: T): Promise<T> {
     const index = this.items.findIndex((item) => item.id === entity.id);
 
-    this.items[index] = entity;
+    this.items[index] = { ...this.items[index], ...entity };
 
-    return Promise.resolve(entity);
+    return Promise.resolve(this.items[index]);
   }
 }

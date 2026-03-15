@@ -1,6 +1,7 @@
 import type { IPasswordHasher } from "../../shared/interfaces/password-hasher.interface.ts";
 import { type IRepository } from "../../shared/interfaces/repository.interface.ts";
 import { omit } from "../../shared/utils/omit.ts";
+import { removeUndefined } from "../../shared/utils/remove-undefined.ts";
 import { type User } from "./user.types.ts";
 
 export class UsersService {
@@ -33,15 +34,23 @@ export class UsersService {
     return omit(createdUser, ["password"]);
   }
 
-  async updateUser(id: string, user: Partial<User>) {
+  async updateUser(
+    id: string,
+    data: Partial<Omit<User, "id" | "createdAt" | "updatedAt">>,
+  ) {
     const existingUser = await this.userRepository.findById(id);
-
     if (!existingUser) return null;
+
+    const cleanData = removeUndefined(data);
+
+    if (cleanData.password) {
+      cleanData.password = await this.passwordHasher.hash(cleanData.password);
+    }
+
     const updatedUser = await this.userRepository.update({
       ...existingUser,
-      ...user,
-      id: existingUser.id!,
-      createdAt: new Date(),
+      ...cleanData,
+      updatedAt: new Date(),
     });
 
     return omit(updatedUser, ["password"]);
