@@ -20,12 +20,15 @@ export class UsersService {
     return omit(user, ["password"]);
   }
 
-  async createUser(data: User) {
+  async createUser(data: Omit<User, "createdAt" | "updatedAt">) {
     const hashedPassword = await this.passwordHasher.hash(data.password);
+    const now = new Date();
 
     const createdUser = await this.userRepository.create({
       ...data,
       password: hashedPassword,
+      createdAt: now,
+      updatedAt: now,
     });
     return omit(createdUser, ["password"]);
   }
@@ -38,6 +41,7 @@ export class UsersService {
       ...existingUser,
       ...user,
       id: existingUser.id!,
+      createdAt: new Date(),
     });
 
     return omit(updatedUser, ["password"]);
