@@ -1,136 +1,74 @@
-export const usersPaths = {
-  "/users": {
-    get: {
-      summary: "List users",
-      operationId: "getUsers",
-      tags: ["Users"],
-      responses: {
-        "200": {
-          description: "List of users",
-          content: {
-            "application/json": {
-              schema: {
-                type: "array",
-                items: {
-                  $ref: "#/components/schemas/User",
-                },
-              },
-            },
-          },
-        },
-      },
-    },
+import {
+  jsonBody,
+  jsonContent,
+  schemaRef,
+} from "../../shared/utils/openapi/helpers.ts";
+import { OpenAPIMethodBuilder } from "../../shared/utils/openapi/method-builder.ts";
+import { OpenAPIPathBuilder } from "../../shared/utils/openapi/path-builder.ts";
+import { OpenAPIResponseBuilder } from "../../shared/utils/openapi/response-builder.ts";
 
-    post: {
-      summary: "Create user",
-      operationId: "createUser",
-      tags: ["Users"],
-      requestBody: {
-        required: true,
-        content: {
-          "application/json": {
-            schema: {
-              $ref: "#/components/schemas/CreateUserDTO",
-            },
+export const usersPaths = new OpenAPIPathBuilder()
+  .addPath(
+    "/users",
+    new OpenAPIMethodBuilder()
+      .addMethod("get", {
+        summary: "List users",
+        operationId: "getUsers",
+        responses: new OpenAPIResponseBuilder().addResponse(
+          "200",
+          "List of users",
+          jsonContent(schemaRef("User")),
+        ),
+        tags: ["Users"],
+      })
+      .addMethod("post", {
+        summary: "Create user",
+        operationId: "createUser",
+        responses: new OpenAPIResponseBuilder()
+          .addResponse("201", "User created", jsonContent(schemaRef("User")))
+          .addResponse("400", "Invalid request body"),
+        tags: ["Users"],
+        requestBody: jsonBody(schemaRef("CreateUserDTO")),
+      }),
+  )
+  .addPath(
+    "/users/{id}",
+    new OpenAPIMethodBuilder()
+      .addMethod("get", {
+        summary: "Get user by ID",
+        operationId: "getUser",
+        responses: new OpenAPIResponseBuilder()
+          .addResponse("200", "User found", jsonContent(schemaRef("User")))
+          .addResponse("404", "User not found"),
+        tags: ["Users"],
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            description: "User UUID",
+            schema: { type: "string", format: "uuid" },
           },
-        },
-      },
-      responses: {
-        "201": {
-          description: "User created",
-          content: {
-            "application/json": {
-              schema: {
-                $ref: "#/components/schemas/User",
-              },
-            },
+        ],
+      })
+      .addMethod("patch", {
+        summary: "Update user",
+        operationId: "updateUser",
+        responses: new OpenAPIResponseBuilder()
+          .addResponse("200", "User updated", jsonContent(schemaRef("User")))
+          .addResponse("400", "Invalid request body")
+          .addResponse("404", "User not found"),
+        tags: ["Users"],
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            description: "User UUID",
+            schema: { type: "string", format: "uuid" },
           },
-        },
-        "400": {
-          description: "Invalid request body",
-        },
-      },
-    },
-  },
-
-  "/users/{id}": {
-    get: {
-      summary: "Get user by ID",
-      operationId: "getUser",
-      tags: ["Users"],
-      parameters: [
-        {
-          name: "id",
-          in: "path",
-          required: true,
-          description: "User UUID",
-          schema: {
-            type: "string",
-            format: "uuid",
-          },
-        },
-      ],
-      responses: {
-        "200": {
-          description: "User found",
-          content: {
-            "application/json": {
-              schema: {
-                $ref: "#/components/schemas/User",
-              },
-            },
-          },
-        },
-        "404": {
-          description: "User not found",
-        },
-      },
-    },
-
-    patch: {
-      summary: "Update user",
-      operationId: "updateUser",
-      tags: ["Users"],
-      parameters: [
-        {
-          name: "id",
-          in: "path",
-          required: true,
-          description: "User UUID",
-          schema: {
-            type: "string",
-            format: "uuid",
-          },
-        },
-      ],
-      requestBody: {
-        required: true,
-        content: {
-          "application/json": {
-            schema: {
-              $ref: "#/components/schemas/UpdateUserDTO",
-            },
-          },
-        },
-      },
-      responses: {
-        "200": {
-          description: "User updated",
-          content: {
-            "application/json": {
-              schema: {
-                $ref: "#/components/schemas/User",
-              },
-            },
-          },
-        },
-        "400": {
-          description: "Invalid request body",
-        },
-        "404": {
-          description: "User not found",
-        },
-      },
-    },
-  },
-};
+        ],
+        requestBody: jsonBody(schemaRef("UpdateUserDTO")),
+      }),
+  )
+  .build();
