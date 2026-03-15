@@ -16,9 +16,6 @@ export const schemas = {
         type: "string",
         format: "email",
       },
-      password: {
-        type: "string",
-      },
       avatarUrl: {
         type: "string",
         format: "uri",
@@ -32,7 +29,7 @@ export const schemas = {
         format: "date-time",
       },
     },
-    required: ["name", "email", "password", "createdAt", "updatedAt"],
+    required: ["name", "email", "createdAt", "updatedAt"],
   },
   ...validationMetadatasToSchemas(),
 };
