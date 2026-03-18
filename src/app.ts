@@ -22,7 +22,6 @@ export function createApp(): Express {
 
   if (!config.isTest) app.use(pinoHttp({ logger }));
   app.use(express.json());
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   app.use(cookieParser());
 
   app.use("/", createOpenAPiRoutes());
@@ -36,7 +35,7 @@ export function createApp(): Express {
 
   const usersService = new UsersService(userRepository, passwordHasher);
   const usersController = new UserController(usersService);
-  app.use("/users", createUsersRoutes(usersController));
+  app.use("/users", createUsersRoutes(usersController, authMiddleware));
 
   const authService = new AuthService(
     userRepository,
