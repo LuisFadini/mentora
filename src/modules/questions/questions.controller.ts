@@ -1,5 +1,5 @@
 import { type Request, type Response } from 'express'
-import { CreateQuestion, createAnswer } from './dto/create-question.dto.ts'
+import { CreateQuestion } from './dto/create-question.dto.ts'
 import { UpdateQuestion } from './dto/update-question.dto.ts'
 import { GetQuestionParams } from './params/get-question.params.ts'
 import { QuestionService, AnswerService } from './questions.service.ts';
@@ -28,7 +28,7 @@ export class QuestionController {
   }
 
   createQuestion = async (
-    req: Request<unknown, unknown, CreateQuestion>,
+    req: Request<unknown, CreateQuestion>,
     res: Response) => {
     //const question: any;
     const body = await this.questionService.createQuestion(req.body);
@@ -52,22 +52,45 @@ export class AnswerController {
   constructor(private readonly answerService: AnswerService) { }
 
   getAnswer = async (
-    _req: Request,
-    res: Response) => { }
+    req: Request,
+    res: Response) => {
+    const answer = await this.answerService.getAnswerById(req.body.id);
+    if (!answer) return res.status(404).json({ message: "User Not Found" });
+    return res.json(answer);
+  }
 
   getAnswers = async (
-    req: Request,
-    res: Response) => { }
+    _req: Request,
+    res: Response) => {
+    const answers = await this.answerService.getAnswers();
+    return res.json(answers);
+  }
 
   createAnswer = async (
     req: Request<unknown, CreateAnswerDTO>,
-    res: Response) => { }
+    res: Response) => {
+    const answerCreated = await this.answerService.createAnswer(req.body);
+    return res.status(201).json(answerCreated);
+  }
 
   updateAnswer = async (
     req: Request<GetAnswerParams, unknown, UpdateAnswerDTO>,
-    res: Response) => { }
+    res: Response) => {
+
+    const answerToUpdate = this.answerService.getAnswerById(req.params.id);
+    if (!answerToUpdate) return res.status(404).json({ message: "Id Not Found" });
+    this.answerService.updateAnswer(
+      req.params.id,
+      req.body
+    );
+    return res.status(200);
+  }
 
   deleteAnswer = async (
-    req: Request,
-    res: Response) => { }
+    req: Request<GetQuestionParams>,
+    res: Response) => {
+    const isDeleted = this.answerService.deleteAnswer(req.params.id);
+
+    return res.status(200).json({ message: isDeleted })
+  }
 }

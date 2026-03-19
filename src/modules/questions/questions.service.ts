@@ -56,7 +56,7 @@ export class AnswerService {
       id: answerFinded.id!,
     })
   }
-  async deleteAnswer(answer: Answers) {
-    this.answerReposity.delete(answer);
+  async deleteAnswer(id: string) {
+    return this.answerReposity.delete(id);
   }
 }
