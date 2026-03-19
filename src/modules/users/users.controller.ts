@@ -7,7 +7,7 @@ import { type GetUserParams } from "./params/get-user.params.ts";
 import { type UsersService } from "./users.service.ts";
 
 export class UserController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   getUsers = async (_req: Request, res: Response) => {
     const users = await this.usersService.getUsers();
