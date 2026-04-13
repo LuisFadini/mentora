@@ -6,10 +6,10 @@ export type Question = {
   answers: string[];
   createAt: Date;
   updateAt: Date;
-}
+};
 
 export type Answers = {
   id: string;
   idQuestion: string;
   answerBody: string;
-}
+};

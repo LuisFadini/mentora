@@ -1,8 +1,8 @@
 import { type IRepository } from "../../shared/interfaces/repository.interface.ts";
-import { type Question, type Answers } from "./question.types.ts";
+import { type Answers, type Question } from "./question.types.ts";
 
 export class QuestionService {
-  constructor(private readonly questionReposity: IRepository<Question>) { }
+  constructor(private readonly questionReposity: IRepository<Question>) {}
 
   async getQuestions(): Promise<Question[]> {
     return this.questionReposity.findAll();
@@ -16,7 +16,7 @@ export class QuestionService {
     return this.questionReposity.create({
       ...question,
       createAt: new Date(),
-      updateAt: new Date()
+      updateAt: new Date(),
     });
   }
 
@@ -27,16 +27,16 @@ export class QuestionService {
     return this.questionReposity.update({
       ...questionFinded,
       ...question,
-      id: questionFinded.id!,
+      id: questionFinded.id,
     });
   }
 }
 
 export class AnswerService {
-  constructor(private readonly answerReposity: IRepository<Answers>) { }
+  constructor(private readonly answerReposity: IRepository<Answers>) {}
 
   async getAnswers(): Promise<Answers[]> {
-    return this.answerReposity.findAll()
+    return this.answerReposity.findAll();
   }
 
   async getAnswerById(id: string) {
@@ -53,8 +53,8 @@ export class AnswerService {
     return this.answerReposity.update({
       ...answerFinded,
       ...answer,
-      id: answerFinded.id!,
-    })
+      id: answerFinded.id,
+    });
   }
   async deleteAnswer(id: string) {
     return this.answerReposity.delete(id);

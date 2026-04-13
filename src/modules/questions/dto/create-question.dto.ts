@@ -1,4 +1,4 @@
-import { IsDefined, IsString, IsArray, IsDate } from 'class-validator'
+import { IsArray, IsDate, IsDefined, IsString } from "class-validator";
 export class CreateQuestion {
   @IsDefined()
   @IsString()

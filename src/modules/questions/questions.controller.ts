@@ -1,96 +1,87 @@
-import { type Request, type Response } from 'express'
-import { CreateQuestion } from './dto/create-question.dto.ts'
-import { UpdateQuestion } from './dto/update-question.dto.ts'
-import { GetQuestionParams } from './params/get-question.params.ts'
-import { QuestionService, AnswerService } from './questions.service.ts';
-import { CreateAnswerDTO } from './dto/create-answer.dto.ts';
-import { GetAnswerParams } from './params/get-answer.params.ts';
-import { UpdateAnswerDTO } from './dto/update-answer.dto.ts';
+import { type Request, type Response } from "express";
+
+import type { CreateAnswerDTO } from "./dto/create-answer.dto.ts";
+import type { CreateQuestion } from "./dto/create-question.dto.ts";
+import type { UpdateAnswerDTO } from "./dto/update-answer.dto.ts";
+import type { UpdateQuestion } from "./dto/update-question.dto.ts";
+import type { GetAnswerParams } from "./params/get-answer.params.ts";
+import type { GetQuestionParams } from "./params/get-question.params.ts";
+import type { AnswerService, QuestionService } from "./questions.service.ts";
 
 export class QuestionController {
-  constructor(private readonly questionService: QuestionService) { }
+  constructor(private readonly questionService: QuestionService) {}
 
-  getQuestions = async (
-    _req: Request,
-    res: Response
-  ) => {
+  getQuestions = async (_req: Request, res: Response) => {
     const questions = await this.questionService.getQuestions();
     return res.json(questions);
-  }
+  };
 
-  getQuestion = async (
-    req: Request,
-    res: Response
-  ) => {
+  getQuestion = async (req: Request, res: Response) => {
     const question = await this.questionService.getQuestionbyId(req.body.id);
-    if (!question) return res.status(404).json({ message: 'The Question Was Not Found' });
+    if (!question)
+      return res.status(404).json({ message: "The Question Was Not Found" });
     return res.json(question);
-  }
+  };
 
   createQuestion = async (
     req: Request<unknown, CreateQuestion>,
-    res: Response) => {
+    res: Response,
+  ) => {
     //const question: any;
     const body = await this.questionService.createQuestion(req.body);
     return res.status(201).json(body);
-  }
+  };
 
   updateQuestion = async (
     req: Request<GetQuestionParams, unknown, UpdateQuestion>,
-    res: Response
+    res: Response,
   ) => {
     const userFinded = await this.questionService.updateQuestion(
       req.params.id,
       req.body,
-    )
-    if (!userFinded) return res.status(404).json({ message: "Cound't Find it" });
+    );
+    if (!userFinded)
+      return res.status(404).json({ message: "Cound't Find it" });
     return res.status(204).json(userFinded);
-  }
+  };
 }
 
 export class AnswerController {
-  constructor(private readonly answerService: AnswerService) { }
+  constructor(private readonly answerService: AnswerService) {}
 
-  getAnswer = async (
-    req: Request,
-    res: Response) => {
+  getAnswer = async (req: Request, res: Response) => {
     const answer = await this.answerService.getAnswerById(req.body.id);
     if (!answer) return res.status(404).json({ message: "User Not Found" });
     return res.json(answer);
-  }
+  };
 
-  getAnswers = async (
-    _req: Request,
-    res: Response) => {
+  getAnswers = async (_req: Request, res: Response) => {
     const answers = await this.answerService.getAnswers();
     return res.json(answers);
-  }
+  };
 
   createAnswer = async (
     req: Request<unknown, CreateAnswerDTO>,
-    res: Response) => {
+    res: Response,
+  ) => {
     const answerCreated = await this.answerService.createAnswer(req.body);
     return res.status(201).json(answerCreated);
-  }
+  };
 
   updateAnswer = async (
     req: Request<GetAnswerParams, unknown, UpdateAnswerDTO>,
-    res: Response) => {
-
+    res: Response,
+  ) => {
     const answerToUpdate = this.answerService.getAnswerById(req.params.id);
-    if (!answerToUpdate) return res.status(404).json({ message: "Id Not Found" });
-    this.answerService.updateAnswer(
-      req.params.id,
-      req.body
-    );
+    if (!answerToUpdate)
+      return res.status(404).json({ message: "Id Not Found" });
+    this.answerService.updateAnswer(req.params.id, req.body);
     return res.status(200);
-  }
+  };
 
-  deleteAnswer = async (
-    req: Request<GetQuestionParams>,
-    res: Response) => {
+  deleteAnswer = async (req: Request<GetQuestionParams>, res: Response) => {
     const isDeleted = this.answerService.deleteAnswer(req.params.id);
 
-    return res.status(200).json({ message: isDeleted })
-  }
+    return res.status(200).json({ message: isDeleted });
+  };
 }
