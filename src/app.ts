@@ -10,7 +10,7 @@ import { AuthService } from "./modules/auth/auth.service.ts";
 import type { Session } from "./modules/auth/auth.types.ts";
 import type { Question } from "./modules/questions/question.types.ts";
 import { QuestionController } from "./modules/questions/questions.controller.ts";
-import { RouteQuestions } from "./modules/questions/questions.routes.ts";
+import { createQuestionsRoutes } from "./modules/questions/questions.routes.ts";
 import { QuestionService } from "./modules/questions/questions.service.ts";
 import { UserController } from "./modules/users/users.controller.ts";
 import { createUsersRoutes } from "./modules/users/users.routes.ts";
@@ -53,7 +53,7 @@ export function createApp(): Express {
 
   const questionsService = new QuestionService(questionsRepository);
   const questionsController = new QuestionController(questionsService);
-  app.use("/questions", RouteQuestions(questionsController));
+  app.use("/questions", createQuestionsRoutes(questionsController));
 
   return app;
 }

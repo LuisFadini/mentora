@@ -1,9 +1,9 @@
 import { type Request, type Response } from "express";
 
 import type { CreateAnswerDTO } from "./dto/create-answer.dto.ts";
-import type { CreateQuestion } from "./dto/create-question.dto.ts";
+import type { CreateQuestionDTO } from "./dto/create-question.dto.ts";
 import type { UpdateAnswerDTO } from "./dto/update-answer.dto.ts";
-import type { UpdateQuestion } from "./dto/update-question.dto.ts";
+import type { UpdateQuestionDTO } from "./dto/update-question.dto.ts";
 import type { GetAnswerParams } from "./params/get-answer.params.ts";
 import type { GetQuestionParams } from "./params/get-question.params.ts";
 import type { AnswerService, QuestionService } from "./questions.service.ts";
@@ -24,7 +24,7 @@ export class QuestionController {
   };
 
   createQuestion = async (
-    req: Request<unknown, unknown, CreateQuestion>,
+    req: Request<unknown, unknown, CreateQuestionDTO>,
     res: Response,
   ) => {
     const body = await this.questionService.createQuestion(req.body);
@@ -32,7 +32,7 @@ export class QuestionController {
   };
 
   updateQuestion = async (
-    req: Request<GetQuestionParams, unknown, UpdateQuestion>,
+    req: Request<GetQuestionParams, unknown, UpdateQuestionDTO>,
     res: Response,
   ) => {
     const userFinded = await this.questionService.updateQuestion(

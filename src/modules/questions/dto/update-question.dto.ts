@@ -1,5 +1,6 @@
 import { IsArray, IsDefined, IsString } from "class-validator";
-export class UpdateQuestion {
+
+export class UpdateQuestionDTO {
   @IsDefined()
   @IsString()
   title?: string;
@@ -15,6 +16,4 @@ export class UpdateQuestion {
   @IsDefined()
   @IsArray()
   answers?: string[];
-
-  // Nao Acho Que Faca Muito Sentindo Atualizar o Data De Criacao
 }

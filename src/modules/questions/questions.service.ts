@@ -1,64 +1,77 @@
 import { type IRepository } from "../../shared/interfaces/repository.interface.ts";
-import type { CreateQuestion } from "./dto/create-question.dto.ts";
-import { type Answers, type Question } from "./question.types.ts";
+import { removeUndefined } from "../../shared/utils/remove-undefined.ts";
+import type { CreateAnswerDTO } from "./dto/create-answer.dto.ts";
+import type { CreateQuestionDTO } from "./dto/create-question.dto.ts";
+import type { UpdateAnswerDTO } from "./dto/update-answer.dto.ts";
+import type { UpdateQuestionDTO } from "./dto/update-question.dto.ts";
+import { type Answer, type Question } from "./question.types.ts";
 
 export class QuestionService {
-  constructor(private readonly questionReposity: IRepository<Question>) {}
+  constructor(private readonly questionRepository: IRepository<Question>) {}
 
   async getQuestions(): Promise<Question[]> {
-    return this.questionReposity.findAll();
+    return this.questionRepository.findAll();
   }
 
   async getQuestionbyId(id: string) {
-    return this.questionReposity.findById(id);
+    return this.questionRepository.findById(id);
   }
 
-  async createQuestion(question: CreateQuestion) {
-    return this.questionReposity.create({
+  async createQuestion(question: CreateQuestionDTO) {
+    return this.questionRepository.create({
       ...question,
-      createAt: new Date(),
-      updateAt: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
   }
 
-  async updateQuestion(id: string, question: Partial<Question>) {
-    const questionFinded = await this.questionReposity.findById(id);
-    if (!questionFinded) return null;
+  async updateQuestion(id: string, data: Partial<UpdateQuestionDTO>) {
+    const existingQuestion = await this.questionRepository.findById(id);
+    if (!existingQuestion) return null;
 
-    return this.questionReposity.update({
-      id: questionFinded.id!,
-      ...questionFinded,
-      ...question,
+    const cleanData = removeUndefined(data);
+
+    return this.questionRepository.update({
+      ...existingQuestion,
+      ...cleanData,
+      updatedAt: new Date(),
     });
   }
 }
 
 export class AnswerService {
-  constructor(private readonly answerReposity: IRepository<Answers>) {}
+  constructor(private readonly answerRepository: IRepository<Answer>) {}
 
-  async getAnswers(): Promise<Answers[]> {
-    return this.answerReposity.findAll();
+  async getAnswers(): Promise<Answer[]> {
+    return this.answerRepository.findAll();
   }
 
   async getAnswerById(id: string) {
-    return this.answerReposity.findById(id);
+    return this.answerRepository.findById(id);
   }
 
-  async createAnswer(answer: Answers) {
-    return this.answerReposity.create(answer);
-  }
-
-  async updateAnswer(id: string, answer: Partial<Answers>) {
-    const answerFinded = await this.answerReposity.findById(id);
-    if (!answerFinded) return null;
-    return this.answerReposity.update({
-      id: answerFinded.id!,
-      ...answerFinded,
+  async createAnswer(answer: CreateAnswerDTO) {
+    return this.answerRepository.create({
       ...answer,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+  }
+
+  async updateAnswer(id: string, data: Partial<UpdateAnswerDTO>) {
+    const existingAnswer = await this.answerRepository.findById(id);
+    if (!existingAnswer) return null;
+
+    const cleanData = removeUndefined(data);
+
+    return this.answerRepository.update({
+      ...existingAnswer,
+      ...cleanData,
+      updatedAt: new Date(),
     });
   }
 
   async deleteAnswer(id: string) {
-    return this.answerReposity.delete(id);
+    return this.answerRepository.delete(id);
   }
 }

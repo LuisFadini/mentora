@@ -1,5 +1,6 @@
 import { IsArray, IsDefined, IsString } from "class-validator";
-export class CreateQuestion {
+
+export class CreateQuestionDTO {
   @IsDefined()
   @IsString()
   title!: string;

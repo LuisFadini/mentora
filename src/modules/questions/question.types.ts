@@ -4,12 +4,14 @@ export type Question = {
   subjects: string;
   body: string;
   answers: string[];
-  createAt: Date;
-  updateAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
-export type Answers = {
+export type Answer = {
   id?: string;
   idQuestion: string;
   answerBody: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
