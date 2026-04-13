@@ -16,18 +16,17 @@ export class QuestionController {
     return res.json(questions);
   };
 
-  getQuestion = async (req: Request, res: Response) => {
-    const question = await this.questionService.getQuestionbyId(req.body.id);
+  getQuestion = async (req: Request<GetQuestionParams>, res: Response) => {
+    const question = await this.questionService.getQuestionbyId(req.params.id);
     if (!question)
       return res.status(404).json({ message: "The Question Was Not Found" });
     return res.json(question);
   };
 
   createQuestion = async (
-    req: Request<unknown, CreateQuestion>,
+    req: Request<unknown, unknown, CreateQuestion>,
     res: Response,
   ) => {
-    //const question: any;
     const body = await this.questionService.createQuestion(req.body);
     return res.status(201).json(body);
   };
@@ -49,8 +48,8 @@ export class QuestionController {
 export class AnswerController {
   constructor(private readonly answerService: AnswerService) {}
 
-  getAnswer = async (req: Request, res: Response) => {
-    const answer = await this.answerService.getAnswerById(req.body.id);
+  getAnswer = async (req: Request<GetAnswerParams>, res: Response) => {
+    const answer = await this.answerService.getAnswerById(req.params.id);
     if (!answer) return res.status(404).json({ message: "User Not Found" });
     return res.json(answer);
   };
@@ -61,7 +60,7 @@ export class AnswerController {
   };
 
   createAnswer = async (
-    req: Request<unknown, CreateAnswerDTO>,
+    req: Request<unknown, unknown, CreateAnswerDTO>,
     res: Response,
   ) => {
     const answerCreated = await this.answerService.createAnswer(req.body);
@@ -72,15 +71,17 @@ export class AnswerController {
     req: Request<GetAnswerParams, unknown, UpdateAnswerDTO>,
     res: Response,
   ) => {
-    const answerToUpdate = this.answerService.getAnswerById(req.params.id);
-    if (!answerToUpdate)
-      return res.status(404).json({ message: "Id Not Found" });
-    this.answerService.updateAnswer(req.params.id, req.body);
-    return res.status(200);
+    const updatedAnswer = await this.answerService.updateAnswer(
+      req.params.id,
+      req.body,
+    );
+    if (!updatedAnswer)
+      return res.status(404).json({ message: "Answer not found" });
+    return res.status(201).json(updatedAnswer);
   };
 
   deleteAnswer = async (req: Request<GetQuestionParams>, res: Response) => {
-    const isDeleted = this.answerService.deleteAnswer(req.params.id);
+    const isDeleted = await this.answerService.deleteAnswer(req.params.id);
 
     return res.status(200).json({ message: isDeleted });
   };

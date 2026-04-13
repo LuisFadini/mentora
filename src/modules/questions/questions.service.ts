@@ -1,4 +1,5 @@
 import { type IRepository } from "../../shared/interfaces/repository.interface.ts";
+import type { CreateQuestion } from "./dto/create-question.dto.ts";
 import { type Answers, type Question } from "./question.types.ts";
 
 export class QuestionService {
@@ -12,7 +13,7 @@ export class QuestionService {
     return this.questionReposity.findById(id);
   }
 
-  async createQuestion(question: Question) {
+  async createQuestion(question: CreateQuestion) {
     return this.questionReposity.create({
       ...question,
       createAt: new Date(),
@@ -25,9 +26,9 @@ export class QuestionService {
     if (!questionFinded) return null;
 
     return this.questionReposity.update({
+      id: questionFinded.id!,
       ...questionFinded,
       ...question,
-      id: questionFinded.id,
     });
   }
 }
@@ -51,11 +52,12 @@ export class AnswerService {
     const answerFinded = await this.answerReposity.findById(id);
     if (!answerFinded) return null;
     return this.answerReposity.update({
+      id: answerFinded.id!,
       ...answerFinded,
       ...answer,
-      id: answerFinded.id,
     });
   }
+
   async deleteAnswer(id: string) {
     return this.answerReposity.delete(id);
   }

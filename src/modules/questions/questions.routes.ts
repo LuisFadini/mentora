@@ -21,4 +21,6 @@ export function RouteQuestions(questionController: QuestionController) {
     questionController.createQuestion,
   );
   router.patch("/:id", questionController.updateQuestion);
+
+  return router;
 }

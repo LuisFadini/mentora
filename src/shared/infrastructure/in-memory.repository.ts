@@ -29,8 +29,8 @@ export class InMemoryRepository<
     return Promise.resolve(entity);
   }
 
-  async delete(entity: T): Promise<boolean> {
-    const index = this.items.findIndex((item) => item.id === entity.id);
+  async delete(id: string): Promise<boolean> {
+    const index = this.items.findIndex((item) => item.id === id);
     this.items.splice(index, 1);
     return Promise.resolve(true);
   }

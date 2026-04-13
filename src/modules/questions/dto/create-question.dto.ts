@@ -1,4 +1,4 @@
-import { IsArray, IsDate, IsDefined, IsString } from "class-validator";
+import { IsArray, IsDefined, IsString } from "class-validator";
 export class CreateQuestion {
   @IsDefined()
   @IsString()
@@ -15,12 +15,4 @@ export class CreateQuestion {
   @IsDefined()
   @IsArray()
   answers!: string[];
-
-  @IsDefined()
-  @IsDate()
-  createAt!: Date;
-
-  @IsDefined()
-  @IsDate()
-  updateAt!: Date;
 }

@@ -1,5 +1,5 @@
 export type Question = {
-  id: string;
+  id?: string;
   title: string;
   subjects: string;
   body: string;
@@ -9,7 +9,7 @@ export type Question = {
 };
 
 export type Answers = {
-  id: string;
+  id?: string;
   idQuestion: string;
   answerBody: string;
 };
