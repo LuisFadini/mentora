@@ -8,6 +8,10 @@ import { AuthController } from "./modules/auth/auth.controller.ts";
 import { createAuthRoutes } from "./modules/auth/auth.routes.ts";
 import { AuthService } from "./modules/auth/auth.service.ts";
 import type { Session } from "./modules/auth/auth.types.ts";
+import type { Question } from "./modules/questions/question.types.ts";
+import { QuestionController } from "./modules/questions/questions.controller.ts";
+import { createQuestionsRoutes } from "./modules/questions/questions.routes.ts";
+import { QuestionService } from "./modules/questions/questions.service.ts";
 import { UserController } from "./modules/users/users.controller.ts";
 import { createUsersRoutes } from "./modules/users/users.routes.ts";
 import { UsersService } from "./modules/users/users.service.ts";
@@ -44,6 +48,12 @@ export function createApp(): Express {
   );
   const authController = new AuthController(authService);
   app.use("/auth", createAuthRoutes(authController, authMiddleware));
+
+  const questionsRepository = new InMemoryRepository<Question>();
+
+  const questionsService = new QuestionService(questionsRepository);
+  const questionsController = new QuestionController(questionsService);
+  app.use("/questions", createQuestionsRoutes(questionsController));
 
   return app;
 }
