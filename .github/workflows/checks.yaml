@@ -13,8 +13,8 @@ on:
       - "docs/**"
 
 jobs:
-  checks:
-    name: Checks
+  lint:
+    name: lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -31,9 +31,28 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        
+
       - name: Validate lint
         run: pnpm lint
+
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: ".nvmrc"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Build project
         run: pnpm build
