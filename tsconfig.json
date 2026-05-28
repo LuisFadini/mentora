@@ -1,18 +1,9 @@
 {
-  "extends": [
-    "@tsconfig/strictest/tsconfig.json",
-    "@tsconfig/node24/tsconfig.json"
-  ],
-  "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "dist",
+  "files": [],
 
-    "allowImportingTsExtensions": true,
-    "rewriteRelativeImportExtensions": true,
-
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
-  },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist", "coverage"]
+  "references": [
+    {
+      "path": "./apps/api"
+    }
+  ]
 }

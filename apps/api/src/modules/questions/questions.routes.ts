@@ -6,7 +6,9 @@ import { CreateQuestionDTO } from "./dto/create-question.dto.ts";
 import type { GetQuestionParams } from "./params/get-question.params.ts";
 import type { QuestionController } from "./questions.controller.ts";
 
-export function createQuestionsRoutes(questionController: QuestionController) {
+export function createQuestionsRoutes(
+  questionController: QuestionController,
+): Router {
   const router = Router();
 
   router.get("/", questionController.getQuestions);

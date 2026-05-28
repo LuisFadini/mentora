@@ -20,7 +20,7 @@ export default defineConfig([
   ts.configs.recommendedTypeChecked,
 
   {
-    files: ["**/*.{js,ts}"],
+    files: ["{apps,packages}/**/*.{js,ts}"],
     languageOptions: {
       globals: {
         ...globals.node,
@@ -33,7 +33,7 @@ export default defineConfig([
     },
   },
   {
-    files: ["**/*.test.ts", "**/*.spec.ts"],
+    files: ["{apps,packages}/**/*.test.ts", "{apps,packages}/**/*.spec.ts"],
     languageOptions: {
       globals: {
         ...globals.node,
