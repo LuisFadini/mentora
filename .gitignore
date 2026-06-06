@@ -1,19 +1,31 @@
+# Dependencies
 node_modules/
 
+# Builds
 dist/
+build/
 coverage/
+.svelte-kit/
 
+# Environment
 .env
 .env.*
 !.env.example
 
+# Logs
 logs/
 *.log
 npm-debug.log*
 pnpm-debug.log*
 
+# OS
 .DS_Store
 Thumbs.db
 tsconfig.tsbuildinfo
 
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# Local tools
 bruno/
