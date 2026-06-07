@@ -1,4 +1,4 @@
-import { type ResponseObject } from "./types.ts";
+import { type ResponseObject } from "../types.ts";
 
 export class OpenAPIResponseBuilder {
   private responses: Record<string, ResponseObject> = {};

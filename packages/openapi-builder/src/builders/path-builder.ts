@@ -1,5 +1,5 @@
+import type { PathItem } from "../types.ts";
 import { OpenAPIMethodBuilder } from "./method-builder.ts";
-import type { PathItem } from "./types.ts";
 
 export class OpenAPIPathBuilder {
   private paths: Record<string, PathItem> = {};

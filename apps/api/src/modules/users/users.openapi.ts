@@ -1,11 +1,11 @@
 import {
   jsonBody,
   jsonContent,
+  OpenAPIMethodBuilder,
+  OpenAPIPathBuilder,
+  OpenAPIResponseBuilder,
   schemaRef,
-} from "../../shared/utils/openapi/helpers.ts";
-import { OpenAPIMethodBuilder } from "../../shared/utils/openapi/method-builder.ts";
-import { OpenAPIPathBuilder } from "../../shared/utils/openapi/path-builder.ts";
-import { OpenAPIResponseBuilder } from "../../shared/utils/openapi/response-builder.ts";
+} from "@mentora/openapi-builder";
 
 export const usersPaths = new OpenAPIPathBuilder()
   .addPath(

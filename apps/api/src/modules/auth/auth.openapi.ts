@@ -1,7 +1,10 @@
-import { jsonBody, schemaRef } from "../../shared/utils/openapi/helpers.ts";
-import { OpenAPIMethodBuilder } from "../../shared/utils/openapi/method-builder.ts";
-import { OpenAPIPathBuilder } from "../../shared/utils/openapi/path-builder.ts";
-import { OpenAPIResponseBuilder } from "../../shared/utils/openapi/response-builder.ts";
+import {
+  jsonBody,
+  OpenAPIMethodBuilder,
+  OpenAPIPathBuilder,
+  OpenAPIResponseBuilder,
+  schemaRef,
+} from "@mentora/openapi-builder";
 
 export const authPaths = new OpenAPIPathBuilder()
   .addPath(

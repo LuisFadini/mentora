@@ -1,5 +1,9 @@
+import type {
+  MethodDefinition,
+  MethodsType,
+  ResponseObject,
+} from "../types.ts";
 import { OpenAPIResponseBuilder } from "./response-builder.ts";
-import type { MethodDefinition, MethodsType, ResponseObject } from "./types.ts";
 
 type MethodBuilderOptions = {
   summary: string;
