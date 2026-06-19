@@ -26,7 +26,10 @@
     }
   },
   "lint-staged": {
-    "*.ts": "eslint --fix"
+    "*.ts": "eslint --fix",
+    "apps/frontend/**/*.{js,ts,svelte,css}": [
+      "pnpm --dir apps/frontend exec eslint --fix"
+    ]
   },
   "devDependencies": {
     "@commitlint/cli": "^20.5.2",
