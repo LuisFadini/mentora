@@ -1,7 +1,7 @@
+import { omit, removeUndefined } from "@mentora/utils";
+
 import type { IPasswordHasher } from "../../shared/interfaces/password-hasher.interface.ts";
 import { type IRepository } from "../../shared/interfaces/repository.interface.ts";
-import { omit } from "../../shared/utils/omit.ts";
-import { removeUndefined } from "../../shared/utils/remove-undefined.ts";
 import { type User } from "./user.types.ts";
 
 export class UsersService {

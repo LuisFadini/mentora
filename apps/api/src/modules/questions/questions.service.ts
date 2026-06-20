@@ -1,5 +1,6 @@
+import { removeUndefined } from "@mentora/utils";
+
 import { type IRepository } from "../../shared/interfaces/repository.interface.ts";
-import { removeUndefined } from "../../shared/utils/remove-undefined.ts";
 import type { CreateAnswerDTO } from "./dto/create-answer.dto.ts";
 import type { CreateQuestionDTO } from "./dto/create-question.dto.ts";
 import type { UpdateAnswerDTO } from "./dto/update-answer.dto.ts";

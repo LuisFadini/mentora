@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@mentora/openapi-builder": "workspace:*",
+    "@mentora/utils": "workspace:*",
     "argon2": "^0.44.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
