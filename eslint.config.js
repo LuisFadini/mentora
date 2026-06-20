@@ -15,12 +15,15 @@ const gitignorePath = fileURLToPath(new URL(".gitignore", import.meta.url));
 
 export default defineConfig([
   includeIgnoreFile(gitignorePath),
+  {
+    ignores: ["apps/frontend/**", "*.config.{js,ts}"],
+  },
 
   js.configs.recommended,
   ts.configs.recommendedTypeChecked,
 
   {
-    files: ["**/*.{js,ts}"],
+    files: ["{apps,packages}/**/*.{js,ts}"],
     languageOptions: {
       globals: {
         ...globals.node,
@@ -33,7 +36,7 @@ export default defineConfig([
     },
   },
   {
-    files: ["**/*.test.ts", "**/*.spec.ts"],
+    files: ["{apps,packages}/**/*.test.ts", "{apps,packages}/**/*.spec.ts"],
     languageOptions: {
       globals: {
         ...globals.node,
