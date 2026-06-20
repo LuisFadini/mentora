@@ -10,5 +10,8 @@
     "test": "vitest run",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "@mentora/utils": "workspace:*"
   }
 }
