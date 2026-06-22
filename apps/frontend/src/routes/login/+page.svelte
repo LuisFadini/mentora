@@ -1,4 +1,7 @@
 <script>
+  import AuthFooterLink from "$lib/components/auth/AuthFooterLink.svelte";
+  import AuthHeader from "$lib/components/auth/AuthHeader.svelte";
+  import AuthSubmitButton from "$lib/components/auth/AuthSubmitButton.svelte";
   import AuthTextField from "$lib/components/auth/AuthTextField.svelte";
   import Navbar from "$lib/components/Navbar.svelte";
 
@@ -59,18 +62,10 @@
   <div
     class="w-full max-w-md rounded-xl border-2 border-black bg-white p-6 shadow-[8px_8px_0_0_black]"
   >
-    <div class="mb-6">
-      <h1 class="relative inline-block text-4xl font-black leading-none">
-        <span class="relative z-10"> Faça seu login </span>
-        <span
-          class="absolute -bottom-0.5 left-[-2.5%] h-3 w-[105%] z-0 -skew-x-6 bg-blue-300"
-        >
-        </span>
-      </h1>
-      <p class="mt-1 text-neutral-600">
-        Insira seu e-mail e senha para acessar sua conta.
-      </p>
-    </div>
+    <AuthHeader
+      header="Faça seu login"
+      subtitle="Insira seu e-mail e senha para acessar sua conta."
+    />
 
     <form class="flex flex-col gap-5" onsubmit={handleSubmit}>
       <AuthTextField
@@ -97,13 +92,15 @@
         onValidate={validatePassword}
       />
 
-      <button
-        type="submit"
-        disabled={!isValid}
-        class="mt-2 rounded-lg cursor-pointer border-2 border-black px-5 py-3 font-black text-white transition-all enabled:bg-blue-500 enabled:shadow-[4px_4px_0_0_black] enabled:hover:translate-x-0.5 enabled:hover:translate-y-0.5 enabled:hover:shadow-none disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500"
-      >
+      <AuthSubmitButton disabled={!isValid} type="submit">
         Fazer login
-      </button>
+      </AuthSubmitButton>
+
+      <AuthFooterLink
+        text="Não tem uma conta?"
+        href="/signup"
+        action="Criar conta"
+      />
     </form>
   </div>
 </main>
