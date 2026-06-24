@@ -93,7 +93,7 @@
         {/each}
 
         <a
-        href={resolve("/login")}
+          href={resolve("/login")}
           class="mt-2 flex sm:hidden items-center justify-center gap-2 rounded-lg border-2 border-black bg-blue-500 px-4 py-3 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
         >
           Login
