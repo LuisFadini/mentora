@@ -28,7 +28,12 @@ export function createApp(): Express {
   if (!config.isTest) app.use(pinoHttp({ logger }));
   app.use(express.json());
   app.use(cookieParser());
-  app.use(cors());
+  app.use(
+    cors({
+      credentials: true,
+      origin: "http://localhost:5173",
+    }),
+  );
 
   app.use("/", createOpenAPiRoutes());
 

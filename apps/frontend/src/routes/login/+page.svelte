@@ -5,6 +5,8 @@
   import AuthSubmitButton from "$lib/components/auth/AuthSubmitButton.svelte";
   import AuthTextField from "$lib/components/auth/AuthTextField.svelte";
   import Navbar from "$lib/components/Navbar.svelte";
+  import { ApiError } from "$lib/api/api-error";
+  import { createSession } from "$lib/api/users/create-session";
 
   let email = $state("");
   let password = $state("");
@@ -34,13 +36,34 @@
     );
   }
 
+  let loading = $state(false);
+  let apiError = $state("");
+
   async function handleSubmit() {
     validateEmail();
     validatePassword();
 
     if (emailError || passwordError) return;
 
-    alert(`E-mail: ${email}\nSenha: ${password}`);
+    loading = true;
+    apiError = "";
+
+    try {
+      await createSession({ email, password });
+    } catch (error) {
+      if (error instanceof ApiError) {
+        switch (error.status) {
+          case 401:
+          case 404:
+            apiError = "E-mail ou senha inválidos.";
+            break;
+        }
+      } else {
+        apiError = "Não foi possível conectar ao servidor.";
+      }
+    } finally {
+      loading = false;
+    }
   }
 </script>
 
@@ -81,8 +104,12 @@
       />
 
       <AuthSubmitButton disabled={!isValid} type="submit">
-        Fazer login
+        {loading ? "Fazendo login..." : "Fazer login"}
       </AuthSubmitButton>
+
+      {#if apiError}
+        <p class="text-center font-medium text-red-600">{apiError}</p>
+      {/if}
 
       <AuthFooterLink
         text="Não tem uma conta?"
