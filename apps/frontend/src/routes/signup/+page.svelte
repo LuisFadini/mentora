@@ -1,4 +1,5 @@
 <script>
+  import * as validators from "$lib/utils/validators";
   import AuthFooterLink from "$lib/components/auth/AuthFooterLink.svelte";
   import AuthHeader from "$lib/components/auth/AuthHeader.svelte";
   import AuthSubmitButton from "$lib/components/auth/AuthSubmitButton.svelte";
@@ -32,52 +33,29 @@
   );
 
   function validateName() {
-    const value = name.trim();
-
-    if (!value) {
-      nameError = "";
-      return;
-    }
-
-    nameError =
-      value.length >= 4 ? "" : "O nome deve ter pelo menos 4 caracteres.";
+    nameError = validators.minLength(name, 4, validators.messages.nameMin);
   }
 
   function validateEmail() {
-    const value = email.trim();
-
-    if (!value) {
-      emailError = "";
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    emailError = emailRegex.test(value) ? "" : "Digite um e-mail válido.";
+    emailError = validators.email(email);
   }
 
   function validatePassword() {
-    const value = password.trim();
-
-    if (!value) {
-      passwordError = "";
-      return;
-    }
-
-    passwordError =
-      value.length >= 8 ? "" : "A senha deve ter pelo menos 8 caracteres.";
+    passwordError = validators.minLength(
+      password,
+      8,
+      validators.messages.passwordMin,
+    );
 
     validateConfirmPassword();
   }
 
   function validateConfirmPassword() {
-    const value = confirmPassword.trim();
-
-    if (!value) {
-      confirmPasswordError = "";
-      return;
-    }
-
-    confirmPasswordError = value === password ? "" : "As senhas não coincidem.";
+    confirmPasswordError = validators.matches(
+      confirmPassword,
+      password,
+      validators.messages.passwordMismatch,
+    );
   }
 
   async function handleSubmit() {
