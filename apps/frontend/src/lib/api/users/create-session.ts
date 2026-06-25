@@ -16,5 +16,5 @@ export async function createSession(data: CreateSessionDTO) {
     throw new ApiError(response.status, await response.text());
   }
 
-  return response.json();
+  return true;
 }
