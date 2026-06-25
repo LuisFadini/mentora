@@ -1,4 +1,5 @@
 import cookieParser from "cookie-parser";
+import cors from "cors";
 import express, { type Express } from "express";
 import { pinoHttp } from "pino-http";
 
@@ -27,6 +28,7 @@ export function createApp(): Express {
   if (!config.isTest) app.use(pinoHttp({ logger }));
   app.use(express.json());
   app.use(cookieParser());
+  app.use(cors());
 
   app.use("/", createOpenAPiRoutes());
 

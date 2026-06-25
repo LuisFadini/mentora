@@ -5,6 +5,8 @@
   import AuthSubmitButton from "$lib/components/auth/AuthSubmitButton.svelte";
   import AuthTextField from "$lib/components/auth/AuthTextField.svelte";
   import Navbar from "$lib/components/Navbar.svelte";
+  import { createUser } from "$lib/api/users/create-user";
+  import { ApiError } from "$lib/api/api-error";
 
   let name = $state("");
   let email = $state("");
@@ -58,6 +60,9 @@
     );
   }
 
+  let loading = $state(false);
+  let apiError = $state("");
+
   async function handleSubmit() {
     validateName();
     validateEmail();
@@ -67,7 +72,31 @@
     if (nameError || emailError || passwordError || confirmPasswordError)
       return;
 
-    alert(`Nome: ${name}\nE-mail: ${email}\nSenha: ${password}`);
+    loading = true;
+    apiError = "";
+
+    try {
+      const user = await createUser({ name, email, password });
+
+      console.log("Usuário criado:", user);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        switch (error.status) {
+          case 400:
+            apiError = "Dados inválidos.";
+            break;
+          case 409:
+            apiError = "E-mail já cadastrado.";
+            break;
+          default:
+            apiError = "Erro ao criar conta.";
+        }
+      } else {
+        apiError = "Não foi possível conectar ao servidor.";
+      }
+    } finally {
+      loading = false;
+    }
   }
 </script>
 
@@ -131,9 +160,13 @@
         onValidate={validateConfirmPassword}
       />
 
-      <AuthSubmitButton disabled={!isValid} type="submit">
-        Criar conta
+      <AuthSubmitButton disabled={!isValid || loading} type="submit">
+        {loading ? "Criando conta..." : "Criar conta"}
       </AuthSubmitButton>
+
+      {#if apiError}
+        <p class="text-center font-medium text-red-600">{apiError}</p>
+      {/if}
 
       <AuthFooterLink
         text="Já tem uma conta?"
