@@ -11,6 +11,7 @@ export function createAuthRoutes(
 ): Router {
   const router = Router();
 
+  router.get("/", controller.verifySession);
   router.post("/", validateBodyDTO(CreateSessionDTO), controller.createSession);
   router.delete("/", authMiddleware, controller.deleteSession);
 

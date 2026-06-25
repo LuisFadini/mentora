@@ -26,7 +26,8 @@ export const usersPaths = new OpenAPIPathBuilder()
         operationId: "createUser",
         responses: new OpenAPIResponseBuilder()
           .addResponse("201", "User created", jsonContent(schemaRef("User")))
-          .addResponse("400", "Invalid request body"),
+          .addResponse("400", "Invalid request body")
+          .addResponse("409", "Email already in use"),
         tags: ["Users"],
         requestBody: jsonBody(schemaRef("CreateUserDTO")),
       }),
@@ -57,7 +58,8 @@ export const usersPaths = new OpenAPIPathBuilder()
         responses: new OpenAPIResponseBuilder()
           .addResponse("200", "User updated", jsonContent(schemaRef("User")))
           .addResponse("400", "Invalid request body")
-          .addResponse("404", "User not found"),
+          .addResponse("404", "User not found")
+          .addResponse("409", "Email already in use"),
         tags: ["Users"],
         parameters: [
           {

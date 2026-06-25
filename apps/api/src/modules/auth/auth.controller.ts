@@ -6,6 +6,24 @@ import type { CreateSessionDTO } from "./dto/create-session.dto.ts";
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  verifySession = async (req: Request, res: Response) => {
+    const sessionCookie = (req.cookies as { [key: string]: string })[
+      "session_token"
+    ];
+
+    if (!sessionCookie) {
+      return res.status(401).json({ authenticated: false });
+    }
+
+    const result = await this.authService.verifySession(sessionCookie);
+
+    if (!result.authenticated) {
+      return res.status(401).json(result);
+    }
+
+    return res.json(result);
+  };
+
   createSession = async (
     req: Request<unknown, unknown, CreateSessionDTO>,
     res: Response,

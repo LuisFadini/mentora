@@ -1,5 +1,6 @@
 import {
   jsonBody,
+  jsonContent,
   OpenAPIMethodBuilder,
   OpenAPIPathBuilder,
   OpenAPIResponseBuilder,
@@ -10,6 +11,18 @@ export const authPaths = new OpenAPIPathBuilder()
   .addPath(
     "/auth",
     new OpenAPIMethodBuilder()
+      .addMethod("get", {
+        summary: "Get current session user",
+        operationId: "getCurrentSession",
+        responses: new OpenAPIResponseBuilder()
+          .addResponse(
+            "200",
+            "Authenticated user",
+            jsonContent(schemaRef("AuthSessionResponse")),
+          )
+          .addResponse("401", "Not authenticated"),
+        tags: ["Auth"],
+      })
       .addMethod("post", {
         summary: "Create a session",
         operationId: "createSession",
