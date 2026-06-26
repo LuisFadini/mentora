@@ -91,7 +91,7 @@
         id="email"
         label="E-mail"
         type="email"
-        icon="mdi:email-outline"
+        icon="ph:envelope-simple-bold"
         placeholder="voce@exemplo.com"
         bind:value={email}
         bind:error={emailError}
@@ -103,7 +103,7 @@
         id="password"
         label="Senha"
         type="password"
-        icon="mdi:lock-outline"
+        icon="ph:lock-bold"
         placeholder="••••••••"
         bind:value={password}
         bind:error={passwordError}

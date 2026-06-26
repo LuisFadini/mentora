@@ -119,7 +119,7 @@
         id="name"
         label="Nome"
         type="text"
-        icon="mdi:user-outline"
+        icon="ph:user-bold"
         placeholder="Seu nome"
         bind:value={name}
         bind:error={nameError}
@@ -131,7 +131,7 @@
         id="email"
         label="E-mail"
         type="email"
-        icon="mdi:email-outline"
+        icon="ph:envelope-simple-bold"
         placeholder="voce@exemplo.com"
         bind:value={email}
         bind:error={emailError}
@@ -143,7 +143,7 @@
         id="password"
         label="Senha"
         type="password"
-        icon="mdi:lock-outline"
+        icon="ph:lock-bold"
         placeholder="••••••••"
         bind:value={password}
         bind:error={passwordError}
@@ -155,7 +155,7 @@
         id="confirmPassword"
         label="Confirme sua senha"
         type="password"
-        icon="mdi:lock-outline"
+        icon="ph:lock-bold"
         placeholder="••••••••"
         bind:value={confirmPassword}
         bind:error={confirmPasswordError}
