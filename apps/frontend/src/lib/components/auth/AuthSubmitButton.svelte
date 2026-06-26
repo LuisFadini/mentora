@@ -1,5 +1,13 @@
-<script>
-  let { type, disabled = false, children } = $props();
+<script lang="ts">
+  import type { Snippet } from "svelte";
+
+  type Props = {
+    type?: HTMLButtonElement["type"];
+    disabled?: boolean;
+    children?: Snippet;
+  };
+
+  let { type = "button", disabled = false, children }: Props = $props();
 </script>
 
 <button

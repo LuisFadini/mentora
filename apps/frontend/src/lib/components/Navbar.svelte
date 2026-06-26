@@ -3,6 +3,16 @@
   import type { Session } from "$lib/api/users/get-session";
   import Icon from "@iconify/svelte";
   import Avatar from "./Avatar.svelte";
+  import type {
+    RouteIdWithSearchOrHash,
+    PathnameWithSearchOrHash,
+  } from "$app/types";
+
+  type Props = {
+    session?: Session;
+  };
+
+  let { session }: Props = $props();
 
   let mobileMenuOpen = $state(false);
 
@@ -14,22 +24,16 @@
     mobileMenuOpen = false;
   }
 
-  let headerLinks = [
-    {
-      href: resolve("/"),
-      text: "Questões",
-    },
-    {
-      href: resolve("/"),
-      text: "Conteúdos",
-    },
-    {
-      href: resolve("/"),
-      text: "Fórum",
-    },
-  ];
+  type HeaderLink = {
+    href: RouteIdWithSearchOrHash | PathnameWithSearchOrHash;
+    text: string;
+  };
 
-  const { session }: { session?: Session } = $props();
+  const headerLinks: HeaderLink[] = [
+    { href: "/", text: "Questões" },
+    { href: "/", text: "Conteúdos" },
+    { href: "/", text: "Fórum" },
+  ];
 </script>
 
 <header class="fixed inset-x-0 top-0 z-50 border-b-2 border-black bg-white">
@@ -51,7 +55,7 @@
           <li
             class="text-2xl font-bold hover:underline decoration-2 transition-all text-gray-900 hover:text-blue-400 duration-150"
           >
-            <a href={link.href}>{link.text}</a>
+            <a href={resolve(link.href)}>{link.text}</a>
           </li>
         {/each}
       </ul>
@@ -105,7 +109,7 @@
         {#each headerLinks as link (link.text)}
           <li>
             <a
-              href={link.href}
+              href={resolve(link.href)}
               onclick={closeMenu}
               class="flex items-center rounded-lg border-2 border-black bg-white px-4 py-3 font-bold shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:bg-blue-100 hover:shadow-none"
             >

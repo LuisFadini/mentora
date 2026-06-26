@@ -1,6 +1,18 @@
-<script>
+<script lang="ts">
   import Icon from "@iconify/svelte";
   import ErrorText from "../ErrorText.svelte";
+
+  type Props = {
+    id: string;
+    label: string;
+    type?: HTMLInputElement["type"];
+    icon?: string;
+    placeholder?: string;
+    value: string;
+    error: string;
+    focused?: boolean;
+    onValidate?: () => void;
+  };
 
   let {
     id,
@@ -12,7 +24,7 @@
     error = $bindable(),
     focused = $bindable(false),
     onValidate,
-  } = $props();
+  }: Props = $props();
 
   function handleInput() {
     onValidate?.();

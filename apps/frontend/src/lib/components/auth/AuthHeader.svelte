@@ -1,5 +1,10 @@
-<script>
-  let { header, subtitle } = $props();
+<script lang="ts">
+  type Props = {
+    header: string;
+    subtitle: string;
+  };
+
+  let { header, subtitle }: Props = $props();
 </script>
 
 <div class="mb-6">

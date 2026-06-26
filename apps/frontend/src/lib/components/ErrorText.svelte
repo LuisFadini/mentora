@@ -1,7 +1,12 @@
-<script>
+<script lang="ts">
   import { twMerge } from "tailwind-merge";
 
-  let { message, class: className = "" } = $props();
+  type Props = {
+    message?: string;
+    class?: string;
+  };
+
+  let { message, class: className = "" }: Props = $props();
 </script>
 
 {#if message}

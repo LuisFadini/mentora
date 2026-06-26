@@ -1,7 +1,15 @@
-<script>
+<script lang="ts">
   import { resolve } from "$app/paths";
+  import type { PathnameWithSearchOrHash } from "$app/types";
+  import type { RouteIdWithSearchOrHash } from "$app/types";
 
-  let { text, href, action } = $props();
+  type Props = {
+    text: string;
+    href: RouteIdWithSearchOrHash | PathnameWithSearchOrHash;
+    action: string;
+  };
+
+  let { text, href, action }: Props = $props();
 </script>
 
 <div class="mt-4 text-center text-sm text-neutral-600">
