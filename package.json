@@ -29,7 +29,8 @@
   "lint-staged": {
     "*.ts": "eslint --fix",
     "apps/frontend/**/*.{js,ts,svelte,css}": [
-      "pnpm --dir apps/frontend exec eslint --fix"
+      "pnpm --dir apps/frontend exec eslint --fix",
+      "pnpm --dir apps/frontend exec prettier --write"
     ]
   },
   "devDependencies": {

@@ -1,5 +1,6 @@
 import { type Request, type Response } from "express";
 
+import { ConflictError } from "../../shared/errors/conflict.error.ts";
 import type { CreateUserDTO } from "./dto/create-user.dto.ts";
 import type { UpdateUserDTO } from "./dto/update-user.dto.ts";
 import { type GetUserParams } from "./params/get-user.params.ts";
@@ -23,20 +24,47 @@ export class UserController {
     req: Request<unknown, unknown, CreateUserDTO>,
     res: Response,
   ) => {
-    const user = await this.usersService.createUser(req.body);
-    res.status(201).json(user);
+    try {
+      const user = await this.usersService.createUser(req.body);
+      return res.status(201).json(user);
+    } catch (error) {
+      if (error instanceof ConflictError) {
+        return res.status(409).json({
+          message: error.message,
+        });
+      }
+
+      return res.status(500).json({
+        message: "Internal server error",
+      });
+    }
   };
 
   updateUser = async (
     req: Request<GetUserParams, unknown, UpdateUserDTO>,
     res: Response,
   ) => {
-    const updatedUser = await this.usersService.updateUser(
-      req.params.id,
-      req.body,
-    );
-    if (!updatedUser)
-      return res.status(404).json({ message: "User not found" });
-    return res.status(200).json(updatedUser);
+    try {
+      const updatedUser = await this.usersService.updateUser(
+        req.params.id,
+        req.body,
+      );
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      return res.status(200).json(updatedUser);
+    } catch (error) {
+      if (error instanceof ConflictError) {
+        return res.status(409).json({
+          message: error.message,
+        });
+      }
+
+      return res.status(500).json({
+        message: "Internal server error",
+      });
+    }
   };
 }

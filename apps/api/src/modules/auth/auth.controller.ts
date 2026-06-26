@@ -1,10 +1,29 @@
 import { type Request, type Response } from "express";
 
+import { config } from "../../config/env.ts";
 import type { AuthService } from "./auth.service.ts";
 import type { CreateSessionDTO } from "./dto/create-session.dto.ts";
 
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  verifySession = async (req: Request, res: Response) => {
+    const sessionCookie = (req.cookies as { [key: string]: string })[
+      "session_token"
+    ];
+
+    if (!sessionCookie) {
+      return res.status(401).json({ authenticated: false });
+    }
+
+    const result = await this.authService.verifySession(sessionCookie);
+
+    if (!result.authenticated) {
+      return res.status(401).json(result);
+    }
+
+    return res.json(result);
+  };
 
   createSession = async (
     req: Request<unknown, unknown, CreateSessionDTO>,
@@ -22,7 +41,16 @@ export class AuthController {
         message: "Passwords don't match",
       });
 
-    return res.status(202).cookie("session_token", session.sessionId!).send();
+    return res
+      .status(202)
+      .cookie("session_token", session.sessionId!, {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: !config.isDevelopment,
+        maxAge: 8 * 60 * 60 * 1000,
+      })
+      .send();
   };
 
   deleteSession = async (req: Request, res: Response) => {

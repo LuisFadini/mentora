@@ -1,7 +1,14 @@
-type SchemaObject = {
-  type: "string";
-  format?: "uuid" | "email" | "uri" | "date-time" | "date";
-};
+type SchemaObject =
+  | {
+      type: "string";
+      format?: "uuid" | "email" | "uri" | "date-time" | "date";
+    }
+  | {
+      $ref: string;
+    }
+  | {
+      type: "boolean";
+    };
 
 type PropertyMap = Record<string, SchemaObject>;
 

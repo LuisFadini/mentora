@@ -1,12 +1,13 @@
 import { omit, removeUndefined } from "@mentora/utils";
 
+import { ConflictError } from "../../shared/errors/conflict.error.ts";
 import type { IPasswordHasher } from "../../shared/interfaces/password-hasher.interface.ts";
-import { type IRepository } from "../../shared/interfaces/repository.interface.ts";
+import { type IUserRepository } from "../../shared/interfaces/repository.interface.ts";
 import { type User } from "./user.types.ts";
 
 export class UsersService {
   constructor(
-    private readonly userRepository: IRepository<User>,
+    private readonly userRepository: IUserRepository,
     private readonly passwordHasher: IPasswordHasher,
   ) {}
 
@@ -22,6 +23,12 @@ export class UsersService {
   }
 
   async createUser(data: Omit<User, "createdAt" | "updatedAt">) {
+    const existingUser = await this.userRepository.findByEmail(data.email);
+
+    if (existingUser) {
+      throw new ConflictError("Email already in use");
+    }
+
     const hashedPassword = await this.passwordHasher.hash(data.password);
     const now = new Date();
 
@@ -42,6 +49,16 @@ export class UsersService {
     if (!existingUser) return null;
 
     const cleanData = removeUndefined(data);
+
+    if (cleanData.email) {
+      const userWithSameEmail = await this.userRepository.findByEmail(
+        cleanData.email,
+      );
+
+      if (userWithSameEmail && userWithSameEmail.id !== id) {
+        throw new ConflictError("Email already in use");
+      }
+    }
 
     if (cleanData.password) {
       cleanData.password = await this.passwordHasher.hash(cleanData.password);

@@ -1,6 +1,18 @@
-<script>
+<script lang="ts">
   import { resolve } from "$app/paths";
+  import type { Session } from "$lib/api/users/get-session";
   import Icon from "@iconify/svelte";
+  import Avatar from "./Avatar.svelte";
+  import type {
+    RouteIdWithSearchOrHash,
+    PathnameWithSearchOrHash,
+  } from "$app/types";
+
+  type Props = {
+    session?: Session;
+  };
+
+  let { session }: Props = $props();
 
   let mobileMenuOpen = $state(false);
 
@@ -12,19 +24,15 @@
     mobileMenuOpen = false;
   }
 
-  let headerLinks = [
-    {
-      href: resolve("/"),
-      text: "Questões",
-    },
-    {
-      href: resolve("/"),
-      text: "Conteúdos",
-    },
-    {
-      href: resolve("/"),
-      text: "Fórum",
-    },
+  type HeaderLink = {
+    href: RouteIdWithSearchOrHash | PathnameWithSearchOrHash;
+    text: string;
+  };
+
+  const headerLinks: HeaderLink[] = [
+    { href: "/", text: "Questões" },
+    { href: "/", text: "Conteúdos" },
+    { href: "/", text: "Fórum" },
   ];
 </script>
 
@@ -47,24 +55,43 @@
           <li
             class="text-2xl font-bold hover:underline decoration-2 transition-all text-gray-900 hover:text-blue-400 duration-150"
           >
-            <a href={link.href}>{link.text}</a>
+            <a href={resolve(link.href)}>{link.text}</a>
           </li>
         {/each}
       </ul>
     </nav>
 
     <div class="flex items-center gap-3">
-      <button
-        class="hidden sm:flex items-center gap-2 rounded-lg border-2 border-black bg-blue-500 px-5 py-2 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-      >
-        Login
-        <Icon icon="ph:sign-in-bold" class="text-lg" />
-      </button>
+      {#if session && session.authenticated}
+        {const user = session.user}
+        <div class="hidden sm:flex items-center gap-3">
+          <span
+            class="max-w-32 truncate text-right font-bold text-black"
+            title={user.name}
+          >
+            {user.name}
+          </span>
+
+          <Avatar
+            name={user.name}
+            avatarUrl={user.avatarUrl}
+            class="size-11 shrink-0"
+          />
+        </div>
+      {:else}
+        <a
+          href={resolve("/login")}
+          class="hidden sm:flex items-center gap-2 rounded-lg border-2 border-black bg-blue-500 px-5 py-2 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+        >
+          Login
+          <Icon icon="ph:sign-in-bold" class="text-lg" />
+        </a>
+      {/if}
 
       <button
         onclick={toggleMenu}
         aria-label="Abrir menu"
-        class="flex size-11 items-center justify-center rounded-lg border-2 border-black bg-yellow-300 shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none lg:hidden"
+        class="flex size-11 items-center cursor-pointer justify-center rounded-lg border-2 border-black bg-yellow-300 shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none lg:hidden"
       >
         <Icon
           icon={mobileMenuOpen ? "ph:x-bold" : "ph:list-bold"}
@@ -82,7 +109,7 @@
         {#each headerLinks as link (link.text)}
           <li>
             <a
-              href={link.href}
+              href={resolve(link.href)}
               onclick={closeMenu}
               class="flex items-center rounded-lg border-2 border-black bg-white px-4 py-3 font-bold shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:bg-blue-100 hover:shadow-none"
             >
@@ -91,12 +118,30 @@
           </li>
         {/each}
 
-        <button
-          class="mt-2 flex sm:hidden items-center justify-center gap-2 rounded-lg border-2 border-black bg-blue-500 px-4 py-3 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-        >
-          Login
-          <Icon icon="ph:sign-in-bold" />
-        </button>
+        {#if session && session.authenticated}
+          {const user = session.user}
+          <div
+            class="mb-4 flex sm:hidden items-center gap-3 rounded-lg border-2 border-black bg-gray-50 p-3"
+          >
+            <Avatar
+              name={user.name}
+              avatarUrl={user.avatarUrl}
+              class="size-12 shrink-0"
+            />
+
+            <span class="min-w-0 flex-1 truncate font-bold" title={user.name}>
+              {user.name}
+            </span>
+          </div>
+        {:else}
+          <a
+            href={resolve("/login")}
+            class="mt-2 flex sm:hidden items-center justify-center gap-2 rounded-lg border-2 border-black bg-blue-500 px-4 py-3 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+          >
+            Login
+            <Icon icon="ph:sign-in-bold" />
+          </a>
+        {/if}
       </ul>
     </div>
   {/if}
