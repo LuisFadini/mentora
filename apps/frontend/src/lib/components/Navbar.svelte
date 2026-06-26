@@ -1,6 +1,8 @@
-<script>
+<script lang="ts">
   import { resolve } from "$app/paths";
+  import type { Session } from "$lib/api/users/get-session";
   import Icon from "@iconify/svelte";
+  import Avatar from "./Avatar.svelte";
 
   let mobileMenuOpen = $state(false);
 
@@ -26,6 +28,8 @@
       text: "Fórum",
     },
   ];
+
+  const { session }: { session?: Session } = $props();
 </script>
 
 <header class="fixed inset-x-0 top-0 z-50 border-b-2 border-black bg-white">
@@ -54,18 +58,36 @@
     </nav>
 
     <div class="flex items-center gap-3">
-      <a
-        href={resolve("/login")}
-        class="hidden sm:flex items-center gap-2 rounded-lg border-2 border-black bg-blue-500 px-5 py-2 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-      >
-        Login
-        <Icon icon="ph:sign-in-bold" class="text-lg" />
-      </a>
+      {#if session && session.authenticated}
+        {const user = session.user}
+        <div class="hidden sm:flex items-center gap-3">
+          <span
+            class="max-w-32 truncate text-right font-bold text-black"
+            title={user.name}
+          >
+            {user.name}
+          </span>
+
+          <Avatar
+            name={user.name}
+            avatarUrl={user.avatarUrl}
+            class="size-11 shrink-0"
+          />
+        </div>
+      {:else}
+        <a
+          href={resolve("/login")}
+          class="hidden sm:flex items-center gap-2 rounded-lg border-2 border-black bg-blue-500 px-5 py-2 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+        >
+          Login
+          <Icon icon="ph:sign-in-bold" class="text-lg" />
+        </a>
+      {/if}
 
       <button
         onclick={toggleMenu}
         aria-label="Abrir menu"
-        class="flex size-11 items-center justify-center rounded-lg border-2 border-black bg-yellow-300 shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none lg:hidden"
+        class="flex size-11 items-center cursor-pointer justify-center rounded-lg border-2 border-black bg-yellow-300 shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none lg:hidden"
       >
         <Icon
           icon={mobileMenuOpen ? "ph:x-bold" : "ph:list-bold"}
@@ -92,13 +114,30 @@
           </li>
         {/each}
 
-        <a
-          href={resolve("/login")}
-          class="mt-2 flex sm:hidden items-center justify-center gap-2 rounded-lg border-2 border-black bg-blue-500 px-4 py-3 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-        >
-          Login
-          <Icon icon="ph:sign-in-bold" />
-        </a>
+        {#if session && session.authenticated}
+          {const user = session.user}
+          <div
+            class="mb-4 flex sm:hidden items-center gap-3 rounded-lg border-2 border-black bg-gray-50 p-3"
+          >
+            <Avatar
+              name={user.name}
+              avatarUrl={user.avatarUrl}
+              class="size-12 shrink-0"
+            />
+
+            <span class="min-w-0 flex-1 truncate font-bold" title={user.name}>
+              {user.name}
+            </span>
+          </div>
+        {:else}
+          <a
+            href={resolve("/login")}
+            class="mt-2 flex sm:hidden items-center justify-center gap-2 rounded-lg border-2 border-black bg-blue-500 px-4 py-3 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+          >
+            Login
+            <Icon icon="ph:sign-in-bold" />
+          </a>
+        {/if}
       </ul>
     </div>
   {/if}

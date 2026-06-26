@@ -6,6 +6,7 @@
   import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
   import { ApiError } from "$lib/api/api-error";
+  import Avatar from "$lib/components/Avatar.svelte";
 
   const { data }: PageProps = $props();
   const hours = new Date().getHours();
@@ -31,7 +32,7 @@
   }
 </script>
 
-<Navbar />
+<Navbar session={data.session} />
 
 <main class="h-screen w-screen flex flex-col gap-2 justify-center items-center">
   {#if data.session && data.session.authenticated}
@@ -61,12 +62,7 @@
           </h1>
         </div>
 
-        <img
-          class="h-36 rounded-full bg-gray-500 border-2 border-black"
-          src={user.avatarUrl ??
-            `https://api.dicebear.com/10.x/identicon/svg?seed=${user.name}`}
-          alt=""
-        />
+        <Avatar name={user.name} avatarUrl={user.avatarUrl} class="size-36" />
       </div>
 
       <button
