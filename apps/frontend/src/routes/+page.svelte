@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Navbar from "$lib/components/Navbar.svelte";
   import Icon from "@iconify/svelte";
   import type { PageProps } from "./$types";
   import { closeSession } from "$lib/api/users/close-session";
@@ -7,6 +6,7 @@
   import { resolve } from "$app/paths";
   import { ApiError } from "$lib/api/api-error";
   import Avatar from "$lib/components/Avatar.svelte";
+  import ErrorText from "$lib/components/ErrorText.svelte";
 
   const { data }: PageProps = $props();
   const hours = new Date().getHours();
@@ -32,8 +32,6 @@
   }
 </script>
 
-<Navbar session={data.session} />
-
 <main class="h-screen w-screen flex flex-col gap-2 justify-center items-center">
   {#if data.session && data.session.authenticated}
     {const user = data.session.user}
@@ -42,23 +40,23 @@
     >
       <div class="flex flex-row justify-between">
         <div class="flex flex-col">
-          <h2 class="font-bold text-3xl">
+          <h2 class="text-3xl font-bold">
             {#if hours < 6 || hours >= 18}
               Boa noite
-            {:else if hours >= 6 && hours < 12}
-              Boa dia
+            {:else if hours < 12}
+              Bom dia
             {:else}
               Boa tarde
             {/if},
           </h2>
+
           <h1
-            class="relative inline-block text-4xl font-black leading-none w-fit"
+            class="relative inline-block w-fit text-4xl font-black leading-none"
           >
             <span class="relative z-10">{user.name}!</span>
             <span
               class="absolute -bottom-0.5 left-[-2.5%] h-3 w-[110%] z-0 -skew-x-6 bg-blue-300"
-            >
-            </span>
+            ></span>
           </h1>
         </div>
 
@@ -72,9 +70,8 @@
         Sair
         <Icon icon="ph:sign-out-bold" />
       </button>
-      {#if logoutError}
-        <p class="text-center font-medium text-red-600">{logoutError}</p>
-      {/if}
+
+      <ErrorText message={logoutError} class="text-center" />
     </div>
   {:else}
     <h1 class="text-center text-5xl font-semibold text-gray-800">

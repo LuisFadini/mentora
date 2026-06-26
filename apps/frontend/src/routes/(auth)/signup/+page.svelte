@@ -4,9 +4,11 @@
   import AuthHeader from "$lib/components/auth/AuthHeader.svelte";
   import AuthSubmitButton from "$lib/components/auth/AuthSubmitButton.svelte";
   import AuthTextField from "$lib/components/auth/AuthTextField.svelte";
-  import Navbar from "$lib/components/Navbar.svelte";
   import { createUser } from "$lib/api/users/create-user";
   import { ApiError } from "$lib/api/api-error";
+  import ErrorText from "$lib/components/ErrorText.svelte";
+  import { goto } from "$app/navigation";
+  import { resolve } from "$app/paths";
 
   let name = $state("");
   let email = $state("");
@@ -69,16 +71,19 @@
     validatePassword();
     validateConfirmPassword();
 
-    if (nameError || emailError || passwordError || confirmPasswordError)
-      return;
+    if (!isValid || loading) return;
 
     loading = true;
     apiError = "";
 
     try {
-      const user = await createUser({ name, email, password });
+      await createUser({
+        name: name.trim(),
+        email: email.trim(),
+        password,
+      });
 
-      console.log("Usuário criado:", user);
+      goto(resolve("/login?created=1"));
     } catch (error) {
       if (error instanceof ApiError) {
         switch (error.status) {
@@ -100,8 +105,6 @@
   }
 </script>
 
-<Navbar />
-
 <main class="flex h-screen w-screen items-center justify-center px-4">
   <div
     class="w-full max-w-md rounded-xl border-2 border-black bg-white p-6 shadow-[8px_8px_0_0_black]"
@@ -111,7 +114,7 @@
       subtitle="Insira seus dados para criar sua conta."
     />
 
-    <form class="flex flex-col gap-5" onsubmit={handleSubmit}>
+    <form class="flex flex-col gap-5" novalidate onsubmit={handleSubmit}>
       <AuthTextField
         id="name"
         label="Nome"
@@ -164,9 +167,7 @@
         {loading ? "Criando conta..." : "Criar conta"}
       </AuthSubmitButton>
 
-      {#if apiError}
-        <p class="text-center font-medium text-red-600">{apiError}</p>
-      {/if}
+      <ErrorText message={apiError} class="text-center" />
 
       <AuthFooterLink
         text="Já tem uma conta?"

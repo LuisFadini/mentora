@@ -1,5 +1,6 @@
 <script>
   import Icon from "@iconify/svelte";
+  import ErrorText from "../ErrorText.svelte";
 
   let {
     id,
@@ -46,7 +47,5 @@
     />
   </div>
 
-  {#if error}
-    <p class="text-sm font-medium text-red-600">{error}</p>
-  {/if}
+  <ErrorText class="text-sm text-start" message={error} />
 </div>

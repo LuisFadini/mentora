@@ -4,9 +4,12 @@
   import AuthHeader from "$lib/components/auth/AuthHeader.svelte";
   import AuthSubmitButton from "$lib/components/auth/AuthSubmitButton.svelte";
   import AuthTextField from "$lib/components/auth/AuthTextField.svelte";
-  import Navbar from "$lib/components/Navbar.svelte";
   import { ApiError } from "$lib/api/api-error";
   import { createSession } from "$lib/api/users/create-session";
+  import ErrorText from "$lib/components/ErrorText.svelte";
+  import { page } from "$app/state";
+  import { goto } from "$app/navigation";
+  import { resolve } from "$app/paths";
 
   let email = $state("");
   let password = $state("");
@@ -22,6 +25,10 @@
       password.trim() !== "" &&
       !emailError &&
       !passwordError,
+  );
+
+  const accountCreated = $derived(
+    page.url.searchParams.has("created") && email === "" && password === "",
   );
 
   function validateEmail() {
@@ -43,13 +50,14 @@
     validateEmail();
     validatePassword();
 
-    if (emailError || passwordError) return;
+    if (!isValid || loading) return;
 
     loading = true;
     apiError = "";
 
     try {
-      await createSession({ email, password });
+      await createSession({ email: email.trim(), password });
+      goto(resolve("/"), { invalidateAll: true });
     } catch (error) {
       if (error instanceof ApiError) {
         switch (error.status) {
@@ -57,6 +65,8 @@
           case 404:
             apiError = "E-mail ou senha inválidos.";
             break;
+          default:
+            apiError = "Erro ao fazer login.";
         }
       } else {
         apiError = "Não foi possível conectar ao servidor.";
@@ -67,8 +77,6 @@
   }
 </script>
 
-<Navbar />
-
 <main class="flex h-screen w-screen items-center justify-center px-4">
   <div
     class="w-full max-w-md rounded-xl border-2 border-black bg-white p-6 shadow-[8px_8px_0_0_black]"
@@ -78,7 +86,7 @@
       subtitle="Insira seu e-mail e senha para acessar sua conta."
     />
 
-    <form class="flex flex-col gap-5" onsubmit={handleSubmit}>
+    <form class="flex flex-col gap-5" novalidate onsubmit={handleSubmit}>
       <AuthTextField
         id="email"
         label="E-mail"
@@ -103,13 +111,17 @@
         onValidate={validatePassword}
       />
 
-      <AuthSubmitButton disabled={!isValid} type="submit">
+      <AuthSubmitButton disabled={!isValid || loading} type="submit">
         {loading ? "Fazendo login..." : "Fazer login"}
       </AuthSubmitButton>
 
-      {#if apiError}
-        <p class="text-center font-medium text-red-600">{apiError}</p>
+      {#if accountCreated}
+        <p class="text-center font-medium text-green-600">
+          Conta criada com sucesso! Faça login para continuar.
+        </p>
       {/if}
+
+      <ErrorText message={apiError} class="text-center" />
 
       <AuthFooterLink
         text="Não tem uma conta?"
