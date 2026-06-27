@@ -28,7 +28,7 @@
       "onFail": "warn"
     }
   },
-  "packageManager": "pnpm@11.5.2",
+  "packageManager": "pnpm@11.9.0",
   "lint-staged": {
     "*.ts": "eslint --fix",
     "apps/frontend/**/*.{js,ts,svelte,css}": [
