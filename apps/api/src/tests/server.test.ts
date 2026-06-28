@@ -1,14 +1,26 @@
+import { DatabaseSync } from "node:sqlite";
+
+import { drizzle } from "drizzle-orm/node-sqlite";
 import type { Logger } from "pino";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createApp } from "../app.ts";
 import { startServer } from "../server.ts";
+import type { DB } from "../shared/infrastructure/db/index.ts";
 
 function createMockLogger(): Logger {
   return {
     info: vi.fn(),
     error: vi.fn(),
   } as unknown as Logger;
+}
+
+function createMockDB(): DB {
+  const sqlite = new DatabaseSync(":memory:");
+
+  return drizzle({
+    client: sqlite,
+  }) as DB;
 }
 
 describe("startServer", () => {
@@ -18,9 +30,10 @@ describe("startServer", () => {
 
   it("logs when server starts", async () => {
     const app = createApp();
+    const db = createMockDB();
     const logger = createMockLogger();
 
-    const server = startServer(app, 0, logger);
+    const server = startServer(app, db, 0, logger);
 
     await new Promise<void>((resolve) => {
       server.on("listening", resolve);
@@ -35,9 +48,10 @@ describe("startServer", () => {
 
   it("handles SIGTERM signal", async () => {
     const app = createApp();
+    const db = createMockDB();
     const logger = createMockLogger();
 
-    const server = startServer(app, 0, logger);
+    const server = startServer(app, db, 0, logger);
 
     await new Promise<void>((resolve) => {
       server.on("listening", resolve);
@@ -54,9 +68,10 @@ describe("startServer", () => {
 
   it("handles SIGINT signal", async () => {
     const app = createApp();
+    const db = createMockDB();
     const logger = createMockLogger();
 
-    const server = startServer(app, 0, logger);
+    const server = startServer(app, db, 0, logger);
 
     await new Promise<void>((resolve) => {
       server.on("listening", resolve);

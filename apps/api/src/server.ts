@@ -3,8 +3,11 @@ import type { Server } from "node:http";
 import type { Express } from "express";
 import type { Logger } from "pino";
 
+import type { DB } from "./shared/infrastructure/db/index.ts";
+
 export function startServer(
   app: Express,
+  db: DB,
   port: number,
   logger: Logger,
 ): Server {
@@ -17,6 +20,9 @@ export function startServer(
 
     server.close(() => {
       logger.info("Server closed");
+
+      db.$client.close();
+      logger.info("Database connection closed");
     });
   };
 

@@ -15,7 +15,8 @@
     "typecheck": "pnpm -r typecheck",
     "prepare": "husky",
     "commitlint": "commitlint",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "drizzle-kit": "pnpm --filter @mentora/api drizzle-kit"
   },
   "license": "MIT",
   "devEngines": {
