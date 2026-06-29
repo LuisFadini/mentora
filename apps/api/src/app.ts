@@ -8,7 +8,6 @@ import { logger } from "./logger.ts";
 import { AuthController } from "./modules/auth/auth.controller.ts";
 import { createAuthRoutes } from "./modules/auth/auth.routes.ts";
 import { AuthService } from "./modules/auth/auth.service.ts";
-import type { Session } from "./modules/auth/auth.types.ts";
 import type { Question } from "./modules/questions/question.types.ts";
 import { QuestionController } from "./modules/questions/questions.controller.ts";
 import { createQuestionsRoutes } from "./modules/questions/questions.routes.ts";
@@ -16,13 +15,15 @@ import { QuestionService } from "./modules/questions/questions.service.ts";
 import { UserController } from "./modules/users/users.controller.ts";
 import { createUsersRoutes } from "./modules/users/users.routes.ts";
 import { UsersService } from "./modules/users/users.service.ts";
+import type { DB } from "./shared/infrastructure/db/index.ts";
+import { SessionRepository } from "./shared/infrastructure/db/repositories/session.repository.ts";
+import { UserRepository } from "./shared/infrastructure/db/repositories/user.repository.ts";
 import { InMemoryRepository } from "./shared/infrastructure/in-memory.repository.ts";
-import { InMemoryUserRepository } from "./shared/infrastructure/in-memory-user.repository.ts";
 import { createOpenAPiRoutes } from "./shared/infrastructure/openapi/openapi.routes.ts";
 import { Argon2idPasswordHasher } from "./shared/infrastructure/security/argon2-password-hasher.ts";
 import { makeAuthMiddleware } from "./shared/middlewares/auth.middleware.ts";
 
-export function createApp(): Express {
+export function createApp(db: DB): Express {
   const app = express();
 
   if (!config.isTest) app.use(pinoHttp({ logger }));
@@ -37,8 +38,8 @@ export function createApp(): Express {
 
   app.use("/", createOpenAPiRoutes());
 
-  const userRepository = new InMemoryUserRepository();
-  const sessionRepository = new InMemoryRepository<Session>();
+  const userRepository = new UserRepository(db);
+  const sessionRepository = new SessionRepository(db);
 
   const authMiddleware = makeAuthMiddleware(sessionRepository, userRepository);
 

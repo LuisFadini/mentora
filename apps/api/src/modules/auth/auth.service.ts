@@ -2,15 +2,17 @@ import crypto from "node:crypto";
 
 import { omit } from "@mentora/utils";
 
-import type { InMemoryUserRepository } from "../../shared/infrastructure/in-memory-user.repository.ts";
 import type { IPasswordHasher } from "../../shared/interfaces/password-hasher.interface.ts";
-import { type IRepository } from "../../shared/interfaces/repository.interface.ts";
+import type {
+  IRepository,
+  IUserRepository,
+} from "../../shared/interfaces/repository.interface.ts";
 import { type Session } from "./auth.types.ts";
 import type { CreateSessionDTO } from "./dto/create-session.dto.ts";
 
 export class AuthService {
   constructor(
-    private readonly userRepository: InMemoryUserRepository,
+    private readonly userRepository: IUserRepository,
     private readonly sessionRepository: IRepository<Session>,
     private readonly passwordHasher: IPasswordHasher,
   ) {}

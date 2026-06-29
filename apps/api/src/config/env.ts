@@ -8,6 +8,7 @@ export enum NodeEnvironment {
 export interface Config {
   NODE_ENV: NodeEnvironment;
   PORT: number;
+  DATABASE_URL: string;
   isDevelopment: boolean;
   isTest: boolean;
 }
@@ -41,12 +42,31 @@ function parsePort(value?: string): number {
   return port;
 }
 
+function parseDatabaseURL(value?: string): string {
+  const url = value ?? "file:../../data/db.sqlite";
+
+  if (!url.startsWith("file:")) {
+    throw new Error(
+      "Invalid database connection string. Must start with 'file:'.",
+    );
+  }
+
+  if (url === "file:") {
+    throw new Error(
+      "Invalid database connection string. Missing SQLite database path.",
+    );
+  }
+
+  return url;
+}
+
 export function loadConfig(): Config {
   const NODE_ENV = parseNodeEnvironment(process.env["NODE_ENV"]);
 
   return {
     NODE_ENV,
     PORT: parsePort(process.env["PORT"]),
+    DATABASE_URL: parseDatabaseURL(process.env["DATABASE_URL"]),
     isDevelopment: NODE_ENV === NodeEnvironment.Development,
     isTest: NODE_ENV === NodeEnvironment.Testing,
   };
