@@ -29,8 +29,8 @@ describe("startServer", () => {
   });
 
   it("logs when server starts", async () => {
-    const app = createApp();
     const db = createMockDB();
+    const app = createApp(db);
     const logger = createMockLogger();
 
     const server = startServer(app, db, 0, logger);
@@ -47,8 +47,8 @@ describe("startServer", () => {
   });
 
   it("handles SIGTERM signal", async () => {
-    const app = createApp();
     const db = createMockDB();
+    const app = createApp(db);
     const logger = createMockLogger();
 
     const server = startServer(app, db, 0, logger);
@@ -67,8 +67,8 @@ describe("startServer", () => {
   });
 
   it("handles SIGINT signal", async () => {
-    const app = createApp();
     const db = createMockDB();
+    const app = createApp(db);
     const logger = createMockLogger();
 
     const server = startServer(app, db, 0, logger);

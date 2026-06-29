@@ -8,5 +8,5 @@ import { startServer } from "./server.ts";
 import { initDatabase } from "./shared/infrastructure/db/index.ts";
 
 const db = initDatabase(config.DATABASE_URL, logger);
-const app = createApp();
+const app = createApp(db);
 startServer(app, db, config.PORT, logger);

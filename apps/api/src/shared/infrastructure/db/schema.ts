@@ -4,7 +4,7 @@ import { sql } from "drizzle-orm";
 import { check, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { v7 as uuidv7 } from "uuid";
 
-export const users = sqliteTable(
+export const usersTable = sqliteTable(
   "users",
   {
     id: text("id")
@@ -27,13 +27,13 @@ export const users = sqliteTable(
   ],
 );
 
-export const sessions = sqliteTable("sessions", {
+export const sessionsTable = sqliteTable("sessions", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomBytes(32).toString("base64url")),
   userId: text("user_id")
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => usersTable.id, { onDelete: "cascade" }),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .$defaultFn(() => new Date()),
