@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Icon from "@iconify/svelte";
+
   type Question = {
     id: string;
     title: string;
@@ -67,6 +69,16 @@
       ],
     },
   ];
+
+  const subjects = ["Todas", ...new Set(questions.map((q) => q.subject))];
+
+  let selectedSubject = $state("Todas");
+
+  const filteredQuestions = $derived(
+    selectedSubject === "Todas"
+      ? questions
+      : questions.filter((q) => q.subject === selectedSubject),
+  );
 </script>
 
 <main class="min-h-screen flex items-center justify-center p-4">
@@ -75,12 +87,37 @@
   >
     <h1 class="text-3xl font-black leading-none sm:text-4xl">Questões</h1>
 
+    <div class="flex flex-col gap-1.5">
+      <label for="subject" class="font-semibold">Matéria</label>
+
+      <div
+        class="flex items-center gap-2 rounded-lg border-2 border-black bg-white px-3 transition-all focus-within:-translate-x-1 focus-within:-translate-y-1 focus-within:shadow-[6px_6px_0_0_black]"
+      >
+        <Icon icon="ph:book-open-text" class="text-xl" />
+
+        <select
+          id="subject"
+          bind:value={selectedSubject}
+          onchange={(e) => e.currentTarget.blur()}
+          class="w-full cursor-pointer appearance-none bg-transparent py-3 outline-none"
+        >
+          {#each subjects as subject (subject)}
+            <option value={subject}>
+              {subject}
+            </option>
+          {/each}
+        </select>
+
+        <Icon icon="ph:caret-down" class="pointer-events-none text-xl" />
+      </div>
+    </div>
+
     <hr
       class="h-2 rounded-xl border-2 border-black bg-blue-400 shadow-[2px_2px_0_0_black]"
     />
 
     <ul class="flex flex-col gap-2">
-      {#each questions as question (question.id)}
+      {#each filteredQuestions as question (question.id)}
         <li
           class="flex flex-col gap-4 rounded-xl border-2 border-black px-4 py-3 shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_black] sm:flex-row sm:items-center sm:justify-between"
         >
