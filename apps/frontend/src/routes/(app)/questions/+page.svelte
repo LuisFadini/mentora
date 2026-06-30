@@ -1,74 +1,7 @@
 <script lang="ts">
+  import { resolve } from "$app/paths";
+  import { questions } from "$lib/mock-data";
   import Icon from "@iconify/svelte";
-
-  type Question = {
-    id: string;
-    title: string;
-    source: string;
-    subject: string;
-    content: string;
-    answers: Answer[];
-  };
-
-  type Answer = {
-    correct: boolean;
-    content: string;
-  };
-
-  const questions: Question[] = [
-    {
-      id: "019f1569-236c-78db-9466-b6290799b98c",
-      title: "Lorem ipsum dolor sit amet",
-      source: "Lorem University",
-      subject: "Lorem Studies",
-      content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      answers: [
-        {
-          correct: false,
-          content: "Lorem ipsum dolor sit amet.",
-        },
-        {
-          correct: false,
-          content: "Consectetur adipiscing elit.",
-        },
-        {
-          correct: true,
-          content: "Sed do eiusmod tempor incididunt.",
-        },
-        {
-          correct: false,
-          content: "Ut enim ad minim veniam.",
-        },
-      ],
-    },
-    {
-      id: "019f1569-236c-7d5a-97ee-c45a2a7cc29b",
-      title: "Dolor sit amet consectetur",
-      source: "Ipsum Institute",
-      subject: "Placeholder Science",
-      content:
-        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-      answers: [
-        {
-          correct: true,
-          content: "Duis aute irure dolor in reprehenderit.",
-        },
-        {
-          correct: false,
-          content: "Excepteur sint occaecat cupidatat non proident.",
-        },
-        {
-          correct: false,
-          content: "Sunt in culpa qui officia deserunt.",
-        },
-        {
-          correct: false,
-          content: "Mollit anim id est laborum.",
-        },
-      ],
-    },
-  ];
 
   const subjects = ["Todas", ...new Set(questions.map((q) => q.subject))];
 
@@ -141,11 +74,12 @@
             </div>
           </div>
 
-          <button
+          <a
+            href={resolve("/(app)/questions/[slug]", { slug: question.id })}
             class="w-full shrink-0 rounded-lg border-2 border-black bg-blue-500 px-5 py-2 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:w-auto"
           >
             Fazer
-          </button>
+          </a>
         </li>
       {/each}
     </ul>
