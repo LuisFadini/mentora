@@ -30,7 +30,7 @@
   };
 
   const headerLinks: HeaderLink[] = [
-    { href: "/", text: "Questões" },
+    { href: "/questions", text: "Questões" },
     { href: "/", text: "Conteúdos" },
     { href: "/", text: "Fórum" },
   ];

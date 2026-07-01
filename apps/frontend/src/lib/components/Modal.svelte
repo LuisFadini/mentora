@@ -6,12 +6,14 @@
     showModal: boolean;
     class?: string;
     children?: Snippet;
+    onClose?: () => void;
   };
 
   let {
     showModal = $bindable(),
     children,
     class: className = "",
+    onClose,
   }: Props = $props();
 
   let dialog: HTMLDialogElement;
@@ -46,6 +48,7 @@
 
   function close() {
     showModal = false;
+    onClose?.();
   }
 
   function handleClose() {

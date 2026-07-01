@@ -3,6 +3,7 @@
   import type { PageProps } from "./$types";
   import { resolve } from "$app/paths";
   import Modal from "$lib/components/Modal.svelte";
+  import { goto } from "$app/navigation";
 
   let { data }: PageProps = $props();
   const { question } = $derived(data);
@@ -29,7 +30,7 @@
   />
 </svelte:head>
 
-<Modal bind:showModal>
+<Modal bind:showModal onClose={() => goto(resolve("/(app)/questions"))}>
   <h1 class="text-2xl font-bold">Resposta selecionada:</h1>
   <div class="mt-2">
     <!-- eslint-disable-next-line svelte/no-at-html-tags -->
