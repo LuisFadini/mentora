@@ -2,25 +2,21 @@
   import Icon from "@iconify/svelte";
   import type { PageProps } from "./$types";
   import { resolve } from "$app/paths";
+  import Modal from "$lib/components/Modal.svelte";
 
   let { data }: PageProps = $props();
   const { question } = $derived(data);
 
   let selectedAnswer = $state("");
+  let selectedAnswerHTML = $state("");
+  let showModal = $state(false);
 
   function handleSubmit() {
     const answer = question.answers.find((a) => a.id === selectedAnswer);
     if (!answer) return;
 
-    // Hack-ish way to get raw text content from HTML
-    const doc = new DOMParser().parseFromString(answer.html, "text/html");
-
-    doc.querySelectorAll(".katex").forEach((el) => {
-      const tex = el.querySelector("annotation")?.textContent ?? "";
-      el.replaceWith(doc.createTextNode(tex));
-    });
-
-    alert(`Resposta selecionada: ${doc.body.textContent}`);
+    selectedAnswerHTML = answer.html;
+    showModal = true;
   }
 </script>
 
@@ -32,6 +28,14 @@
     crossorigin="anonymous"
   />
 </svelte:head>
+
+<Modal bind:showModal>
+  <h1 class="text-2xl font-bold">Resposta selecionada:</h1>
+  <div class="mt-2">
+    <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+    {@html selectedAnswerHTML}
+  </div>
+</Modal>
 
 <main
   class="min-h-[calc(100vh-4rem)] pt-16 flex items-center justify-center p-4"
@@ -206,7 +210,7 @@
     }
 
     :global(.katex-display) {
-      @apply my-6 overflow-x-auto;
+      @apply my-6 overflow-x-visible;
     }
 
     :global(.katex) {
