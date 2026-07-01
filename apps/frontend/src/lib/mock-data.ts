@@ -82,4 +82,131 @@ export const questions: Question[] = [
       },
     ],
   },
+  {
+    id: "3",
+    title: "Equação do Segundo Grau",
+    source: "Universidade Exemplo",
+    subject: "Matemática",
+    content: `
+Considere a equação
+
+$$
+x^2 - 5x + 6 = 0.
+$$
+
+Para resolvê-la, podemos utilizar a **fórmula de Bhaskara**:
+
+$$
+x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}.
+$$
+
+Neste caso, temos:
+
+| Coeficiente | Valor |
+| ------------ | ----: |
+| $a$ | $1$ |
+| $b$ | $-5$ |
+| $c$ | $6$ |
+
+Como o discriminante é
+
+$$
+\\Delta = b^2 - 4ac = (-5)^2 - 4(1)(6) = 1,
+$$
+
+a equação possui **duas raízes reais distintas**.
+
+### Observações
+
+- O coeficiente $a$ deve ser diferente de zero.
+- Se $\\Delta > 0$, existem duas raízes reais.
+- Se $\\Delta = 0$, existe uma raiz real dupla.
+- Se $\\Delta < 0$, não existem raízes reais.
+
+> Dica: sempre calcule o discriminante antes de aplicar a fórmula.
+`,
+    answers: [
+      {
+        id: "1",
+        correct: false,
+        content: "$x = 1$ e $x = 6$",
+      },
+      {
+        id: "2",
+        correct: true,
+        content: "$x = 2$ e $x = 3$",
+      },
+      {
+        id: "3",
+        correct: false,
+        content: "$x = -2$ e $x = -3$",
+      },
+      {
+        id: "4",
+        correct: false,
+        content: "A equação **não possui raízes reais**.",
+      },
+    ],
+  },
+  {
+    id: "4",
+    title: "Análise de Dados",
+    source: "Instituto Nacional de Estatística",
+    subject: "Estatística",
+    content: `
+Uma pesquisa foi realizada com **100 estudantes** para identificar o meio de transporte utilizado para chegar à escola.
+
+| Transporte | Frequência |
+| --------- | ---------: |
+| Ônibus | 45 |
+| Carro | 25 |
+| Bicicleta | 20 |
+| A pé | 10 |
+
+A frequência relativa de cada categoria pode ser calculada por
+
+$$
+f_r = \\frac{f_i}{N},
+$$
+
+em que:
+
+- $f_i$ é a frequência da categoria;
+- $N$ é o total de observações.
+
+Assim, para quem utiliza ônibus,
+
+$$
+f_r = \\frac{45}{100} = 0{,}45 = 45\\%.
+$$
+
+### Considere as afirmações
+
+- A categoria mais frequente é **Ônibus**.
+- A soma das frequências é igual a **100**.
+- As frequências relativas totalizam **100%**.
+`,
+    answers: [
+      {
+        id: "1",
+        correct: true,
+        content: "**45%** dos estudantes utilizam ônibus.",
+      },
+      {
+        id: "2",
+        correct: false,
+        content: "**25%** dos estudantes vão a pé.",
+      },
+      {
+        id: "3",
+        correct: false,
+        content: "A soma das frequências é **90**.",
+      },
+      {
+        id: "4",
+        correct: false,
+        content: "A bicicleta é o meio de transporte mais utilizado.",
+      },
+    ],
+  },
 ];
