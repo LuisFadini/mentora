@@ -53,6 +53,7 @@
 
   function handleClose() {
     showModal = false;
+    onClose?.();
   }
 
   function handleBackdropClick(event: MouseEvent) {
@@ -77,6 +78,7 @@
   <form method="dialog" class="mt-6 flex justify-center">
     <button
       type="button"
+      onclick={handleClose}
       class="cursor-pointer rounded-lg border-2 border-black bg-red-500 px-4 py-2 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_black]"
     >
       Fechar
