@@ -4,6 +4,7 @@ import type { PersistedQuestion } from "../../shared/infrastructure/db/repositor
 import { type IRepository } from "../../shared/interfaces/repository.interface.ts";
 import type { CreateQuestionDTO } from "./dto/create-question.dto.ts";
 import type { UpdateQuestionDTO } from "./dto/update-question.dto.ts";
+import type { ValidateQuestionDTO } from "./dto/validate-question.dto.ts";
 import { type Answer, type Question } from "./question.types.ts";
 
 export class QuestionService {
@@ -90,5 +91,26 @@ export class QuestionService {
       ...updatedQuestionBase,
       answers: finalAnswers,
     });
+  }
+
+  async validateQuestion(id: string, data: ValidateQuestionDTO) {
+    const question = await this.questionRepository.findById(id);
+
+    if (!question) {
+      throw new Error("Question now found");
+    }
+
+    const correctAnswer = question.answers.find((a) => a.correct);
+
+    if (!correctAnswer) {
+      throw new Error("Question has no correct answer");
+    }
+
+    const isCorrect = correctAnswer.id === data.answerId;
+
+    return {
+      correct: isCorrect,
+      correctAnswerId: correctAnswer.id,
+    };
   }
 }

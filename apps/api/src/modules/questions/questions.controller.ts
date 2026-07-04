@@ -2,6 +2,7 @@ import { type Request, type Response } from "express";
 
 import type { CreateQuestionDTO } from "./dto/create-question.dto.ts";
 import type { UpdateQuestionDTO } from "./dto/update-question.dto.ts";
+import type { ValidateQuestionDTO } from "./dto/validate-question.dto.ts";
 import type { GetQuestionParams } from "./params/get-question.params.ts";
 import type { QuestionService } from "./questions.service.ts";
 
@@ -39,5 +40,23 @@ export class QuestionController {
     if (!updatedQuestion)
       return res.status(404).json({ message: "Question not found" });
     return res.status(200).json(updatedQuestion);
+  };
+
+  validateQuestion = async (
+    req: Request<GetQuestionParams, unknown, ValidateQuestionDTO>,
+    res: Response,
+  ) => {
+    try {
+      const result = await this.questionService.validateQuestion(
+        req.params.id,
+        req.body,
+      );
+
+      return res.json(result);
+    } catch (e) {
+      return res.status(404).json({
+        message: e instanceof Error ? e.message : (e as string),
+      });
+    }
   };
 }

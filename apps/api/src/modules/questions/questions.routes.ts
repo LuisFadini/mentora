@@ -4,6 +4,7 @@ import { validateBodyDTO } from "../../shared/middlewares/validate-body-dto.midd
 import { validateUUIDV7Param } from "../../shared/middlewares/validate-uuid.middleware.ts";
 import { CreateQuestionDTO } from "./dto/create-question.dto.ts";
 import { UpdateQuestionDTO } from "./dto/update-question.dto.ts";
+import { ValidateQuestionDTO } from "./dto/validate-question.dto.ts";
 import type { GetQuestionParams } from "./params/get-question.params.ts";
 import type { QuestionController } from "./questions.controller.ts";
 
@@ -28,6 +29,12 @@ export function createQuestionsRoutes(
     validateUUIDV7Param<GetQuestionParams>("id"),
     validateBodyDTO(UpdateQuestionDTO),
     questionController.updateQuestion,
+  );
+  router.post(
+    "/:id/validate",
+    validateUUIDV7Param<GetQuestionParams>("id"),
+    validateBodyDTO(ValidateQuestionDTO),
+    questionController.validateQuestion,
   );
 
   return router;

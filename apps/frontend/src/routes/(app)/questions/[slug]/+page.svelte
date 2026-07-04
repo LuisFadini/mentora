@@ -4,20 +4,46 @@
   import { resolve } from "$app/paths";
   import Modal from "$lib/components/Modal.svelte";
   import { goto } from "$app/navigation";
+  import { validateQuestion } from "$lib/api/questions/validate-question";
+  import ErrorText from "$lib/components/ErrorText.svelte";
 
   let { data }: PageProps = $props();
   const { question } = $derived(data);
 
   let selectedAnswer = $state("");
-  let selectedAnswerHTML = $state("");
   let showModal = $state(false);
 
-  function handleSubmit() {
-    const answer = question.answers.find((a) => a.id === selectedAnswer);
-    if (!answer) return;
+  let isLoading = $state(false);
+  let apiError = $state("");
+  let isCorrect = $state<boolean | null>(null);
+  let correctAnswerId = $state<string | null>(null);
 
-    selectedAnswerHTML = answer.html;
-    showModal = true;
+  async function handleSubmit(e: Event) {
+    e.preventDefault();
+    if (!selectedAnswer) return;
+
+    isLoading = true;
+    apiError = "";
+
+    try {
+      const result = await validateQuestion(question.id, {
+        answerId: selectedAnswer,
+      });
+
+      isCorrect = result.correct;
+      correctAnswerId = result.correctAnswerId;
+
+      showModal = true;
+    } catch (err) {
+      console.error("Validation failed:", err);
+      apiError = "Não foi possível conectar ao servidor";
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  function onClose() {
+    goto(resolve("/(app)/questions"));
   }
 </script>
 
@@ -30,12 +56,25 @@
   />
 </svelte:head>
 
-<Modal bind:showModal onClose={() => goto(resolve("/(app)/questions"))}>
-  <h1 class="text-2xl font-bold">Resposta selecionada:</h1>
-  <div class="mt-2">
-    <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-    {@html selectedAnswerHTML}
-  </div>
+<Modal bind:showModal {onClose}>
+  {#if isCorrect === true}
+    <Icon
+      icon="ph:circle-wavy-check-fill"
+      class="size-1/2 mx-auto text-green-500"
+    />
+
+    <h1 class="text-2xl font-bold text-center">Parabéns, você acertou!</h1>
+  {:else}
+    <Icon icon="ph:x-circle-fill" class="size-1/2 mx-auto text-red-500" />
+    <h1 class="text-2xl font-bold">A resposta correta seria:</h1>
+    <div class="mt-2">
+      {#if correctAnswerId}
+        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+        {@html question.answers.find((a) => a.id === correctAnswerId)?.html ??
+          ""}
+      {/if}
+    </div>
+  {/if}
 </Modal>
 
 <main
@@ -79,12 +118,14 @@
         {#each question.answers as answer (answer.id)}
           <label
             class="group flex cursor-pointer items-center gap-3 border-2 border-black rounded-lg bg-white px-4 py-4 shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_black] active:translate-x-0 active:translate-y-0 active:shadow-none has-checked:translate-x-0.5 has-checked:translate-y-0.5 has-checked:shadow-none has-checked:bg-blue-200"
+            for="answer-{answer.id}"
           >
             <input
               type="radio"
               name="answer"
               id="answer-{answer.id}"
               value={answer.id}
+              disabled={isLoading || isCorrect !== null}
               bind:group={selectedAnswer}
               class="h-4 w-4 accent-black"
             />
@@ -102,14 +143,15 @@
 
         <button
           type="submit"
-          disabled={!selectedAnswer}
+          disabled={!selectedAnswer || isLoading || isCorrect !== null}
           class="flex items-center cursor-pointer gap-2 rounded-lg border-2 border-black px-5 py-3 font-black text-white bg-blue-500 shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:bg-neutral-300 disabled:text-neutral-500 disabled:shadow-none disabled:cursor-not-allowed disabled:translate-x-0 disabled:translate-y-0"
         >
-          Enviar
+          {isLoading ? "Enviando..." : "Enviar"}
           <Icon icon="ph:check-bold" class="text-lg" />
         </button>
       </div>
     </form>
+    <ErrorText message={apiError} class="text-center" />
   </section>
 </main>
 
