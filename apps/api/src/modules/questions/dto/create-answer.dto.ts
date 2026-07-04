@@ -1,11 +1,9 @@
-import { IsDefined, IsString } from "class-validator";
+import { IsBoolean, IsString } from "class-validator";
 
 export class CreateAnswerDTO {
-  @IsDefined()
-  @IsString()
-  idQuestion!: string;
+  @IsBoolean()
+  correct!: boolean;
 
-  @IsDefined()
   @IsString()
-  answerBody!: string;
+  content!: string;
 }

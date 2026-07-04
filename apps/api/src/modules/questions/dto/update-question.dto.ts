@@ -1,19 +1,28 @@
-import { IsArray, IsDefined, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import { IsArray, IsOptional, IsString, ValidateNested } from "class-validator";
+
+import { UpdateAnswerDTO } from "./update-answer.dto.ts";
 
 export class UpdateQuestionDTO {
-  @IsDefined()
+  @IsString()
+  id!: string;
+
+  @IsOptional()
   @IsString()
   title?: string;
 
-  @IsDefined()
-  @IsString()
-  subjects?: string;
-
-  @IsDefined()
-  @IsString()
-  body?: string;
-
-  @IsDefined()
+  @IsOptional()
   @IsArray()
-  answers?: string[];
+  @IsString({ each: true })
+  subjects?: string[];
+
+  @IsOptional()
+  @IsString()
+  content?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => UpdateAnswerDTO)
+  answers?: UpdateAnswerDTO[];
 }

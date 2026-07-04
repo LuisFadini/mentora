@@ -10,7 +10,7 @@ export type Question = {
 
 export type Answer = {
   id?: string;
-  questionId: string;
+  questionId?: string;
   correct: boolean;
   content: string;
   createdAt: Date;

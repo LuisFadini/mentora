@@ -8,7 +8,6 @@ import { logger } from "./logger.ts";
 import { AuthController } from "./modules/auth/auth.controller.ts";
 import { createAuthRoutes } from "./modules/auth/auth.routes.ts";
 import { AuthService } from "./modules/auth/auth.service.ts";
-import type { Question } from "./modules/questions/question.types.ts";
 import { QuestionController } from "./modules/questions/questions.controller.ts";
 import { createQuestionsRoutes } from "./modules/questions/questions.routes.ts";
 import { QuestionService } from "./modules/questions/questions.service.ts";
@@ -16,9 +15,10 @@ import { UserController } from "./modules/users/users.controller.ts";
 import { createUsersRoutes } from "./modules/users/users.routes.ts";
 import { UsersService } from "./modules/users/users.service.ts";
 import type { DB } from "./shared/infrastructure/db/index.ts";
+import { AnswerRepository } from "./shared/infrastructure/db/repositories/answer.repository.ts";
+import { QuestionRepository } from "./shared/infrastructure/db/repositories/question.repository.ts";
 import { SessionRepository } from "./shared/infrastructure/db/repositories/session.repository.ts";
 import { UserRepository } from "./shared/infrastructure/db/repositories/user.repository.ts";
-import { InMemoryRepository } from "./shared/infrastructure/in-memory.repository.ts";
 import { createOpenAPiRoutes } from "./shared/infrastructure/openapi/openapi.routes.ts";
 import { Argon2idPasswordHasher } from "./shared/infrastructure/security/argon2-password-hasher.ts";
 import { makeAuthMiddleware } from "./shared/middlewares/auth.middleware.ts";
@@ -57,9 +57,10 @@ export function createApp(db: DB): Express {
   const authController = new AuthController(authService);
   app.use("/auth", createAuthRoutes(authController, authMiddleware));
 
-  const questionsRepository = new InMemoryRepository<Question>();
+  const answerRepository = new AnswerRepository(db);
+  const questionRepository = new QuestionRepository(db, answerRepository);
 
-  const questionsService = new QuestionService(questionsRepository);
+  const questionsService = new QuestionService(questionRepository);
   const questionsController = new QuestionController(questionsService);
   app.use("/questions", createQuestionsRoutes(questionsController));
 
