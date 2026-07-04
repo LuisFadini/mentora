@@ -1,16 +1,21 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
-  import { questions } from "$lib/mock-data";
   import Icon from "@iconify/svelte";
 
-  const subjects = ["Todas", ...new Set(questions.map((q) => q.subject))];
+  const { data } = $props();
+  const { questions } = $derived(data);
+
+  const subjects = $derived([
+    "Todas",
+    ...new Set(questions.flatMap((q) => q.subjects)),
+  ]);
 
   let selectedSubject = $state("Todas");
 
   const filteredQuestions = $derived(
     selectedSubject === "Todas"
       ? questions
-      : questions.filter((q) => q.subject === selectedSubject),
+      : questions.filter((q) => q.subjects.includes(selectedSubject)),
   );
 </script>
 
@@ -62,15 +67,19 @@
             <div
               class="flex flex-wrap items-center gap-2 text-sm text-neutral-600"
             >
-              <span
-                class="rounded-full border-2 border-blue-400 bg-blue-200 px-2"
-              >
-                {question.subject}
-              </span>
+              <div class="flex flex-wrap gap-2">
+                {#each question.subjects as subject (subject)}
+                  <span
+                    class="rounded-full border-2 border-blue-400 bg-blue-200 px-2"
+                  >
+                    {subject}
+                  </span>
+                {/each}
+              </div>
 
               <span class="hidden sm:inline text-neutral-500">•</span>
 
-              <p>Fonte: {question.source}</p>
+              <p>Fonte: Teste</p>
             </div>
           </div>
 

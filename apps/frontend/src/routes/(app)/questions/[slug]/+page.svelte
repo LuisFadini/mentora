@@ -57,16 +57,16 @@
       </a>
     </div>
 
-    <div class="mt-3 flex items-center gap-2">
-      <span
-        class="border-2 border-black bg-blue-300 rounded-sm px-2 py-0.5 text-[11px] font-bold shadow-[2px_2px_0_0_black]"
-      >
-        {question.subject}
-      </span>
+    <div class="flex flex-wrap items-center gap-2">
+      {#each question.subjects as subject (subject)}
+        <span
+          class="border-2 border-black bg-blue-300 rounded-sm px-2 py-0.5 text-[11px] font-bold shadow-[2px_2px_0_0_black]"
+        >
+          {subject}
+        </span>
+      {/each}
 
-      <span class="text-xs text-neutral-600">
-        Fonte: {question.source}
-      </span>
+      <span class="text-xs text-neutral-600"> Fonte: Teste </span>
     </div>
 
     <div class="question-content">
