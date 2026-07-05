@@ -105,7 +105,7 @@
         </span>
       {/each}
 
-      <span class="text-xs text-neutral-600"> Fonte: Teste </span>
+      <span class="text-xs text-neutral-600"> Fonte: {question.source} </span>
     </div>
 
     <div class="question-content">

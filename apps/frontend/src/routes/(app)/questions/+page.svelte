@@ -79,7 +79,7 @@
 
               <span class="hidden sm:inline text-neutral-500">•</span>
 
-              <p>Fonte: Teste</p>
+              <p>Fonte: {question.source}</p>
             </div>
           </div>
 

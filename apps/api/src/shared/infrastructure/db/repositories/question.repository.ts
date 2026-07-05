@@ -32,6 +32,7 @@ export class QuestionRepository implements IRepository<
       id: question.id,
       title: question.title,
       subjects: question.subjects,
+      source: question.source,
       content: question.content,
       createdAt: question.createdAt,
       updatedAt: question.updatedAt,
@@ -81,6 +82,7 @@ export class QuestionRepository implements IRepository<
       .values({
         title: entity.title,
         subjects: entity.subjects,
+        source: entity.source,
         content: entity.content,
       })
       .returning();

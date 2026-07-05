@@ -16,6 +16,9 @@ export class UpdateQuestionDTO {
   @IsString({ each: true })
   subjects?: string[];
 
+  @IsString()
+  source!: string;
+
   @IsOptional()
   @IsString()
   content?: string;

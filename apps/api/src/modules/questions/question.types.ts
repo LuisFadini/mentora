@@ -2,6 +2,7 @@ export type Question = {
   id?: string;
   title: string;
   subjects: string[];
+  source: string;
   content: string;
   answers: Answer[];
   createdAt: Date;

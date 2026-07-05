@@ -45,6 +45,7 @@ export const questionsTable = sqliteTable("questions", {
     .$defaultFn(() => uuidv7()),
   title: text("title").notNull(),
   subjects: text("subjects", { mode: "json" }).$type<string[]>().notNull(),
+  source: text("source").notNull(),
   content: text("content").notNull(),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()

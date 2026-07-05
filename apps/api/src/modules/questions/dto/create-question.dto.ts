@@ -19,6 +19,9 @@ export class CreateQuestionDTO {
   subjects!: string[];
 
   @IsString()
+  source!: string;
+
+  @IsString()
   content!: string;
 
   @IsArray()
