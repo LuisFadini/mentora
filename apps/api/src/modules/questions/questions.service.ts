@@ -1,78 +1,116 @@
 import { removeUndefined } from "@mentora/utils";
 
+import type { PersistedQuestion } from "../../shared/infrastructure/db/repositories/question.repository.ts";
 import { type IRepository } from "../../shared/interfaces/repository.interface.ts";
-import type { CreateAnswerDTO } from "./dto/create-answer.dto.ts";
 import type { CreateQuestionDTO } from "./dto/create-question.dto.ts";
-import type { UpdateAnswerDTO } from "./dto/update-answer.dto.ts";
 import type { UpdateQuestionDTO } from "./dto/update-question.dto.ts";
+import type { ValidateQuestionDTO } from "./dto/validate-question.dto.ts";
 import { type Answer, type Question } from "./question.types.ts";
 
 export class QuestionService {
-  constructor(private readonly questionRepository: IRepository<Question>) {}
+  constructor(
+    private readonly questionRepository: IRepository<
+      Question,
+      PersistedQuestion
+    >,
+  ) {}
 
   async getQuestions(): Promise<Question[]> {
     return this.questionRepository.findAll();
   }
 
-  async getQuestionbyId(id: string) {
+  async getQuestionById(id: string) {
     return this.questionRepository.findById(id);
   }
 
   async createQuestion(question: CreateQuestionDTO) {
+    const now = new Date();
+
     return this.questionRepository.create({
       ...question,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      answers: question.answers.map((a) => {
+        return { ...a, createdAt: now, updatedAt: now };
+      }),
+      createdAt: now,
+      updatedAt: now,
     });
   }
 
-  async updateQuestion(id: string, data: Partial<UpdateQuestionDTO>) {
+  async updateQuestion(id: string, data: UpdateQuestionDTO) {
     const existingQuestion = await this.questionRepository.findById(id);
     if (!existingQuestion) return null;
 
     const cleanData = removeUndefined(data);
 
-    return this.questionRepository.update({
+    const { answers: incomingAnswers, ...questionFields } = cleanData;
+    const now = new Date();
+
+    const updatedQuestionBase = {
       ...existingQuestion,
-      ...cleanData,
-      updatedAt: new Date(),
+      ...questionFields,
+      updatedAt: now,
+    };
+
+    if (!incomingAnswers) {
+      return this.questionRepository.update(updatedQuestionBase);
+    }
+
+    const existingAnswersMap = new Map(
+      existingQuestion.answers.map((a) => [a.id, a]),
+    );
+
+    const finalAnswers: Answer[] = [];
+
+    for (const incoming of incomingAnswers) {
+      if (incoming.delete && incoming.id) {
+        continue;
+      }
+
+      if (incoming.id && existingAnswersMap.has(incoming.id)) {
+        const existing = existingAnswersMap.get(incoming.id)!;
+
+        finalAnswers.push({
+          ...existing,
+          content: incoming.content,
+          correct: incoming.correct,
+          updatedAt: now,
+        });
+
+        continue;
+      }
+
+      finalAnswers.push({
+        content: incoming.content,
+        correct: incoming.correct,
+        createdAt: now,
+        updatedAt: now,
+      } as Answer);
+    }
+
+    return this.questionRepository.update({
+      ...updatedQuestionBase,
+      answers: finalAnswers,
     });
   }
-}
 
-export class AnswerService {
-  constructor(private readonly answerRepository: IRepository<Answer>) {}
+  async validateQuestion(id: string, data: ValidateQuestionDTO) {
+    const question = await this.questionRepository.findById(id);
 
-  async getAnswers(): Promise<Answer[]> {
-    return this.answerRepository.findAll();
-  }
+    if (!question) {
+      throw new Error("Question now found");
+    }
 
-  async getAnswerById(id: string) {
-    return this.answerRepository.findById(id);
-  }
+    const correctAnswer = question.answers.find((a) => a.correct);
 
-  async createAnswer(answer: CreateAnswerDTO) {
-    return this.answerRepository.create({
-      ...answer,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-  }
+    if (!correctAnswer) {
+      throw new Error("Question has no correct answer");
+    }
 
-  async updateAnswer(id: string, data: Partial<UpdateAnswerDTO>) {
-    const existingAnswer = await this.answerRepository.findById(id);
-    if (!existingAnswer) return null;
+    const isCorrect = correctAnswer.id === data.answerId;
 
-    const cleanData = removeUndefined(data);
-
-    return this.answerRepository.update({
-      ...existingAnswer,
-      ...cleanData,
-      updatedAt: new Date(),
-    });
-  }
-
-  async deleteAnswer(id: string) {
-    return this.answerRepository.delete(id);
+    return {
+      correct: isCorrect,
+      correctAnswerId: correctAnswer.id,
+    };
   }
 }

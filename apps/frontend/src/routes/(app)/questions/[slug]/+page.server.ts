@@ -1,6 +1,5 @@
 import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { questions } from "$lib/mock-data";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
@@ -8,6 +7,7 @@ import remarkMath from "remark-math";
 import remarkRehype from "remark-rehype";
 import rehypeKatex from "rehype-katex";
 import rehypeStringify from "rehype-stringify";
+import { getQuestion } from "$lib/api/questions/get-question";
 
 const processor = unified()
   .use(remarkParse)
@@ -20,8 +20,8 @@ const processor = unified()
 const renderMarkdown = async (markdown: string) =>
   String(await processor.process(markdown));
 
-export const load: PageServerLoad = async ({ params }) => {
-  const question = questions.find((q) => q.id === params.slug);
+export const load: PageServerLoad = async ({ params, fetch }) => {
+  const question = await getQuestion(params.slug, fetch);
 
   if (question) {
     return {

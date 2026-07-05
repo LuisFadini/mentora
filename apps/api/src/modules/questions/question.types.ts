@@ -1,17 +1,19 @@
 export type Question = {
   id?: string;
   title: string;
-  subjects: string;
-  body: string;
-  answers: string[];
+  subjects: string[];
+  source: string;
+  content: string;
+  answers: Answer[];
   createdAt: Date;
   updatedAt: Date;
 };
 
 export type Answer = {
   id?: string;
-  idQuestion: string;
-  answerBody: string;
+  questionId?: string;
+  correct: boolean;
+  content: string;
   createdAt: Date;
   updatedAt: Date;
 };

@@ -1,11 +1,17 @@
-import { IsDefined, IsString } from "class-validator";
+import { IsBoolean, IsOptional, IsString } from "class-validator";
 
 export class UpdateAnswerDTO {
-  @IsDefined()
+  @IsOptional()
   @IsString()
-  idQuestion?: string;
+  id?: string;
 
-  @IsDefined()
+  @IsBoolean()
+  correct!: boolean;
+
   @IsString()
-  answerBody?: string;
+  content!: string;
+
+  @IsOptional()
+  @IsBoolean()
+  delete?: boolean;
 }

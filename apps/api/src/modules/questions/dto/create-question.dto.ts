@@ -1,19 +1,32 @@
-import { IsArray, IsDefined, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import {
+  ArrayMinSize,
+  ArrayNotEmpty,
+  IsArray,
+  IsString,
+  ValidateNested,
+} from "class-validator";
+
+import { CreateAnswerDTO } from "./create-answer.dto.ts";
 
 export class CreateQuestionDTO {
-  @IsDefined()
   @IsString()
   title!: string;
 
-  @IsDefined()
-  @IsString()
-  subjects!: string;
-
-  @IsDefined()
-  @IsString()
-  body!: string;
-
-  @IsDefined()
   @IsArray()
-  answers!: string[];
+  @ArrayNotEmpty()
+  @IsString({ each: true })
+  subjects!: string[];
+
+  @IsString()
+  source!: string;
+
+  @IsString()
+  content!: string;
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @ValidateNested({ each: true })
+  @Type(() => CreateAnswerDTO)
+  answers!: CreateAnswerDTO[];
 }

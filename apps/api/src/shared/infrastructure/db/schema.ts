@@ -38,3 +38,38 @@ export const sessionsTable = sqliteTable("sessions", {
     .notNull()
     .$defaultFn(() => new Date()),
 });
+
+export const questionsTable = sqliteTable("questions", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => uuidv7()),
+  title: text("title").notNull(),
+  subjects: text("subjects", { mode: "json" }).$type<string[]>().notNull(),
+  source: text("source").notNull(),
+  content: text("content").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+});
+
+export const answersTable = sqliteTable("answers", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => uuidv7()),
+  questionId: text("question_id")
+    .notNull()
+    .references(() => questionsTable.id, {
+      onDelete: "cascade",
+    }),
+  correct: integer("correct", { mode: "boolean" }).notNull(),
+  content: text("content").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+});
