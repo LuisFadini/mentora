@@ -1,3 +1,4 @@
+import type { RequestHandler } from "express";
 import { Router } from "express";
 
 import { validateBodyDTO } from "../../shared/middlewares/validate-body-dto.middleware.ts";
@@ -10,28 +11,33 @@ import type { QuestionController } from "./questions.controller.ts";
 
 export function createQuestionsRoutes(
   questionController: QuestionController,
+  authMiddleware: RequestHandler,
 ): Router {
   const router = Router();
 
-  router.get("/", questionController.getQuestions);
+  router.get("/", authMiddleware, questionController.getQuestions);
   router.get(
     "/:id",
+    authMiddleware,
     validateUUIDV7Param<GetQuestionParams>("id"),
     questionController.getQuestion,
   );
   router.post(
     "/",
+    authMiddleware,
     validateBodyDTO(CreateQuestionDTO),
     questionController.createQuestion,
   );
   router.patch(
     "/:id",
+    authMiddleware,
     validateUUIDV7Param<GetQuestionParams>("id"),
     validateBodyDTO(UpdateQuestionDTO),
     questionController.updateQuestion,
   );
   router.post(
     "/:id/validate",
+    authMiddleware,
     validateUUIDV7Param<GetQuestionParams>("id"),
     validateBodyDTO(ValidateQuestionDTO),
     questionController.validateQuestion,

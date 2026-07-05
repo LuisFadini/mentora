@@ -62,7 +62,10 @@ export function createApp(db: DB): Express {
 
   const questionsService = new QuestionService(questionRepository);
   const questionsController = new QuestionController(questionsService);
-  app.use("/questions", createQuestionsRoutes(questionsController));
+  app.use(
+    "/questions",
+    createQuestionsRoutes(questionsController, authMiddleware),
+  );
 
   return app;
 }
