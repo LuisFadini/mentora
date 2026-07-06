@@ -19,15 +19,12 @@ export class AuthService {
 
   async verifySession(sessionId: string) {
     const session = await this.sessionRepository.findById(sessionId);
-    if (!session) return { authenticated: false };
+    if (!session) return null;
 
     const user = await this.userRepository.findById(session.userId);
-    if (!user) return { authenticated: false };
+    if (!user) return null;
 
-    return {
-      authenticated: true,
-      user: omit(user, ["password"]),
-    };
+    return omit(user, ["password"]);
   }
 
   async createSession(data: CreateSessionDTO) {

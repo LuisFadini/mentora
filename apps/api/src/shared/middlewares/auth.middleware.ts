@@ -14,9 +14,8 @@ export function makeAuthMiddleware(
   userRepository: IRepository<User>,
 ): RequestHandler {
   return async (req: Request, res: Response, next: NextFunction) => {
-    const sessionCookie = req.cookies as { [key: string]: string };
+    const { session_token } = req.cookies as Record<string, string>;
 
-    const session_token = sessionCookie["session_token"];
     if (!session_token)
       return res.status(401).json({ message: "Authentication required" });
 
@@ -28,6 +27,9 @@ export function makeAuthMiddleware(
     const user = await userRepository.findById(session.userId);
 
     if (!user) return res.status(401).json({ error: "User not found" });
+
+    req.user = user;
+    req.session = session;
 
     return next();
   };

@@ -8,21 +8,15 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   verifySession = async (req: Request, res: Response) => {
-    const sessionCookie = (req.cookies as { [key: string]: string })[
-      "session_token"
-    ];
+    const { session_token } = req.cookies as Record<string, string>;
 
-    if (!sessionCookie) {
-      return res.status(401).json({ authenticated: false });
-    }
+    if (!session_token) return res.status(401).json({ authenticated: false });
 
-    const result = await this.authService.verifySession(sessionCookie);
+    const user = await this.authService.verifySession(session_token);
 
-    if (!result.authenticated) {
-      return res.status(401).json(result);
-    }
+    if (!user) return res.status(401).json({ authenticated: false });
 
-    return res.json(result);
+    return res.json({ authenticated: true, user });
   };
 
   createSession = async (
@@ -54,10 +48,9 @@ export class AuthController {
   };
 
   deleteSession = async (req: Request, res: Response) => {
-    const sessionCookie = (req.cookies as { [key: string]: string })[
-      "session_token"
-    ];
-    const deleteSuccess = await this.authService.deleteSession(sessionCookie!);
+    const { session_token } = req.cookies as Record<string, string>;
+
+    const deleteSuccess = await this.authService.deleteSession(session_token!);
 
     if (!deleteSuccess)
       return res.status(400).json({ message: "Error closing session" });
