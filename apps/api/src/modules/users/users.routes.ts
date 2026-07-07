@@ -11,6 +11,7 @@ import { type UserController } from "./users.controller.ts";
 export function createUsersRoutes(
   controller: UserController,
   authMiddleware: RequestHandler,
+  guestMiddleware: RequestHandler,
 ): Router {
   const router = Router();
 
@@ -21,7 +22,12 @@ export function createUsersRoutes(
     validateUUIDV7Param<GetUserParams>("id"),
     controller.getUser,
   );
-  router.post("/", validateBodyDTO(CreateUserDTO), controller.createUser);
+  router.post(
+    "/",
+    guestMiddleware,
+    validateBodyDTO(CreateUserDTO),
+    controller.createUser,
+  );
   router.patch(
     "/:id",
     authMiddleware,
