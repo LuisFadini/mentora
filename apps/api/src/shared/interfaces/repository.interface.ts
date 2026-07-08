@@ -1,3 +1,4 @@
+import type { Session } from "../../modules/auth/auth.types.ts";
 import type { Answer } from "../../modules/questions/question.types.ts";
 import type { User } from "../../modules/users/user.types.ts";
 
@@ -11,6 +12,13 @@ export interface IRepository<TCreate, TPersisted = TCreate> {
 
 export interface IUserRepository extends IRepository<User> {
   findByEmail(email: string): Promise<User | null>;
+}
+
+export interface ISessionRepository extends Omit<
+  IRepository<Session>,
+  "update"
+> {
+  touch(id: string, lastSeenAt: Date): Promise<void>;
 }
 
 export type PersistedAnswer = Answer & { id: string; questionId: string };

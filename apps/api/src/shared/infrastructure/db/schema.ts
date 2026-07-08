@@ -37,6 +37,9 @@ export const sessionsTable = sqliteTable("sessions", {
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .$defaultFn(() => new Date()),
+  lastSeenAt: integer("last_seen_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
 });
 
 export const questionsTable = sqliteTable("questions", {

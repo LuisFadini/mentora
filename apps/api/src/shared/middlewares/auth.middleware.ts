@@ -5,12 +5,14 @@ import {
   type Response,
 } from "express";
 
-import type { Session } from "../../modules/auth/auth.types.ts";
 import type { User } from "../../modules/users/user.types.ts";
-import type { IRepository } from "../interfaces/repository.interface.ts";
+import type {
+  IRepository,
+  ISessionRepository,
+} from "../interfaces/repository.interface.ts";
 
 export function makeAuthMiddleware(
-  sessionRepository: IRepository<Session>,
+  sessionRepository: ISessionRepository,
   userRepository: IRepository<User>,
 ): RequestHandler {
   return async (req: Request, res: Response, next: NextFunction) => {

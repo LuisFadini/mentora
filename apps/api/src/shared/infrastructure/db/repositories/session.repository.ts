@@ -1,13 +1,13 @@
 import { eq } from "drizzle-orm";
 
 import type { Session } from "../../../../modules/auth/auth.types.ts";
-import type { IRepository } from "../../../interfaces/repository.interface.ts";
+import type { ISessionRepository } from "../../../interfaces/repository.interface.ts";
 import type { DB } from "../index.ts";
 import { sessionsTable } from "../schema.ts";
 
 type DbSession = typeof sessionsTable.$inferSelect;
 
-export class SessionRepository implements IRepository<Session> {
+export class SessionRepository implements ISessionRepository {
   constructor(private db: DB) {}
 
   private toDomainSession(dbSession: DbSession): Session {
@@ -15,6 +15,7 @@ export class SessionRepository implements IRepository<Session> {
       id: dbSession.id,
       userId: dbSession.userId,
       createdAt: dbSession.createdAt,
+      lastSeenAt: dbSession.lastSeenAt,
     };
   }
 
@@ -46,9 +47,11 @@ export class SessionRepository implements IRepository<Session> {
     return this.toDomainSession(row);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async update(_session: Session): Promise<Session> {
-    return Promise.reject(new Error("Session updates are not supported."));
+  async touch(id: string, lastSeenAt: Date): Promise<void> {
+    await this.db
+      .update(sessionsTable)
+      .set({ lastSeenAt })
+      .where(eq(sessionsTable.id, id));
   }
 
   async delete(id: string): Promise<boolean> {
