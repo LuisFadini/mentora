@@ -282,6 +282,9 @@ importers:
       '@mentora/openapi-builder':
         specifier: workspace:*
         version: link:../../packages/openapi-builder
+      '@mentora/permissions':
+        specifier: workspace:*
+        version: link:../../packages/permissions
       '@mentora/utils':
         specifier: workspace:*
         version: link:../../packages/utils
@@ -436,6 +439,8 @@ importers:
       '@mentora/utils':
         specifier: workspace:*
         version: link:../utils
+
+  packages/permissions: {}
 
   packages/utils: {}
 
@@ -2469,6 +2474,7 @@ packages:
   git-raw-commits@5.0.1:
     resolution: {integrity: sha512-Y+csSm2GD/PCSh6Isd/WiMjNAydu0VBiG9J7EdQsNA5P9uXvLayqjmTsNlK5Gs9IhblFZqOU0yid5Il5JPoLiQ==}
     engines: {node: '>=18'}
+    deprecated: Deprecated and no longer maintained. Use @conventional-changelog/git-client instead.
     hasBin: true
 
   glob-parent@6.0.2:

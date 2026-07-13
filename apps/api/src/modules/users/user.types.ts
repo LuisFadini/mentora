@@ -1,3 +1,5 @@
+import type { Permission } from "@mentora/permissions";
+
 export type User = {
   id?: string;
   name: string;
@@ -6,5 +8,5 @@ export type User = {
   avatarUrl?: string | undefined;
   createdAt: Date;
   updatedAt: Date;
-  permissions?: string[];
+  permissions?: Permission[];
 };
