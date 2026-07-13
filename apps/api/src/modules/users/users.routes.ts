@@ -1,8 +1,8 @@
 import type { RequestHandler } from "express";
 import { Router } from "express";
 
+import { requireSelfParam } from "../../shared/middlewares/require-self-param.middleware.ts";
 import { validateBodyDTO } from "../../shared/middlewares/validate-body-dto.middleware.ts";
-import { validateUUIDV7Param } from "../../shared/middlewares/validate-uuid.middleware.ts";
 import { CreateUserDTO } from "./dto/create-user.dto.ts";
 import { UpdateUserDTO } from "./dto/update-user.dto.ts";
 import { type GetUserParams } from "./params/get-user.params.ts";
@@ -19,7 +19,7 @@ export function createUsersRoutes(
   router.get(
     "/:id",
     authMiddleware,
-    validateUUIDV7Param<GetUserParams>("id"),
+    requireSelfParam<GetUserParams>("id"),
     controller.getUser,
   );
   router.post(
@@ -31,7 +31,7 @@ export function createUsersRoutes(
   router.patch(
     "/:id",
     authMiddleware,
-    validateUUIDV7Param<GetUserParams>("id"),
+    requireSelfParam<GetUserParams>("id"),
     validateBodyDTO(UpdateUserDTO),
     controller.updateUser,
   );

@@ -60,7 +60,10 @@ export function createApp(db: DB): Express {
     passwordHasher,
   );
   const authController = new AuthController(authService);
-  app.use("/auth", createAuthRoutes(authController, authMiddleware));
+  app.use(
+    "/auth",
+    createAuthRoutes(authController, authMiddleware, guestMiddleware),
+  );
 
   const answerRepository = new AnswerRepository(db);
   const questionRepository = new QuestionRepository(db, answerRepository);
