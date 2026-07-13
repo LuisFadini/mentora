@@ -5,6 +5,7 @@ import {
   type Response,
 } from "express";
 
+import { config } from "../../config/env.ts";
 import type { User } from "../../modules/users/user.types.ts";
 import type {
   IRepository,
@@ -25,6 +26,22 @@ export function makeAuthMiddleware(
 
     if (!session)
       return res.status(401).json({ message: "Authentication expired" });
+
+    const expired =
+      Date.now() - session.lastSeenAt.getTime() > config.SESSION_DURATION;
+
+    if (expired) {
+      await sessionRepository.delete(session.id);
+      return res
+        .clearCookie("session_token", {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          secure: !config.isDevelopment,
+        })
+        .status(401)
+        .json({ message: "Authentication expired" });
+    }
 
     const user = await userRepository.findById(session.userId);
 

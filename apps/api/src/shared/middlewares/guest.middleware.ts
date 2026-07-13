@@ -5,6 +5,7 @@ import {
   type Response,
 } from "express";
 
+import { config } from "../../config/env.ts";
 import type { ISessionRepository } from "../interfaces/repository.interface.ts";
 
 export function makeGuestMiddleware(
@@ -18,6 +19,21 @@ export function makeGuestMiddleware(
     const session = await sessionRepository.findById(session_token);
 
     if (!session) return next();
+
+    const expired =
+      Date.now() - session.lastSeenAt.getTime() > config.SESSION_DURATION;
+
+    if (expired) {
+      await sessionRepository.delete(session.id);
+      res.clearCookie("session_token", {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: !config.isDevelopment,
+      });
+
+      return next();
+    }
 
     return res.status(403).json({
       message: "You are already authenticated",
