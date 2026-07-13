@@ -7,6 +7,7 @@
     RouteIdWithSearchOrHash,
     PathnameWithSearchOrHash,
   } from "$app/types";
+  import { hasPermission } from "@mentora/permissions";
 
   type Props = {
     session?: Session;
@@ -29,11 +30,21 @@
     text: string;
   };
 
-  const headerLinks: HeaderLink[] = [
-    { href: "/questions", text: "Questões" },
-    { href: "/", text: "Conteúdos" },
-    { href: "/", text: "Fórum" },
-  ];
+  const headerLinks = $derived.by(() => {
+    const links: HeaderLink[] = [{ href: "/questions", text: "Questões" }];
+
+    if (session?.authenticated) {
+      if (hasPermission(session.user, "materials.access")) {
+        links.push({ href: "/", text: "Conteúdos" });
+      }
+
+      if (hasPermission(session.user, "forum.access")) {
+        links.push({ href: "/", text: "Fórum" });
+      }
+    }
+
+    return links;
+  });
 </script>
 
 <header class="fixed inset-x-0 top-0 z-50 border-b-2 border-black bg-white">

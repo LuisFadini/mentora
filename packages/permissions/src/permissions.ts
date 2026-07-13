@@ -4,4 +4,10 @@ export const permissions = {
     delete: "questions.delete",
     update: "questions.update",
   },
+  materials: {
+    access: "materials.access",
+  },
+  forum: {
+    access: "forum.access",
+  },
 } as const;

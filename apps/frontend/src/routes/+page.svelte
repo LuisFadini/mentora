@@ -17,7 +17,10 @@
     try {
       let success = await closeSession(fetch);
 
-      if (success) goto(resolve("/"), { invalidateAll: true });
+      if (success)
+        await goto(resolve("/"), {
+          invalidateAll: true,
+        });
     } catch (error) {
       if (error instanceof ApiError) {
         switch (error.status) {

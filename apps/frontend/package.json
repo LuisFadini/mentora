@@ -14,6 +14,7 @@
     "lint:fix": "prettier --write ."
   },
   "devDependencies": {
+    "@mentora/permissions": "workspace:*",
     "@eslint/js": "^10.0.1",
     "@iconify/svelte": "^5.2.1",
     "@sveltejs/adapter-auto": "^7.0.1",
