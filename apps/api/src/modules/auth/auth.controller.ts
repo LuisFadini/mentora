@@ -7,22 +7,43 @@ import type { CreateSessionDTO } from "./dto/create-session.dto.ts";
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  private setSessionCookie(res: Response, sessionToken: string) {
+    return res.cookie("session_token", sessionToken, {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+      secure: !config.isDevelopment,
+      maxAge: config.SESSION_DURATION,
+    });
+  }
+
+  private clearSessionCookie(res: Response) {
+    return res.clearCookie("session_token", {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+      secure: !config.isDevelopment,
+    });
+  }
+
   verifySession = async (req: Request, res: Response) => {
-    const sessionCookie = (req.cookies as { [key: string]: string })[
-      "session_token"
-    ];
+    const { session_token } = req.cookies as Record<string, string>;
 
-    if (!sessionCookie) {
-      return res.status(401).json({ authenticated: false });
+    if (!session_token) return res.status(401).json({ authenticated: false });
+
+    const session = await this.authService.verifySession(session_token);
+
+    if (!session) {
+      this.clearSessionCookie(res);
+
+      return res.status(401).json({
+        authenticated: false,
+      });
     }
 
-    const result = await this.authService.verifySession(sessionCookie);
+    if (session.refresh) this.setSessionCookie(res, session_token);
 
-    if (!result.authenticated) {
-      return res.status(401).json(result);
-    }
-
-    return res.json(result);
+    return res.json({ authenticated: true, user: session.user });
   };
 
   createSession = async (
@@ -41,26 +62,20 @@ export class AuthController {
         message: "Passwords don't match",
       });
 
-    return res
-      .status(202)
-      .cookie("session_token", session.sessionId!, {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: !config.isDevelopment,
-        maxAge: 8 * 60 * 60 * 1000,
-      })
-      .send();
+    this.setSessionCookie(res, session.sessionId!);
+
+    return res.status(202).send();
   };
 
   deleteSession = async (req: Request, res: Response) => {
-    const sessionCookie = (req.cookies as { [key: string]: string })[
-      "session_token"
-    ];
-    const deleteSuccess = await this.authService.deleteSession(sessionCookie!);
+    const { session_token } = req.cookies as Record<string, string>;
+
+    const deleteSuccess = await this.authService.deleteSession(session_token!);
 
     if (!deleteSuccess)
       return res.status(400).json({ message: "Error closing session" });
+
+    this.clearSessionCookie(res);
 
     return res.status(200).json({ message: "Session closed successfully" });
   };

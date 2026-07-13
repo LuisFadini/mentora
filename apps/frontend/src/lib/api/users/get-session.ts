@@ -1,3 +1,4 @@
+import type { Permission } from "@mentora/permissions";
 import { ApiError } from "../api-error";
 import { apiFetch } from "../client";
 
@@ -8,6 +9,7 @@ export type User = {
   avatarUrl?: string;
   createdAt: string;
   updatedAt: string;
+  permissions: Permission[];
 };
 
 export type Session =

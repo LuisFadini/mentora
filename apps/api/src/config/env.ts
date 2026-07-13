@@ -1,3 +1,5 @@
+import { durationToMs } from "@mentora/utils";
+
 export enum NodeEnvironment {
   Development = "development",
   Testing = "testing",
@@ -9,6 +11,8 @@ export interface Config {
   NODE_ENV: NodeEnvironment;
   PORT: number;
   DATABASE_URL: string;
+  SESSION_DURATION: number;
+  SESSION_REFRESH_INTERVAL: number;
   isDevelopment: boolean;
   isTest: boolean;
 }
@@ -60,6 +64,16 @@ function parseDatabaseURL(value?: string): string {
   return url;
 }
 
+function parseDuration(value: string = "24h"): number {
+  const duration = durationToMs(value);
+
+  if (duration <= 0) {
+    throw new Error("Session duration must be greater than 0s");
+  }
+
+  return duration;
+}
+
 export function loadConfig(): Config {
   const NODE_ENV = parseNodeEnvironment(process.env["NODE_ENV"]);
 
@@ -67,6 +81,10 @@ export function loadConfig(): Config {
     NODE_ENV,
     PORT: parsePort(process.env["PORT"]),
     DATABASE_URL: parseDatabaseURL(process.env["DATABASE_URL"]),
+    SESSION_DURATION: parseDuration(process.env["SESSION_DURATION"]),
+    SESSION_REFRESH_INTERVAL: parseDuration(
+      process.env["SESSION_REFRESH_INTERVAL"],
+    ),
     isDevelopment: NODE_ENV === NodeEnvironment.Development,
     isTest: NODE_ENV === NodeEnvironment.Testing,
   };

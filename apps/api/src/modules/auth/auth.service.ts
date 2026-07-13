@@ -2,32 +2,45 @@ import crypto from "node:crypto";
 
 import { omit } from "@mentora/utils";
 
+import { config } from "../../config/env.ts";
 import type { IPasswordHasher } from "../../shared/interfaces/password-hasher.interface.ts";
 import type {
-  IRepository,
+  ISessionRepository,
   IUserRepository,
 } from "../../shared/interfaces/repository.interface.ts";
-import { type Session } from "./auth.types.ts";
 import type { CreateSessionDTO } from "./dto/create-session.dto.ts";
 
 export class AuthService {
   constructor(
     private readonly userRepository: IUserRepository,
-    private readonly sessionRepository: IRepository<Session>,
+    private readonly sessionRepository: ISessionRepository,
     private readonly passwordHasher: IPasswordHasher,
   ) {}
 
   async verifySession(sessionId: string) {
     const session = await this.sessionRepository.findById(sessionId);
-    if (!session) return { authenticated: false };
+    if (!session) return null;
+
+    const expired =
+      Date.now() - session.lastSeenAt.getTime() > config.SESSION_DURATION;
+
+    if (expired) {
+      await this.sessionRepository.delete(sessionId);
+      return null;
+    }
+
+    const shouldRefresh =
+      Date.now() - session.lastSeenAt.getTime() >
+      config.SESSION_REFRESH_INTERVAL;
+
+    if (shouldRefresh) {
+      await this.sessionRepository.touch(sessionId, new Date());
+    }
 
     const user = await this.userRepository.findById(session.userId);
-    if (!user) return { authenticated: false };
+    if (!user) return null;
 
-    return {
-      authenticated: true,
-      user: omit(user, ["password"]),
-    };
+    return { user: omit(user, ["password"]), refresh: shouldRefresh };
   }
 
   async createSession(data: CreateSessionDTO) {
@@ -40,10 +53,14 @@ export class AuthService {
     );
 
     if (!passwordMatch) return { authenticated: false };
+
+    const now = new Date();
+
     const session = await this.sessionRepository.create({
       id: crypto.randomBytes(32).toString("base64url"),
       userId: user.id!,
-      createdAt: new Date(),
+      createdAt: now,
+      lastSeenAt: now,
     });
 
     return {

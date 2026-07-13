@@ -19,6 +19,7 @@ export class UserRepository implements IUserRepository {
       avatarUrl: dbUser.avatarUrl ?? undefined,
       createdAt: dbUser.createdAt,
       updatedAt: dbUser.updatedAt,
+      permissions: dbUser.permissions ?? [],
     };
   }
 

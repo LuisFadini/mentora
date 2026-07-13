@@ -22,6 +22,7 @@ import { UserRepository } from "./shared/infrastructure/db/repositories/user.rep
 import { createOpenAPiRoutes } from "./shared/infrastructure/openapi/openapi.routes.ts";
 import { Argon2idPasswordHasher } from "./shared/infrastructure/security/argon2-password-hasher.ts";
 import { makeAuthMiddleware } from "./shared/middlewares/auth.middleware.ts";
+import { makeGuestMiddleware } from "./shared/middlewares/guest.middleware.ts";
 
 export function createApp(db: DB): Express {
   const app = express();
@@ -42,12 +43,16 @@ export function createApp(db: DB): Express {
   const sessionRepository = new SessionRepository(db);
 
   const authMiddleware = makeAuthMiddleware(sessionRepository, userRepository);
+  const guestMiddleware = makeGuestMiddleware(sessionRepository);
 
   const passwordHasher = new Argon2idPasswordHasher();
 
   const usersService = new UsersService(userRepository, passwordHasher);
   const usersController = new UserController(usersService);
-  app.use("/users", createUsersRoutes(usersController, authMiddleware));
+  app.use(
+    "/users",
+    createUsersRoutes(usersController, authMiddleware, guestMiddleware),
+  );
 
   const authService = new AuthService(
     userRepository,
@@ -55,7 +60,10 @@ export function createApp(db: DB): Express {
     passwordHasher,
   );
   const authController = new AuthController(authService);
-  app.use("/auth", createAuthRoutes(authController, authMiddleware));
+  app.use(
+    "/auth",
+    createAuthRoutes(authController, authMiddleware, guestMiddleware),
+  );
 
   const answerRepository = new AnswerRepository(db);
   const questionRepository = new QuestionRepository(db, answerRepository);

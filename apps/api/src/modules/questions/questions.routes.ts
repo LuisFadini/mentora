@@ -1,6 +1,8 @@
+import { permissions } from "@mentora/permissions";
 import type { RequestHandler } from "express";
 import { Router } from "express";
 
+import { requirePermission } from "../../shared/middlewares/permission.middleware.ts";
 import { validateBodyDTO } from "../../shared/middlewares/validate-body-dto.middleware.ts";
 import { validateUUIDV7Param } from "../../shared/middlewares/validate-uuid.middleware.ts";
 import { CreateQuestionDTO } from "./dto/create-question.dto.ts";
@@ -25,12 +27,14 @@ export function createQuestionsRoutes(
   router.post(
     "/",
     authMiddleware,
+    requirePermission(permissions.questions.create),
     validateBodyDTO(CreateQuestionDTO),
     questionController.createQuestion,
   );
   router.patch(
     "/:id",
     authMiddleware,
+    requirePermission(permissions.questions.update),
     validateUUIDV7Param<GetQuestionParams>("id"),
     validateBodyDTO(UpdateQuestionDTO),
     questionController.updateQuestion,

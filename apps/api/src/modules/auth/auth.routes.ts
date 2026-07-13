@@ -8,11 +8,17 @@ import { CreateSessionDTO } from "./dto/create-session.dto.ts";
 export function createAuthRoutes(
   controller: AuthController,
   authMiddleware: RequestHandler,
+  guestMiddleware: RequestHandler,
 ): Router {
   const router = Router();
 
   router.get("/", controller.verifySession);
-  router.post("/", validateBodyDTO(CreateSessionDTO), controller.createSession);
+  router.post(
+    "/",
+    guestMiddleware,
+    validateBodyDTO(CreateSessionDTO),
+    controller.createSession,
+  );
   router.delete("/", authMiddleware, controller.deleteSession);
 
   return router;

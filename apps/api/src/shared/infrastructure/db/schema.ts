@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 
+import type { Permission } from "@mentora/permissions";
 import { sql } from "drizzle-orm";
 import { check, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { v7 as uuidv7 } from "uuid";
@@ -20,6 +21,7 @@ export const usersTable = sqliteTable(
     updatedAt: integer("updated_at", { mode: "timestamp" })
       .notNull()
       .$defaultFn(() => new Date()),
+    permissions: text("permission", { mode: "json" }).$type<Permission[]>(),
   },
   (table) => [
     check("name_min_length", sql`length(${table.name}) >= 4`),
@@ -35,6 +37,9 @@ export const sessionsTable = sqliteTable("sessions", {
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
   createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  lastSeenAt: integer("last_seen_at", { mode: "timestamp" })
     .notNull()
     .$defaultFn(() => new Date()),
 });
