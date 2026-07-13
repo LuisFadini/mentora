@@ -6,4 +6,5 @@ export type User = {
   avatarUrl?: string | undefined;
   createdAt: Date;
   updatedAt: Date;
+  permissions?: string[];
 };

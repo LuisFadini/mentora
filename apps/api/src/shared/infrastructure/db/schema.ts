@@ -20,6 +20,7 @@ export const usersTable = sqliteTable(
     updatedAt: integer("updated_at", { mode: "timestamp" })
       .notNull()
       .$defaultFn(() => new Date()),
+    permissions: text("permission", { mode: "json" }).$type<string[]>(),
   },
   (table) => [
     check("name_min_length", sql`length(${table.name}) >= 4`),

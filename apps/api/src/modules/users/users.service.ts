@@ -22,7 +22,9 @@ export class UsersService {
     return omit(user, ["password"]);
   }
 
-  async createUser(data: Omit<User, "createdAt" | "updatedAt">) {
+  async createUser(
+    data: Omit<User, "createdAt" | "updatedAt" | "permissions">,
+  ) {
     const existingUser = await this.userRepository.findByEmail(data.email);
 
     if (existingUser) {
@@ -43,7 +45,7 @@ export class UsersService {
 
   async updateUser(
     id: string,
-    data: Partial<Omit<User, "id" | "createdAt" | "updatedAt">>,
+    data: Partial<Omit<User, "id" | "createdAt" | "updatedAt" | "permissions">>,
   ) {
     const existingUser = await this.userRepository.findById(id);
     if (!existingUser) return null;
