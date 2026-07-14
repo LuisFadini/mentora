@@ -128,13 +128,13 @@
     </div>
 
     <div class="flex flex-wrap items-center gap-2">
-      {#each question.subjects as subject (subject)}
+      <!--{#each question.subjects as subject (subject)}
         <span
           class="border-2 border-black bg-blue-300 rounded-sm px-2 py-0.5 text-[11px] font-bold shadow-[2px_2px_0_0_black]"
         >
           {subject}
         </span>
-      {/each}
+      {/each}-->
 
       <span class="text-xs text-neutral-600"> Fonte: {question.source} </span>
     </div>
@@ -180,27 +180,12 @@
       </div>
 
       <div class="flex items-center justify-between gap-3">
-        {#if data.tipsAvailable > 0}
-          <Button
-            class="px-4 font-black"
-            disabled={tipsUsed === data.tipsAvailable}
-            onclick={useTip}
-          >
-            {#if isLoadingTip}
-              Carregando...
-            {:else}
-              {data.tipsAvailable - tipsUsed}
-              {data.tipsAvailable - tipsUsed === 1
-                ? "dica disponível"
-                : "dicas disponíveis"}
-            {/if}
-          </Button>
-        {:else}
-          <div></div>
-        {/if}
-
+        <a
+          href={resolve("/questions/edit")}
+          class="flex items-center cursor-pointer gap-2 rounded-lg border-2 border-black px-5 py-3 font-black text-white bg-blue-500 shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+          >Edit</a
+        >
         <Button
-          class="font-black px-4"
           disabled={!selectedAnswer || isLoading || isCorrect !== null}
           icon="ph:check-bold"
           iconClass="text-lg"

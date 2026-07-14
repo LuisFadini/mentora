@@ -6,7 +6,6 @@
   let questionTitle = $state("");
   let questionEnunciado = $state("");
   let questionSubjects_1 = $state("");
-  let questionSubjects_2 = $state("");
   let questionSource = $state("");
   let questionAnswer_1 = $state("");
   let questionAnswer_2 = $state("");
@@ -15,7 +14,6 @@
       questionSource.trim() != "" &&
       questionEnunciado.trim() != "" &&
       questionSubjects_1.trim() != "" &&
-      questionSubjects_2.trim() != "" &&
       questionAnswer_1.trim() != "" &&
       questionAnswer_2.trim() != "",
   );
@@ -31,7 +29,7 @@
         title: questionTitle.trim(),
         content: questionEnunciado.trim(),
         source: questionSource.trim(),
-        subjects: [questionSubjects_1.trim(), questionSubjects_2.trim()],
+        subjects: [questionSubjects_1.trim()],
         answers: [
           { correct: true, content: questionAnswer_1.trim() },
           { correct: false, content: questionAnswer_2.trim() },
@@ -90,14 +88,6 @@
         Materia_1
         <input
           bind:value={questionSubjects_1}
-          class="rounded-xl border-2 border-black shadow-[4px_4px_0_0_black]"
-        />
-      </label>
-
-      <label>
-        Materia_2
-        <input
-          bind:value={questionSubjects_2}
           class="rounded-xl border-2 border-black shadow-[4px_4px_0_0_black]"
         />
       </label>

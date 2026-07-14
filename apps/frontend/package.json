@@ -46,5 +46,8 @@
     "typescript-eslint": "^8.65.0",
     "unified": "^11.0.5",
     "vite": "^8.1.5"
+  },
+  "dependencies": {
+    "svelte-lexical": "^0.6.4"
   }
 }
