@@ -76,7 +76,7 @@
             <div
               class="flex flex-wrap items-center gap-2 text-sm text-neutral-600"
             >
-              <div class="flex flex-wrap gap-2">
+              <!--<div class="flex flex-wrap gap-2">
                 {#each question.subjects as subject (subject)}
                   <span
                     class="rounded-full border-2 border-blue-400 bg-blue-200 px-2"
@@ -84,7 +84,7 @@
                     {subject}
                   </span>
                 {/each}
-              </div>
+              </div>-->
 
               <span class="hidden sm:inline text-neutral-500">•</span>
 
@@ -104,6 +104,11 @@
         </li>
       {/each}
     </ul>
+    <a
+      href={resolve("/(app)/questions/create")}
+      class="w-full shrink-0 rounded-lg border-2 border-black bg-blue-500 px-5 py-2 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:w-auto"
+      >Criar Nova</a
+    >
   </PageContainer>
 </main>
 

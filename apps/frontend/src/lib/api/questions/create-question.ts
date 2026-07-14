@@ -1,18 +1,25 @@
-export interface CreateQuestionDTO {
-  id: number;
-  titulo: string;
-  enunciado: string;
+import { ApiError } from "../api-error";
+import { apiFetch } from "../client.ts";
+export interface CreateAnswerDTO {
+  correct: boolean;
+  content: string;
 }
 
-export const questionDatabase: CreateQuestionDTO[] = [
-  { id: 1, titulo: "Asd", enunciado: "asd" },
-  { id: 2, titulo: "Asd", enunciado: "asd" },
-];
+export interface CreateQuestionDTO {
+  title: string;
+  content: string;
+  source: string;
+  subjects: string[];
+  answers: CreateAnswerDTO[];
+}
 
-export function createQuestion(Question: CreateQuestionDTO) {
-  if (!Question) return 1;
-  Question.id += 3;
-  questionDatabase.push(Question);
-
-  return 0;
+export async function createQuestion(question: CreateQuestionDTO) {
+  const response = await apiFetch("/questions", {
+    method: "POST",
+    body: JSON.stringify(question),
+  });
+  if (!response.ok) {
+    throw new ApiError(response.status, await response.text());
+  }
+  return true;
 }
