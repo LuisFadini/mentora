@@ -1,27 +1,12 @@
 import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { unified } from "unified";
-import remarkParse from "remark-parse";
-import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";
-import remarkRehype from "remark-rehype";
-import rehypeKatex from "rehype-katex";
-import rehypeStringify from "rehype-stringify";
 import { getQuestion } from "$lib/api/questions/get-question";
-
-const processor = unified()
-  .use(remarkParse)
-  .use(remarkGfm)
-  .use(remarkMath)
-  .use(remarkRehype)
-  .use(rehypeKatex)
-  .use(rehypeStringify);
-
-const renderMarkdown = async (markdown: string) =>
-  String(await processor.process(markdown));
+import { getQuestionTips } from "$lib/api/questions/get-question-tips";
+import { renderMarkdown } from "$lib/render-markdown";
 
 export const load: PageServerLoad = async ({ params, fetch }) => {
   const question = await getQuestion(params.slug, fetch);
+  const tips = await getQuestionTips(params.slug, fetch);
 
   if (question) {
     return {
@@ -35,6 +20,7 @@ export const load: PageServerLoad = async ({ params, fetch }) => {
           })),
         ),
       },
+      tipsAvailable: tips.length,
     };
   }
 

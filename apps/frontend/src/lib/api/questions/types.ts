@@ -17,3 +17,12 @@ export type Answer = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type QuestionTip = {
+  id: string;
+  questionId: string;
+  order: number;
+  content: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
