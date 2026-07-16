@@ -6,9 +6,12 @@ import { requirePermission } from "../../shared/middlewares/permission.middlewar
 import { validateBodyDTO } from "../../shared/middlewares/validate-body-dto.middleware.ts";
 import { validateUUIDV7Param } from "../../shared/middlewares/validate-uuid.middleware.ts";
 import { CreateQuestionDTO } from "./dto/create-question.dto.ts";
+import { CreateQuestionTipDTO } from "./dto/create-question-tip.dto.ts";
 import { UpdateQuestionDTO } from "./dto/update-question.dto.ts";
+import { UpdateQuestionTipDTO } from "./dto/update-question-tip.dto.ts";
 import { ValidateQuestionDTO } from "./dto/validate-question.dto.ts";
 import type { GetQuestionParams } from "./params/get-question.params.ts";
+import type { GetQuestionTipParams } from "./params/get-question-tip.params.ts";
 import type { QuestionController } from "./questions.controller.ts";
 
 export function createQuestionsRoutes(
@@ -45,6 +48,43 @@ export function createQuestionsRoutes(
     validateUUIDV7Param<GetQuestionParams>("id"),
     validateBodyDTO(ValidateQuestionDTO),
     questionController.validateQuestion,
+  );
+
+  router.get(
+    "/:id/tips",
+    authMiddleware,
+    validateUUIDV7Param<GetQuestionParams>("id"),
+    questionController.getQuestionTips,
+  );
+  router.post(
+    "/:id/tips",
+    authMiddleware,
+    validateUUIDV7Param<GetQuestionParams>("id"),
+    validateBodyDTO(CreateQuestionTipDTO),
+    questionController.createQuestionTip,
+  );
+  router.get(
+    "/:id/tips/:tipId",
+    authMiddleware,
+    validateUUIDV7Param<GetQuestionTipParams>("id"),
+    validateBodyDTO(CreateQuestionTipDTO),
+    validateUUIDV7Param<GetQuestionTipParams>("tipId"),
+    questionController.getQuestionTip,
+  );
+  router.patch(
+    "/:id/tips/:tipId",
+    authMiddleware,
+    validateUUIDV7Param<GetQuestionTipParams>("id"),
+    validateBodyDTO(UpdateQuestionTipDTO),
+    validateUUIDV7Param<GetQuestionTipParams>("tipId"),
+    questionController.updateQuestionTip,
+  );
+  router.delete(
+    "/:id/tips/:tipId",
+    authMiddleware,
+    validateUUIDV7Param<GetQuestionTipParams>("id"),
+    validateUUIDV7Param<GetQuestionTipParams>("tipId"),
+    questionController.deleteQuestionTip,
   );
 
   return router;

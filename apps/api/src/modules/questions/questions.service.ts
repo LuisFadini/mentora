@@ -1,9 +1,12 @@
 import { removeUndefined } from "@mentora/utils";
 
 import type { PersistedQuestion } from "../../shared/infrastructure/db/repositories/question.repository.ts";
+import type { IQuestionTipsRepository } from "../../shared/interfaces/repository.interface.ts";
 import { type IRepository } from "../../shared/interfaces/repository.interface.ts";
 import type { CreateQuestionDTO } from "./dto/create-question.dto.ts";
+import type { CreateQuestionTipDTO } from "./dto/create-question-tip.dto.ts";
 import type { UpdateQuestionDTO } from "./dto/update-question.dto.ts";
+import type { UpdateQuestionTipDTO } from "./dto/update-question-tip.dto.ts";
 import type { ValidateQuestionDTO } from "./dto/validate-question.dto.ts";
 import { type Answer, type Question } from "./question.types.ts";
 
@@ -13,6 +16,7 @@ export class QuestionService {
       Question,
       PersistedQuestion
     >,
+    private readonly questionTipsRepository: IQuestionTipsRepository,
   ) {}
 
   async getQuestions(): Promise<Question[]> {
@@ -97,7 +101,7 @@ export class QuestionService {
     const question = await this.questionRepository.findById(id);
 
     if (!question) {
-      throw new Error("Question now found");
+      throw new Error("Question not found");
     }
 
     const correctAnswer = question.answers.find((a) => a.correct);
@@ -112,5 +116,49 @@ export class QuestionService {
       correct: isCorrect,
       correctAnswerId: correctAnswer.id,
     };
+  }
+
+  async getQuestionTips(id: string) {
+    const question = await this.questionRepository.findById(id);
+
+    if (!question) {
+      throw new Error("Question not found");
+    }
+
+    return await this.questionTipsRepository.findByQuestionId(question.id);
+  }
+
+  async getQuestionTip(id: string) {
+    return this.questionTipsRepository.findById(id);
+  }
+
+  async createQuestionTip(questionId: string, tip: CreateQuestionTipDTO) {
+    const now = new Date();
+
+    await this.questionTipsRepository.create({
+      questionId,
+      ...tip,
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+
+  async updateQuestionTip(id: string, data: UpdateQuestionTipDTO) {
+    const existingQuestionTip = await this.questionTipsRepository.findById(id);
+    if (!existingQuestionTip) return null;
+
+    const cleanData = removeUndefined(data);
+
+    const updatedQuestionTip = await this.questionTipsRepository.update({
+      ...existingQuestionTip,
+      ...cleanData,
+      updatedAt: new Date(),
+    });
+
+    return updatedQuestionTip;
+  }
+
+  async deleteQuestionTip(id: string) {
+    return await this.questionTipsRepository.delete(id);
   }
 }

@@ -117,4 +117,167 @@ export const questionsPaths = new OpenAPIPathBuilder()
         .addResponse("404", "Question not found"),
     }),
   )
+  .addPath(
+    "/questions/{id}/tips",
+    new OpenAPIMethodBuilder()
+      .addMethod("get", {
+        summary: "List question tips",
+        operationId: "getQuestionTips",
+        tags: ["Question Tips"],
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            description: "Question ID",
+            schema: {
+              type: "string",
+            },
+          },
+        ],
+        responses: new OpenAPIResponseBuilder()
+          .addResponse(
+            "200",
+            "List of question tips",
+            jsonContent({
+              type: "array",
+              items: schemaRef("QuestionTip"),
+            }),
+          )
+          .addResponse("404", "Question not found"),
+      })
+      .addMethod("post", {
+        summary: "Create a question tip",
+        operationId: "createQuestionTip",
+        tags: ["Question Tips"],
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            description: "Question ID",
+            schema: {
+              type: "string",
+            },
+          },
+        ],
+        requestBody: jsonBody(schemaRef("CreateQuestionTipDTO")),
+        responses: new OpenAPIResponseBuilder()
+          .addResponse(
+            "200",
+            "Question tip created",
+            jsonContent(schemaRef("QuestionTip")),
+          )
+          .addResponse("404", "Question not found"),
+      }),
+  )
+  .addPath(
+    "/questions/{id}/tips/{tipId}",
+    new OpenAPIMethodBuilder()
+      .addMethod("get", {
+        summary: "Get question tip",
+        operationId: "getQuestionTip",
+        tags: ["Question Tips"],
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            description: "Question ID",
+            schema: {
+              type: "string",
+            },
+          },
+          {
+            name: "tipId",
+            in: "path",
+            required: true,
+            description: "Question Tip ID",
+            schema: {
+              type: "string",
+            },
+          },
+        ],
+        responses: new OpenAPIResponseBuilder()
+          .addResponse(
+            "200",
+            "Question tip found",
+            jsonContent(schemaRef("QuestionTip")),
+          )
+          .addResponse("404", "Question tip not found"),
+      })
+      .addMethod("patch", {
+        summary: "Update question tip",
+        operationId: "updateQuestionTip",
+        tags: ["Question Tips"],
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            description: "Question ID",
+            schema: {
+              type: "string",
+            },
+          },
+          {
+            name: "tipId",
+            in: "path",
+            required: true,
+            description: "Question Tip ID",
+            schema: {
+              type: "string",
+            },
+          },
+        ],
+        requestBody: jsonBody(schemaRef("UpdateQuestionTipDTO")),
+        responses: new OpenAPIResponseBuilder()
+          .addResponse(
+            "200",
+            "Question tip updated",
+            jsonContent(schemaRef("QuestionTip")),
+          )
+          .addResponse("404", "Question tip not found"),
+      })
+      .addMethod("delete", {
+        summary: "Delete question tip",
+        operationId: "deleteQuestionTip",
+        tags: ["Question Tips"],
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            description: "Question ID",
+            schema: {
+              type: "string",
+            },
+          },
+          {
+            name: "tipId",
+            in: "path",
+            required: true,
+            description: "Question Tip ID",
+            schema: {
+              type: "string",
+            },
+          },
+        ],
+        responses: new OpenAPIResponseBuilder()
+          .addResponse(
+            "200",
+            "Question tip deleted successfully",
+            jsonContent({
+              type: "object",
+              properties: {
+                message: {
+                  type: "string",
+                  example: "Question tip deleted successfully",
+                },
+              },
+            }),
+          )
+          .addResponse("400", "Error deleting question tip"),
+      }),
+  )
   .build();

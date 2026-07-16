@@ -7,6 +7,15 @@ type SchemaObject =
       type: "boolean";
     }
   | {
+      type: "integer" | "number";
+      format?: "int32" | "int64" | "float" | "double";
+      minimum?: number;
+      maximum?: number;
+      exclusiveMinimum?: boolean;
+      exclusiveMaximum?: boolean;
+      multipleOf?: number;
+    }
+  | {
       type: "array";
       items: SchemaObject | { $ref: string };
     }
