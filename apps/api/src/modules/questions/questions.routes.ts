@@ -71,6 +71,12 @@ export function createQuestionsRoutes(
     validateUUIDV7Param<GetQuestionTipParams>("tipId"),
     questionController.getQuestionTip,
   );
+  router.get(
+    "/:id/tips/order/:order",
+    authMiddleware,
+    validateUUIDV7Param<GetQuestionParams>("id"),
+    questionController.getQuestionTipByOrder,
+  );
   router.patch(
     "/:id/tips/:tipId",
     authMiddleware,

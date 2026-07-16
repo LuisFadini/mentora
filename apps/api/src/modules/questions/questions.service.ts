@@ -132,10 +132,14 @@ export class QuestionService {
     return this.questionTipsRepository.findById(id);
   }
 
+  async getQuestionTipByOrder(id: string, order: number) {
+    return this.questionTipsRepository.findByOrder(id, order);
+  }
+
   async createQuestionTip(questionId: string, tip: CreateQuestionTipDTO) {
     const now = new Date();
 
-    await this.questionTipsRepository.create({
+    return await this.questionTipsRepository.create({
       questionId,
       ...tip,
       createdAt: now,

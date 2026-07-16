@@ -1,4 +1,4 @@
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 
 import type { QuestionTip } from "../../../../modules/questions/question.types.ts";
 import type {
@@ -52,6 +52,24 @@ export class QuestionTipRepository implements IQuestionTipsRepository {
       .orderBy(asc(questionTipsTable.order));
 
     return rows.map((row) => this.toDomainQuestionTip(row));
+  }
+
+  async findByOrder(
+    questionId: string,
+    order: number,
+  ): Promise<PersistedQuestionTip | null> {
+    const [row] = await this.db
+      .select()
+      .from(questionTipsTable)
+      .where(
+        and(
+          eq(questionTipsTable.questionId, questionId),
+          eq(questionTipsTable.order, order),
+        ),
+      )
+      .limit(1);
+
+    return row ? this.toDomainQuestionTip(row) : null;
   }
 
   async create(entity: QuestionTip): Promise<PersistedQuestionTip> {

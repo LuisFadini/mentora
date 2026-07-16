@@ -43,6 +43,10 @@ export interface IQuestionTipsRepository extends IRepository<
   PersistedQuestionTip
 > {
   findByQuestionId(questionId: string): Promise<PersistedQuestionTip[]>;
+  findByOrder(
+    questionId: string,
+    order: number,
+  ): Promise<PersistedQuestionTip | null>;
   createMany(
     questionId: string,
     questionTips: QuestionTip[],

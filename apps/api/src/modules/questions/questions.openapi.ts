@@ -280,4 +280,39 @@ export const questionsPaths = new OpenAPIPathBuilder()
           .addResponse("400", "Error deleting question tip"),
       }),
   )
+  .addPath(
+    "/questions/{id}/tips/order/{order}",
+    new OpenAPIMethodBuilder().addMethod("get", {
+      summary: "Get question tip",
+      operationId: "getQuestionTip",
+      tags: ["Question Tips"],
+      parameters: [
+        {
+          name: "id",
+          in: "path",
+          required: true,
+          description: "Question ID",
+          schema: {
+            type: "string",
+          },
+        },
+        {
+          name: "order",
+          in: "path",
+          required: true,
+          description: "Question Tip Order",
+          schema: {
+            type: "number",
+          },
+        },
+      ],
+      responses: new OpenAPIResponseBuilder()
+        .addResponse(
+          "200",
+          "Question tip found",
+          jsonContent(schemaRef("QuestionTip")),
+        )
+        .addResponse("404", "Question tip not found"),
+    }),
+  )
   .build();

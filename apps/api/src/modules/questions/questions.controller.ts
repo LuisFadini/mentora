@@ -7,6 +7,7 @@ import type { UpdateQuestionTipDTO } from "./dto/update-question-tip.dto.ts";
 import type { ValidateQuestionDTO } from "./dto/validate-question.dto.ts";
 import type { GetQuestionParams } from "./params/get-question.params.ts";
 import type { GetQuestionTipParams } from "./params/get-question-tip.params.ts";
+import type { GetQuestionTipByOrderParams } from "./params/get-question-tip-by-order.params.ts";
 import type { QuestionService } from "./questions.service.ts";
 
 export class QuestionController {
@@ -83,6 +84,19 @@ export class QuestionController {
     res: Response,
   ) => {
     const tip = await this.questionService.getQuestionTip(req.params.tipId);
+    if (!tip)
+      return res.status(404).json({ message: "Question tip not found" });
+    return res.json(tip);
+  };
+
+  getQuestionTipByOrder = async (
+    req: Request<GetQuestionTipByOrderParams>,
+    res: Response,
+  ) => {
+    const tip = await this.questionService.getQuestionTipByOrder(
+      req.params.id,
+      Number(req.params.order),
+    );
     if (!tip)
       return res.status(404).json({ message: "Question tip not found" });
     return res.json(tip);
