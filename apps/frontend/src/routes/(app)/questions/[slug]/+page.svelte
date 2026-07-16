@@ -181,7 +181,7 @@
 
       <div class="flex items-center justify-between gap-3">
         <a
-          href={resolve("/questions/edit")}
+          href={resolve("/questions/[slug]/edit", { slug: question.id })}
           class="flex items-center cursor-pointer gap-2 rounded-lg border-2 border-black px-5 py-3 font-black text-white bg-blue-500 shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
           >Edit</a
         >
