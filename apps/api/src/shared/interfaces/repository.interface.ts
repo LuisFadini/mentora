@@ -1,5 +1,8 @@
 import type { Session } from "../../modules/auth/auth.types.ts";
-import type { Answer } from "../../modules/questions/question.types.ts";
+import type {
+  Answer,
+  QuestionTip,
+} from "../../modules/questions/question.types.ts";
 import type { User } from "../../modules/users/user.types.ts";
 
 export interface IRepository<TCreate, TPersisted = TCreate> {
@@ -28,4 +31,24 @@ export interface IAnswerRepository extends IRepository<
 > {
   findByQuestionId(questionId: string): Promise<PersistedAnswer[]>;
   createMany(questionId: string, answers: Answer[]): Promise<PersistedAnswer[]>;
+}
+
+export type PersistedQuestionTip = QuestionTip & {
+  id: string;
+  questionId: string;
+};
+
+export interface IQuestionTipsRepository extends IRepository<
+  QuestionTip,
+  PersistedQuestionTip
+> {
+  findByQuestionId(questionId: string): Promise<PersistedQuestionTip[]>;
+  findByOrder(
+    questionId: string,
+    order: number,
+  ): Promise<PersistedQuestionTip | null>;
+  createMany(
+    questionId: string,
+    questionTips: QuestionTip[],
+  ): Promise<PersistedQuestionTip[]>;
 }

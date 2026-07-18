@@ -77,5 +77,23 @@ export const schemas = {
     .addProperty("correctAnswerId", { type: "string", format: "uuid" }, true)
     .build(),
 
+  QuestionTip: new OpenAPISchemaBuilder()
+    .setDescription("Question tip entity")
+    .addProperty("id", { type: "string", format: "uuid" })
+    .addProperty("questionId", { type: "string", format: "uuid" })
+    .addProperty("order", { type: "integer", minimum: 0 }, true)
+    .addProperty("content", { type: "string" }, true)
+    .addProperty("createdAt", { type: "string", format: "date-time" }, true)
+    .addProperty("updatedAt", { type: "string", format: "date-time" }, true)
+    .build(),
+  // export type QuestionTip = {
+  //   id?: string;
+  //   questionId?: string;
+  //   order: number;
+  //   content: string;
+  //   createdAt: Date;
+  //   updatedAt: Date;
+  // };
+
   ...classValidatorSchemas,
 };

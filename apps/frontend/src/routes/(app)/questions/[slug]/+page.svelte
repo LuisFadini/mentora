@@ -6,9 +6,16 @@
   import { goto } from "$app/navigation";
   import { validateQuestion } from "$lib/api/questions/validate-question";
   import ErrorText from "$lib/components/ErrorText.svelte";
+  import type { QuestionTip } from "$lib/api/questions/types";
+  import { getQuestionTip } from "$lib/api/questions/get-question-tip";
+  import { renderMarkdown } from "$lib/render-markdown";
 
   let { data }: PageProps = $props();
   const { question } = $derived(data);
+
+  let tipsUsed = $state(0);
+  let tips = $state<QuestionTip[]>([]);
+  let isLoadingTip = $state(false);
 
   let selectedAnswer = $state("");
   let showModal = $state(false);
@@ -17,6 +24,25 @@
   let apiError = $state("");
   let isCorrect = $state<boolean | null>(null);
   let correctAnswerId = $state<string | null>(null);
+
+  async function useTip() {
+    if (isLoadingTip) return;
+    if (tipsUsed >= data.tipsAvailable) return;
+
+    isLoadingTip = true;
+
+    try {
+      const tip = await getQuestionTip(question.id, tipsUsed + 1);
+
+      tips.push({ ...tip, content: await renderMarkdown(tip.content) });
+      tipsUsed++;
+    } catch (err) {
+      console.error("Failed to fetch tip:", err);
+      apiError = "Não foi possível carregar a dica.";
+    } finally {
+      isLoadingTip = false;
+    }
+  }
 
   async function handleSubmit(e: Event) {
     e.preventDefault();
@@ -108,6 +134,21 @@
       <span class="text-xs text-neutral-600"> Fonte: {question.source} </span>
     </div>
 
+    {#if tips.length}
+      <section class="mt-6 space-y-3">
+        <h2 class="text-lg font-black">Dicas:</h2>
+
+        {#each tips as tip (tip.id)}
+          <div
+            class="rounded-lg border-2 border-black bg-yellow-100 p-4 shadow-[4px_4px_0_0_black]"
+          >
+            <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+            {@html tip.content}
+          </div>
+        {/each}
+      </section>
+    {/if}
+
     <div class="question-content">
       <!-- eslint-disable-next-line svelte/no-at-html-tags -->
       {@html question.html}
@@ -139,7 +180,22 @@
       </div>
 
       <div class="flex items-center justify-between gap-3">
-        <div></div>
+        {#if data.tipsAvailable > 0}
+          <button
+            type="button"
+            disabled={tipsUsed === data.tipsAvailable}
+            onclick={useTip}
+            class="flex items-center cursor-pointer gap-2 rounded-lg border-2 border-black px-5 py-3 font-black text-white bg-blue-500 shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:bg-neutral-300 disabled:text-neutral-500 disabled:shadow-none disabled:cursor-not-allowed disabled:translate-x-0 disabled:translate-y-0"
+          >
+            {#if isLoadingTip}
+              Carregando...
+            {:else}
+              {data.tipsAvailable - tipsUsed} tips available
+            {/if}
+          </button>
+        {:else}
+          <div></div>
+        {/if}
 
         <button
           type="submit"

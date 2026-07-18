@@ -17,6 +17,7 @@ import { UsersService } from "./modules/users/users.service.ts";
 import type { DB } from "./shared/infrastructure/db/index.ts";
 import { AnswerRepository } from "./shared/infrastructure/db/repositories/answer.repository.ts";
 import { QuestionRepository } from "./shared/infrastructure/db/repositories/question.repository.ts";
+import { QuestionTipRepository } from "./shared/infrastructure/db/repositories/question-tip.repository.ts";
 import { SessionRepository } from "./shared/infrastructure/db/repositories/session.repository.ts";
 import { UserRepository } from "./shared/infrastructure/db/repositories/user.repository.ts";
 import { createOpenAPiRoutes } from "./shared/infrastructure/openapi/openapi.routes.ts";
@@ -67,8 +68,12 @@ export function createApp(db: DB): Express {
 
   const answerRepository = new AnswerRepository(db);
   const questionRepository = new QuestionRepository(db, answerRepository);
+  const questionTipsRepository = new QuestionTipRepository(db);
 
-  const questionsService = new QuestionService(questionRepository);
+  const questionsService = new QuestionService(
+    questionRepository,
+    questionTipsRepository,
+  );
   const questionsController = new QuestionController(questionsService);
   app.use(
     "/questions",

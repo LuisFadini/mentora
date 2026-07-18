@@ -2,7 +2,13 @@ import crypto from "node:crypto";
 
 import type { Permission } from "@mentora/permissions";
 import { sql } from "drizzle-orm";
-import { check, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import {
+  check,
+  integer,
+  sqliteTable,
+  text,
+  uniqueIndex,
+} from "drizzle-orm/sqlite-core";
 import { v7 as uuidv7 } from "uuid";
 
 export const usersTable = sqliteTable(
@@ -78,3 +84,28 @@ export const answersTable = sqliteTable("answers", {
     .notNull()
     .$defaultFn(() => new Date()),
 });
+
+export const questionTipsTable = sqliteTable(
+  "question_tips",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => uuidv7()),
+    questionId: text("question_id")
+      .notNull()
+      .references(() => questionsTable.id, {
+        onDelete: "cascade",
+      }),
+    order: integer("order").notNull(),
+    content: text("content").notNull(),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => [
+    uniqueIndex("tips_question_order_unique").on(table.questionId, table.order),
+  ],
+);
