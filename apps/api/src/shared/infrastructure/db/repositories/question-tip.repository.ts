@@ -1,4 +1,4 @@
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, eq, gt, sql } from "drizzle-orm";
 
 import type { QuestionTip } from "../../../../modules/questions/question.types.ts";
 import type {
@@ -138,11 +138,38 @@ export class QuestionTipRepository implements IQuestionTipsRepository {
   }
 
   async delete(id: string): Promise<boolean> {
-    const rows = await this.db
+    const [tip] = await this.db
+      .select()
+      .from(questionTipsTable)
+      .where(eq(questionTipsTable.id, id))
+      .limit(1);
+
+    if (!tip) {
+      return false;
+    }
+
+    const deleted = await this.db
       .delete(questionTipsTable)
       .where(eq(questionTipsTable.id, id))
       .returning({ id: questionTipsTable.id });
 
-    return rows.length > 0;
+    if (deleted.length === 0) {
+      return false;
+    }
+
+    await this.db
+      .update(questionTipsTable)
+      .set({
+        order: sql`${questionTipsTable.order} - 1`,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(questionTipsTable.questionId, tip.questionId),
+          gt(questionTipsTable.order, tip.order),
+        ),
+      );
+
+    return true;
   }
 }
