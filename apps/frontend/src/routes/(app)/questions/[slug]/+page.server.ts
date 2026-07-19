@@ -1,8 +1,10 @@
 import { error } from "@sveltejs/kit";
-import type { PageServerLoad } from "./$types";
+
 import { getQuestion } from "$lib/api/questions/get-question";
 import { getQuestionTips } from "$lib/api/questions/get-question-tips";
 import { renderMarkdown } from "$lib/render-markdown";
+
+import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ params, fetch }) => {
   const question = await getQuestion(params.slug, fetch);

@@ -1,8 +1,11 @@
 <script lang="ts">
-  import { resolve } from "$app/paths";
   import Icon from "@iconify/svelte";
 
-  const { data } = $props();
+  import { resolve } from "$app/paths";
+
+  import type { PageProps } from "./$types";
+
+  const { data }: PageProps = $props();
   const { questions } = $derived(data);
 
   const subjects = $derived([
@@ -26,18 +29,18 @@
     <h1 class="text-3xl font-black leading-none sm:text-4xl">Questões</h1>
 
     <div class="flex flex-col gap-1.5">
-      <label for="subject" class="font-semibold">Matéria</label>
+      <label class="font-semibold" for="subject">Matéria</label>
 
       <div
         class="flex items-center gap-2 rounded-lg border-2 border-black bg-white px-3 transition-all focus-within:-translate-x-1 focus-within:-translate-y-1 focus-within:shadow-[6px_6px_0_0_black]"
       >
-        <Icon icon="ph:book-open-text" class="text-xl" />
+        <Icon class="text-xl" icon="ph:book-open-text" />
 
         <select
           id="subject"
-          bind:value={selectedSubject}
-          onchange={(e) => e.currentTarget.blur()}
           class="w-full cursor-pointer appearance-none bg-transparent py-3 outline-none"
+          onchange={(e) => e.currentTarget.blur()}
+          bind:value={selectedSubject}
         >
           {#each subjects as subject (subject)}
             <option value={subject}>
@@ -46,7 +49,7 @@
           {/each}
         </select>
 
-        <Icon icon="ph:caret-down" class="pointer-events-none text-xl" />
+        <Icon class="pointer-events-none text-xl" icon="ph:caret-down" />
       </div>
     </div>
 
@@ -84,8 +87,8 @@
           </div>
 
           <a
-            href={resolve("/(app)/questions/[slug]", { slug: question.id })}
             class="w-full shrink-0 rounded-lg border-2 border-black bg-blue-500 px-5 py-2 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:w-auto"
+            href={resolve("/(app)/questions/[slug]", { slug: question.id })}
           >
             Fazer
           </a>

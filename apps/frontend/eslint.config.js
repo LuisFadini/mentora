@@ -1,10 +1,14 @@
-import prettier from "eslint-config-prettier";
 import path from "node:path";
+
 import js from "@eslint/js";
-import svelte from "eslint-plugin-svelte";
 import { defineConfig, includeIgnoreFile } from "eslint/config";
+import prettier from "eslint-config-prettier";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
+import svelte from "eslint-plugin-svelte";
+import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
 import ts from "typescript-eslint";
+
 import svelteConfig from "./svelte.config.js";
 
 const gitignorePath = path.resolve(
@@ -14,35 +18,104 @@ const gitignorePath = path.resolve(
   ".gitignore",
 );
 
+// eslint-disable-next-line no-restricted-exports
 export default defineConfig(
   includeIgnoreFile(gitignorePath),
+
   js.configs.recommended,
-  ts.configs.recommended,
+  ts.configs.recommendedTypeChecked,
   svelte.configs.recommended,
+
   prettier,
   svelte.configs.prettier,
+
   {
-    languageOptions: { globals: { ...globals.browser, ...globals.node } },
-    rules: {
-      // typescript-eslint strongly recommend that you do not use the no-undef lint rule on TypeScript projects.
-      // see: https://typescript-eslint.io/troubleshooting/faqs/eslint/#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors
-      "no-undef": "off",
-    },
-  },
-  {
-    files: ["**/*.svelte", "**/*.svelte.ts", "**/*.svelte.js"],
+    files: ["**/*.{js,ts,svelte,svelte.js,svelte.ts}"],
     languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+
       parserOptions: {
-        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+        project: "./tsconfig.lint.json",
         extraFileExtensions: [".svelte"],
         parser: ts.parser,
         svelteConfig,
       },
     },
+
+    plugins: {
+      "simple-import-sort": simpleImportSort,
+      "unused-imports": unusedImports,
+    },
+
+    rules: {
+      "no-undef": "off",
+      "no-unused-vars": "off",
+
+      "@typescript-eslint/no-unused-vars": "error",
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+
+      "no-restricted-exports": [
+        "error",
+        {
+          restrictDefaultExports: {
+            direct: true,
+            named: true,
+            defaultFrom: true,
+            namedFrom: true,
+            namespaceFrom: true,
+          },
+        },
+      ],
+      "@typescript-eslint/consistent-type-exports": "error",
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        {
+          prefer: "type-imports",
+          fixStyle: "inline-type-imports",
+        },
+      ],
+      "@typescript-eslint/no-import-type-side-effects": "error",
+      "unused-imports/no-unused-imports": "error",
+      "unused-imports/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+      "@typescript-eslint/no-require-imports": "error",
+      "simple-import-sort/imports": "error",
+      "simple-import-sort/exports": "error",
+
+      "@typescript-eslint/no-floating-promises": "error",
+      "@typescript-eslint/no-misused-promises": "error",
+    },
   },
   {
-    // Override or add rule settings here, such as:
-    // 'svelte/button-has-type': 'error'
-    rules: {},
+    files: ["**/*.svelte"],
+    rules: {
+      "svelte/block-lang": ["error", { script: ["ts"], style: "postcss" }],
+      "svelte/button-has-type": "error",
+      "svelte/sort-attributes": "error",
+
+      "svelte/no-at-const-tags": "error",
+      "svelte/no-at-debug-tags": "error",
+
+      "svelte/prefer-const": [
+        "error",
+        {
+          destructuring: "any",
+          additionalProperties: false,
+        },
+      ],
+    },
   },
 );

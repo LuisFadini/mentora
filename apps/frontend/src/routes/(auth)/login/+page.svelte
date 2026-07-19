@@ -1,15 +1,15 @@
-<script>
-  import * as validators from "$lib/utils/validators";
+<script lang="ts">
+  import { goto } from "$app/navigation";
+  import { resolve } from "$app/paths";
+  import { page } from "$app/state";
+  import { ApiError } from "$lib/api/api-error";
+  import { createSession } from "$lib/api/users/create-session";
   import AuthFooterLink from "$lib/components/auth/AuthFooterLink.svelte";
   import AuthHeader from "$lib/components/auth/AuthHeader.svelte";
   import AuthSubmitButton from "$lib/components/auth/AuthSubmitButton.svelte";
   import AuthTextField from "$lib/components/auth/AuthTextField.svelte";
-  import { ApiError } from "$lib/api/api-error";
-  import { createSession } from "$lib/api/users/create-session";
   import ErrorText from "$lib/components/ErrorText.svelte";
-  import { page } from "$app/state";
-  import { goto } from "$app/navigation";
-  import { resolve } from "$app/paths";
+  import * as validators from "$lib/utils/validators";
 
   let email = $state("");
   let password = $state("");
@@ -57,7 +57,7 @@
 
     try {
       await createSession({ email: email.trim(), password });
-      goto(resolve("/"), { invalidateAll: true });
+      await goto(resolve("/"), { invalidateAll: true });
     } catch (error) {
       if (error instanceof ApiError) {
         switch (error.status) {
@@ -89,26 +89,26 @@
     <form class="flex flex-col gap-5" novalidate onsubmit={handleSubmit}>
       <AuthTextField
         id="email"
-        label="E-mail"
-        type="email"
         icon="ph:envelope-simple-bold"
+        label="E-mail"
+        onValidate={validateEmail}
         placeholder="voce@exemplo.com"
+        type="email"
         bind:value={email}
         bind:error={emailError}
         bind:focused={emailFocused}
-        onValidate={validateEmail}
       />
 
       <AuthTextField
         id="password"
-        label="Senha"
-        type="password"
         icon="ph:lock-bold"
+        label="Senha"
+        onValidate={validatePassword}
         placeholder="••••••••"
+        type="password"
         bind:value={password}
         bind:error={passwordError}
         bind:focused={passwordFocused}
-        onValidate={validatePassword}
       />
 
       <AuthSubmitButton disabled={!isValid || loading} type="submit">
@@ -121,12 +121,12 @@
         </p>
       {/if}
 
-      <ErrorText message={apiError} class="text-center" />
+      <ErrorText class="text-center" message={apiError} />
 
       <AuthFooterLink
-        text="Não tem uma conta?"
-        href="/signup"
         action="Criar conta"
+        href="/signup"
+        text="Não tem uma conta?"
       />
     </form>
   </div>

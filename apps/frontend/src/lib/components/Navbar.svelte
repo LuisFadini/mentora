@@ -1,13 +1,12 @@
 <script lang="ts">
-  import { resolve } from "$app/paths";
-  import type { Session } from "$lib/api/users/get-session";
   import Icon from "@iconify/svelte";
-  import Avatar from "./Avatar.svelte";
-  import type {
-    RouteIdWithSearchOrHash,
-    PathnameWithSearchOrHash,
-  } from "$app/types";
   import { hasPermission } from "@mentora/permissions";
+
+  import { resolve } from "$app/paths";
+  import type { ResolvedPathname } from "$app/types";
+  import type { Session } from "$lib/api/users/get-session";
+
+  import Avatar from "./Avatar.svelte";
 
   type Props = {
     session?: Session;
@@ -26,20 +25,22 @@
   }
 
   type HeaderLink = {
-    href: RouteIdWithSearchOrHash | PathnameWithSearchOrHash;
+    href: ResolvedPathname;
     text: string;
   };
 
   const headerLinks = $derived.by(() => {
-    const links: HeaderLink[] = [{ href: "/questions", text: "Questões" }];
+    const links: HeaderLink[] = [
+      { href: resolve("/questions"), text: "Questões" },
+    ];
 
     if (session?.authenticated) {
       if (hasPermission(session.user, "materials.access")) {
-        links.push({ href: "/", text: "Conteúdos" });
+        links.push({ href: resolve("/"), text: "Conteúdos" });
       }
 
       if (hasPermission(session.user, "forum.access")) {
-        links.push({ href: "/", text: "Fórum" });
+        links.push({ href: resolve("/"), text: "Fórum" });
       }
     }
 
@@ -54,8 +55,8 @@
     <a class="flex flex-row gap-2 items-center" href={resolve("/")}>
       <img
         class="h-12 rounded-md bg-gray-600"
-        src="https://api.dicebear.com/10.x/triangles/svg?seed=Mentora"
         alt=""
+        src="https://api.dicebear.com/10.x/triangles/svg?seed=Mentora"
       />
       <p class="text-2xl font-bold hidden lg:block">Mentora</p>
     </a>
@@ -66,7 +67,7 @@
           <li
             class="text-2xl font-bold hover:underline decoration-2 transition-all text-gray-900 hover:text-blue-400 duration-150"
           >
-            <a href={resolve(link.href)}>{link.text}</a>
+            <a href={link.href}>{link.text}</a>
           </li>
         {/each}
       </ul>
@@ -85,28 +86,29 @@
 
           <Avatar
             name={user.name}
-            avatarUrl={user.avatarUrl}
             class="size-11 shrink-0"
+            avatarUrl={user.avatarUrl}
           />
         </div>
       {:else}
         <a
-          href={resolve("/login")}
           class="hidden sm:flex items-center gap-2 rounded-lg border-2 border-black bg-blue-500 px-5 py-2 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+          href={resolve("/login")}
         >
           Login
-          <Icon icon="ph:sign-in-bold" class="text-lg" />
+          <Icon class="text-lg" icon="ph:sign-in-bold" />
         </a>
       {/if}
 
       <button
-        onclick={toggleMenu}
-        aria-label="Abrir menu"
         class="flex size-11 items-center cursor-pointer justify-center rounded-lg border-2 border-black bg-yellow-300 shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none lg:hidden"
+        aria-label="Abrir menu"
+        onclick={toggleMenu}
+        type="button"
       >
         <Icon
-          icon={mobileMenuOpen ? "ph:x-bold" : "ph:list-bold"}
           class="text-2xl"
+          icon={mobileMenuOpen ? "ph:x-bold" : "ph:list-bold"}
         />
       </button>
     </div>
@@ -120,9 +122,9 @@
         {#each headerLinks as link (link.text)}
           <li>
             <a
-              href={resolve(link.href)}
-              onclick={closeMenu}
               class="flex items-center rounded-lg border-2 border-black bg-white px-4 py-3 font-bold shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:bg-blue-100 hover:shadow-none"
+              href={link.href}
+              onclick={closeMenu}
             >
               {link.text}
             </a>
@@ -136,8 +138,8 @@
           >
             <Avatar
               name={user.name}
-              avatarUrl={user.avatarUrl}
               class="size-12 shrink-0"
+              avatarUrl={user.avatarUrl}
             />
 
             <span class="min-w-0 flex-1 truncate font-bold" title={user.name}>
@@ -146,8 +148,8 @@
           </div>
         {:else}
           <a
-            href={resolve("/login")}
             class="mt-2 flex sm:hidden items-center justify-center gap-2 rounded-lg border-2 border-black bg-blue-500 px-4 py-3 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+            href={resolve("/login")}
           >
             Login
             <Icon icon="ph:sign-in-bold" />

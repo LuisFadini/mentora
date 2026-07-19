@@ -19,6 +19,6 @@
     "rounded-full border-2 border-black bg-gray-500 object-cover",
     className,
   )}
-  src={avatarUrl ?? fallback}
   alt={name}
+  src={avatarUrl ?? fallback}
 />

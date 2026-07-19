@@ -1,12 +1,14 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import type { PageProps } from "./$types";
-  import { closeSession } from "$lib/api/users/close-session";
+
   import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
   import { ApiError } from "$lib/api/api-error";
+  import { closeSession } from "$lib/api/users/close-session";
   import Avatar from "$lib/components/Avatar.svelte";
   import ErrorText from "$lib/components/ErrorText.svelte";
+
+  import type { PageProps } from "./$types";
 
   const { data }: PageProps = $props();
   const hours = new Date().getHours();
@@ -15,7 +17,7 @@
 
   async function logout() {
     try {
-      let success = await closeSession(fetch);
+      const success = await closeSession(fetch);
 
       if (success)
         await goto(resolve("/"), {
@@ -63,18 +65,19 @@
           </h1>
         </div>
 
-        <Avatar name={user.name} avatarUrl={user.avatarUrl} class="size-36" />
+        <Avatar name={user.name} class="size-36" avatarUrl={user.avatarUrl} />
       </div>
 
       <button
-        onclick={logout}
         class="mt-2 flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-black bg-red-500 px-6 py-3 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+        onclick={logout}
+        type="button"
       >
         Sair
         <Icon icon="ph:sign-out-bold" />
       </button>
 
-      <ErrorText message={logoutError} class="text-center" />
+      <ErrorText class="text-center" message={logoutError} />
     </div>
   {:else}
     <h1 class="text-center text-5xl font-semibold text-gray-800">
