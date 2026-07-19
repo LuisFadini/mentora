@@ -9,6 +9,8 @@
     "dev:api": "pnpm --filter @mentora/api dev",
     "dev:web": "pnpm --filter @mentora/frontend dev",
     "build": "pnpm -r build",
+    "build:packages": "pnpm -r --filter \"./packages/*\" build",
+    "postinstall": "pnpm build:packages",
     "lint": "pnpm -r lint",
     "lint:fix": "pnpm -r lint:fix",
     "test": "pnpm -r test",
