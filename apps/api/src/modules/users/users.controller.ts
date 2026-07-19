@@ -1,10 +1,10 @@
-import { type Request, type Response } from "express";
+import type { Request, Response } from "express";
 
 import { ConflictError } from "../../shared/errors/conflict.error.ts";
 import type { CreateUserDTO } from "./dto/create-user.dto.ts";
 import type { UpdateUserDTO } from "./dto/update-user.dto.ts";
-import { type GetUserParams } from "./params/get-user.params.ts";
-import { type UsersService } from "./users.service.ts";
+import type { GetUserParams } from "./params/get-user.params.ts";
+import type { UsersService } from "./users.service.ts";
 
 export class UserController {
   constructor(private readonly usersService: UsersService) {}

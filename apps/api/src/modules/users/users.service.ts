@@ -2,8 +2,8 @@ import { omit, removeUndefined } from "@mentora/utils";
 
 import { ConflictError } from "../../shared/errors/conflict.error.ts";
 import type { IPasswordHasher } from "../../shared/interfaces/password-hasher.interface.ts";
-import { type IUserRepository } from "../../shared/interfaces/repository.interface.ts";
-import { type User } from "./user.types.ts";
+import type { IUserRepository } from "../../shared/interfaces/repository.interface.ts";
+import type { User } from "./user.types.ts";
 
 export class UsersService {
   constructor(

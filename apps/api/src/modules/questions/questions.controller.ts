@@ -1,4 +1,4 @@
-import { type Request, type Response } from "express";
+import type { Request, Response } from "express";
 
 import type { CreateQuestionDTO } from "./dto/create-question.dto.ts";
 import type { CreateQuestionTipDTO } from "./dto/create-question-tip.dto.ts";

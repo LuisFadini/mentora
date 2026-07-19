@@ -1,9 +1,4 @@
-import {
-  type NextFunction,
-  type Request,
-  type RequestHandler,
-  type Response,
-} from "express";
+import type { NextFunction, Request, RequestHandler, Response } from "express";
 import * as uuid from "uuid";
 
 export function validateUUIDV7Param<P extends Record<string, string>>(

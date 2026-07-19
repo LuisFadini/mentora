@@ -1,6 +1,6 @@
 import * as argon2 from "argon2";
 
-import { type IPasswordHasher } from "../../interfaces/password-hasher.interface.ts";
+import type { IPasswordHasher } from "../../interfaces/password-hasher.interface.ts";
 
 export class Argon2idPasswordHasher implements IPasswordHasher {
   hash(password: string): Promise<string> {

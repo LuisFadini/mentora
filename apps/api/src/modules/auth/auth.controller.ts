@@ -1,4 +1,4 @@
-import { type Request, type Response } from "express";
+import type { Request, Response } from "express";
 
 import { config } from "../../config/env.ts";
 import type { AuthService } from "./auth.service.ts";

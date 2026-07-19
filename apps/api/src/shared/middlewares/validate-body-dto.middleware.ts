@@ -1,7 +1,7 @@
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import type { RequestHandler } from "express";
-import { type NextFunction, type Request, type Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 
 import { logger } from "../../logger.ts";
 

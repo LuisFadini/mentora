@@ -1,9 +1,4 @@
-import {
-  type NextFunction,
-  type Request,
-  type RequestHandler,
-  type Response,
-} from "express";
+import type { NextFunction, Request, RequestHandler, Response } from "express";
 
 import { config } from "../../config/env.ts";
 import type { User } from "../../modules/users/user.types.ts";

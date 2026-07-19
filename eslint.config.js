@@ -16,7 +16,7 @@ const gitignorePath = fileURLToPath(new URL(".gitignore", import.meta.url));
 export default defineConfig([
   includeIgnoreFile(gitignorePath),
   {
-    ignores: ["apps/frontend/**", "*.config.{js,ts}"],
+    ignores: ["apps/frontend/**", "**/*.config.{js,ts}"],
   },
 
   js.configs.recommended,
@@ -30,7 +30,9 @@ export default defineConfig([
       },
       parser: ts.parser,
       parserOptions: {
-        projectService: { allowDefaultProject: ["*.{js,ts}", "{apps,packages}/*/*.config.{js,ts}"] },
+        projectService: {
+          allowDefaultProject: ["*.{js,ts}"],
+        },
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -53,16 +55,51 @@ export default defineConfig([
 
     rules: {
       "no-console": "error",
+      eqeqeq: ["error", "always"],
 
       "simple-import-sort/imports": "error",
       "simple-import-sort/exports": "error",
 
+      "no-restricted-exports": [
+        "error",
+        {
+          restrictDefaultExports: {
+            direct: true,
+            named: true,
+            defaultFrom: true,
+            namedFrom: true,
+            namespaceFrom: true,
+          },
+        },
+      ],
+
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        {
+          prefer: "type-imports",
+          fixStyle: "inline-type-imports",
+        },
+      ],
+      "@typescript-eslint/consistent-type-exports": "error",
+      "@typescript-eslint/no-import-type-side-effects": "error",
+
       "unused-imports/no-unused-imports": "error",
-      "unused-imports/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+      "unused-imports/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
 
       "@typescript-eslint/consistent-type-imports": "error",
       "@typescript-eslint/no-floating-promises": "error",
       "@typescript-eslint/no-misused-promises": "error",
+      "@typescript-eslint/no-unnecessary-condition": "warn",
+      "@typescript-eslint/no-unnecessary-type-assertion": "error",
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-unused-vars": "off",
 
       "unicorn/prefer-node-protocol": "error",
       "unicorn/prevent-abbreviations": "off",
