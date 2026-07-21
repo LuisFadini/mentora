@@ -1,10 +1,10 @@
-# Projeto integrador
+# Mentora
 
-Este é o projeto integrador do curso técnico em informática.
+O Mentora é o projeto integrador do curso técnico em informática.
 
-A proposta do projeto é desenvolver uma plataforma de estudos voltada para o ENEM e outros vestibulares, reunindo diferentes recursos em um único ambiente.
+O objetivo do projeto é desenvolver uma plataforma de estudos voltada para o ENEM e outros vestibulares, reunindo diferentes recursos em um único ambiente.
 
-A aplicação inclui:
+A versão final da aplicação deverá incluir:
 
 - Questões de provas (ENEM e outros vestibulares)
 - Conteúdos teóricos para estudo
@@ -25,13 +25,21 @@ O projeto está sendo desenvolvido com as seguintes tecnologias:
 - Svelte
 - TailwindCSS
 
+### Ferramentas
+
+- pnpm
+- Docker
+- ESLint
+- Prettier
+
 ## Rodando o projeto
 
 ### Pré-requisitos
 
-- Node.js (versão 24 ou superior)
-- pnpm instalado
-  Caso não tenha o pnpm instalado, veja <https://pnpm.io/installation>, em resumo:
+- Node.js 24+
+- pnpm
+
+Caso não tenha o pnpm instalado, veja <https://pnpm.io/installation>, em resumo:
 
 ```bash
 npm install -g pnpm
@@ -42,11 +50,11 @@ npm install -g pnpm
 Clone o repositório:
 
 ```bash
-git clone https://github.com/luisfadini/questionar
-cd questionar
+git clone https://github.com/luisfadini/mentora
+cd mentora
 ```
 
-Instale as dependências
+Instale as dependências:
 
 ```bash
 pnpm install
@@ -54,26 +62,26 @@ pnpm install
 
 ### Configuração
 
-Crie um arquivo `.env` na raiz do projeto, siga o [`.env.example`](.env.example).
-
-```env
-NODE_ENV=development
-PORT=8080
-```
+Crie um arquivo `.env` em [apps/api/](/apps/api/), siga o [`.env.example`](/apps/api/.env.example).
 
 ### Executando
 
-Ambiente de desenvolvimento:
+Ambiente de desenvolvimento da api:
+
+```bash
+pnpm dev:api
+```
+
+Ambiente de desenvolvimento do frontend:
+
+```bash
+pnpm dev:web
+```
+
+Caso queira, pode se executar os dois projetos de uma vez, usando:
 
 ```bash
 pnpm dev
-```
-
-Ambiente de produção:
-
-```bash
-pnpm build
-node .
 ```
 
 ### Lint
