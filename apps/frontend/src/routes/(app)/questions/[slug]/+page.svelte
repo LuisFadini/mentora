@@ -6,6 +6,7 @@
   import { getQuestionTip } from "$lib/api/questions/get-question-tip";
   import type { QuestionTip } from "$lib/api/questions/types";
   import { validateQuestion } from "$lib/api/questions/validate-question";
+  import Button from "$lib/components/Button.svelte";
   import ErrorText from "$lib/components/ErrorText.svelte";
   import Modal from "$lib/components/Modal.svelte";
   import { renderMarkdown } from "$lib/render-markdown";
@@ -116,12 +117,13 @@
         {question.title}
       </h1>
 
-      <a
-        class="flex size-9 items-center justify-center rounded-lg border-2 border-black bg-red-500 shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_black] active:translate-x-0 active:translate-y-0"
-        href={resolve("/(app)/questions")}
-      >
-        <Icon icon="ph:x-bold" />
-      </a>
+      <Button
+        class="size-9 p-0"
+        icon="ph:x-bold"
+        onclick={async () => await goto(resolve("/(app)/questions"))}
+        shadowVariant="sm"
+        variant="danger"
+      />
     </div>
 
     <div class="flex flex-wrap items-center gap-2">
@@ -183,30 +185,34 @@
 
       <div class="flex items-center justify-between gap-3">
         {#if data.tipsAvailable > 0}
-          <button
-            class="flex items-center cursor-pointer gap-2 rounded-lg border-2 border-black px-5 py-3 font-black text-white bg-blue-500 shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:bg-neutral-300 disabled:text-neutral-500 disabled:shadow-none disabled:cursor-not-allowed disabled:translate-x-0 disabled:translate-y-0"
+          <Button
+            class="px-4 font-black"
             disabled={tipsUsed === data.tipsAvailable}
             onclick={useTip}
-            type="button"
           >
             {#if isLoadingTip}
               Carregando...
             {:else}
-              {data.tipsAvailable - tipsUsed} tips available
+              {data.tipsAvailable - tipsUsed}
+              {data.tipsAvailable - tipsUsed === 1
+                ? "dica disponível"
+                : "dicas disponíveis"}
             {/if}
-          </button>
+          </Button>
         {:else}
           <div></div>
         {/if}
 
-        <button
-          class="flex items-center cursor-pointer gap-2 rounded-lg border-2 border-black px-5 py-3 font-black text-white bg-blue-500 shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:bg-neutral-300 disabled:text-neutral-500 disabled:shadow-none disabled:cursor-not-allowed disabled:translate-x-0 disabled:translate-y-0"
+        <Button
+          class="font-black px-4"
           disabled={!selectedAnswer || isLoading || isCorrect !== null}
+          icon="ph:check-bold"
+          iconClass="text-lg"
+          iconPosition="right"
           type="submit"
         >
           {isLoading ? "Enviando..." : "Enviar"}
-          <Icon class="text-lg" icon="ph:check-bold" />
-        </button>
+        </Button>
       </div>
     </form>
     <ErrorText class="text-center" message={apiError} />

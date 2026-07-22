@@ -1,12 +1,13 @@
 <script lang="ts">
-  import Icon from "@iconify/svelte";
   import { hasPermission } from "@mentora/permissions";
 
+  import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
   import type { ResolvedPathname } from "$app/types";
   import type { Session } from "$lib/api/users/get-session";
 
   import Avatar from "./Avatar.svelte";
+  import Button from "./Button.svelte";
 
   type Props = {
     session?: Session;
@@ -91,26 +92,26 @@
           />
         </div>
       {:else}
-        <a
-          class="hidden sm:flex items-center gap-2 rounded-lg border-2 border-black bg-blue-500 px-5 py-2 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-          href={resolve("/login")}
+        <Button
+          class="hidden sm:flex px-4 py-2 font-bold text-white"
+          icon="ph:sign-in-bold"
+          iconClass="text-lg"
+          iconPosition="right"
+          onclick={async () => await goto(resolve("/login"))}
+          variant="primary"
         >
           Login
-          <Icon class="text-lg" icon="ph:sign-in-bold" />
-        </a>
+        </Button>
       {/if}
 
-      <button
-        class="flex size-11 items-center cursor-pointer justify-center rounded-lg border-2 border-black bg-yellow-300 shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none lg:hidden"
+      <Button
+        class="size-11 flex lg:hidden"
         aria-label="Abrir menu"
+        icon={mobileMenuOpen ? "ph:x-bold" : "ph:list-bold"}
+        iconClass="text-2xl"
         onclick={toggleMenu}
-        type="button"
-      >
-        <Icon
-          class="text-2xl"
-          icon={mobileMenuOpen ? "ph:x-bold" : "ph:list-bold"}
-        />
-      </button>
+        variant="secondary"
+      />
     </div>
   </div>
 
@@ -147,13 +148,15 @@
             </span>
           </div>
         {:else}
-          <a
-            class="mt-2 flex sm:hidden items-center justify-center gap-2 rounded-lg border-2 border-black bg-blue-500 px-4 py-3 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-            href={resolve("/login")}
+          <Button
+            class="mt-2 flex sm:hidden font-bold"
+            icon="ph:sign-in-bold"
+            iconPosition="right"
+            onclick={async () => await goto(resolve("/login"))}
+            variant="primary"
           >
             Login
-            <Icon icon="ph:sign-in-bold" />
-          </a>
+          </Button>
         {/if}
       </ul>
     </div>

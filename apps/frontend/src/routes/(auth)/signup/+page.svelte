@@ -5,8 +5,8 @@
   import { createUser } from "$lib/api/users/create-user";
   import AuthFooterLink from "$lib/components/auth/AuthFooterLink.svelte";
   import AuthHeader from "$lib/components/auth/AuthHeader.svelte";
-  import AuthSubmitButton from "$lib/components/auth/AuthSubmitButton.svelte";
   import AuthTextField from "$lib/components/auth/AuthTextField.svelte";
+  import Button from "$lib/components/Button.svelte";
   import ErrorText from "$lib/components/ErrorText.svelte";
   import * as validators from "$lib/utils/validators";
 
@@ -163,9 +163,13 @@
         bind:focused={confirmPasswordFocused}
       />
 
-      <AuthSubmitButton disabled={!isValid || loading} type="submit">
+      <Button
+        class="mt-2 font-black"
+        disabled={!isValid || loading}
+        type="submit"
+      >
         {loading ? "Criando conta..." : "Criar conta"}
-      </AuthSubmitButton>
+      </Button>
 
       <ErrorText class="text-center" message={apiError} />
 

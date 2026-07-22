@@ -1,11 +1,10 @@
 <script lang="ts">
-  import Icon from "@iconify/svelte";
-
   import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
   import { ApiError } from "$lib/api/api-error";
   import { closeSession } from "$lib/api/users/close-session";
   import Avatar from "$lib/components/Avatar.svelte";
+  import Button from "$lib/components/Button.svelte";
   import ErrorText from "$lib/components/ErrorText.svelte";
 
   import type { PageProps } from "./$types";
@@ -68,14 +67,16 @@
         <Avatar name={user.name} class="size-36" avatarUrl={user.avatarUrl} />
       </div>
 
-      <button
-        class="mt-2 flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-black bg-red-500 px-6 py-3 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+      <Button
+        class="font-bold mt-2"
+        icon="ph:sign-out-bold"
+        iconPosition="right"
         onclick={logout}
-        type="button"
+        shadowVariant="base"
+        variant="danger"
       >
         Sair
-        <Icon icon="ph:sign-out-bold" />
-      </button>
+      </Button>
 
       <ErrorText class="text-center" message={logoutError} />
     </div>

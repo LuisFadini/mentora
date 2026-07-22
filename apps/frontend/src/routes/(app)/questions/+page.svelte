@@ -1,7 +1,9 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
 
+  import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
+  import Button from "$lib/components/Button.svelte";
 
   import type { PageProps } from "./$types";
 
@@ -86,12 +88,15 @@
             </div>
           </div>
 
-          <a
-            class="w-full shrink-0 rounded-lg border-2 border-black bg-blue-500 px-5 py-2 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:w-auto"
-            href={resolve("/(app)/questions/[slug]", { slug: question.id })}
+          <Button
+            class="w-full shrink-0 py-2 font-bold sm:w-auto"
+            onclick={async () =>
+              await goto(
+                resolve("/(app)/questions/[slug]", { slug: question.id }),
+              )}
           >
             Fazer
-          </a>
+          </Button>
         </li>
       {/each}
     </ul>
