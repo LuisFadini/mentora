@@ -88,7 +88,7 @@ export class QuestionService {
         correct: incoming.correct,
         createdAt: now,
         updatedAt: now,
-      } as Answer);
+      });
     }
 
     return this.questionRepository.update({
