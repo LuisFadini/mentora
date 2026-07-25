@@ -2,7 +2,6 @@ import { error } from "@sveltejs/kit";
 
 import { getQuestion } from "$lib/api/questions/get-question";
 import { getQuestionTips } from "$lib/api/questions/get-question-tips";
-import { renderMarkdown } from "$lib/render-markdown";
 
 import type { PageServerLoad } from "./$types";
 
@@ -12,16 +11,7 @@ export const load: PageServerLoad = async ({ params, fetch }) => {
 
   if (question) {
     return {
-      question: {
-        ...question,
-        html: await renderMarkdown(question.content),
-        answers: await Promise.all(
-          question.answers.map(async (a) => ({
-            ...a,
-            html: await renderMarkdown(a.content),
-          })),
-        ),
-      },
+      question,
       tipsAvailable: tips.length,
     };
   }

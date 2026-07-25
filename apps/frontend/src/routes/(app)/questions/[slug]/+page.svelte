@@ -9,7 +9,7 @@
   import Button from "$lib/components/Button.svelte";
   import ErrorText from "$lib/components/ErrorText.svelte";
   import Modal from "$lib/components/Modal.svelte";
-  import { renderMarkdown } from "$lib/render-markdown";
+  import MarkdownRenderer from "$lib/components/questions/MarkdownRenderer.svelte";
 
   import type { PageProps } from "./$types";
 
@@ -37,7 +37,7 @@
     try {
       const tip = await getQuestionTip(question.id, tipsUsed + 1);
 
-      tips.push({ ...tip, content: await renderMarkdown(tip.content) });
+      tips.push(tip);
       tipsUsed++;
     } catch (err) {
       console.error("Failed to fetch tip:", err);
@@ -98,9 +98,11 @@
     <h1 class="text-2xl font-bold">A resposta correta seria:</h1>
     <div class="mt-2">
       {#if correctAnswerId}
-        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-        {@html question.answers.find((a) => a.id === correctAnswerId)?.html ??
-          ""}
+        <MarkdownRenderer
+          class=""
+          markdown={question.answers.find((a) => a.id === correctAnswerId)
+            ?.content ?? ""}
+        />
       {/if}
     </div>
   {/if}
@@ -143,20 +145,15 @@
         <h2 class="text-lg font-black">Dicas:</h2>
 
         {#each tips as tip (tip.id)}
-          <div
+          <MarkdownRenderer
             class="rounded-lg border-2 border-black bg-yellow-100 p-4 shadow-[4px_4px_0_0_black]"
-          >
-            <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-            {@html tip.content}
-          </div>
+            markdown={tip.content}
+          />
         {/each}
       </section>
     {/if}
 
-    <div class="question-content">
-      <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-      {@html question.html}
-    </div>
+    <MarkdownRenderer markdown={question.content} />
 
     <form class="flex flex-col gap-5 mt-2" novalidate onsubmit={handleSubmit}>
       <div class="flex flex-col gap-3">
@@ -175,10 +172,10 @@
               bind:group={selectedAnswer}
             />
 
-            <div class="text-sm leading-relaxed">
-              <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-              {@html answer.html}
-            </div>
+            <MarkdownRenderer
+              class="text-sm leading-relaxed"
+              markdown={answer.content}
+            />
           </label>
         {/each}
       </div>
@@ -224,105 +221,5 @@
 
   :global(body) {
     @apply inset-0 h-full w-full bg-blue-100 bg-[linear-gradient(to_right,#80808018_1px,transparent_1px),linear-gradient(to_bottom,#80808018_1px,transparent_1px)] bg-size-[48px_48px];
-  }
-
-  .question-content {
-    @apply mx-auto mt-6 w-full max-w-prose text-base leading-relaxed text-neutral-800;
-
-    :global(h1) {
-      @apply mt-8 mb-4 text-3xl font-black;
-    }
-
-    :global(h2) {
-      @apply mt-8 mb-3 text-2xl font-extrabold;
-    }
-
-    :global(h3) {
-      @apply mt-6 mb-2 text-xl font-bold;
-    }
-
-    :global(h1:first-child),
-    :global(h2:first-child),
-    :global(h3:first-child) {
-      @apply mt-0;
-    }
-
-    :global(strong) {
-      @apply font-bold;
-    }
-
-    :global(em) {
-      @apply italic;
-    }
-
-    :global(p) {
-      @apply my-4 text-justify;
-    }
-
-    :global(ul),
-    :global(ol) {
-      @apply my-4 ml-6 space-y-2;
-    }
-
-    :global(ul) {
-      @apply list-disc;
-    }
-
-    :global(ol) {
-      @apply list-decimal;
-    }
-
-    :global(li) {
-      @apply pl-1;
-    }
-
-    :global(blockquote) {
-      @apply my-5 rounded-r-lg border-l-4 border-blue-500 bg-blue-50 px-4 py-3 italic;
-    }
-
-    :global(table) {
-      @apply my-6 w-full border-collapse overflow-hidden rounded-lg border-2 border-black;
-    }
-
-    :global(th) {
-      @apply border-2 border-black bg-blue-200 px-4 py-2 text-center font-black;
-    }
-
-    :global(td) {
-      @apply border-2 border-black px-4 py-2 text-center;
-    }
-
-    :global(tbody tr:nth-child(even)) {
-      @apply bg-neutral-100;
-    }
-
-    :global(code) {
-      @apply rounded bg-neutral-200 px-1.5 py-0.5 font-mono text-sm;
-    }
-
-    :global(pre) {
-      @apply my-5 overflow-x-auto rounded-lg border-2 border-black bg-neutral-900 p-4 text-white;
-
-      code {
-        @apply bg-transparent p-0 text-inherit;
-      }
-    }
-
-    :global(a) {
-      @apply font-semibold text-blue-700 underline decoration-2 underline-offset-2 hover:text-blue-900;
-    }
-
-    :global(hr) {
-      @apply my-8 border-black;
-    }
-
-    :global(.katex-display) {
-      @apply my-6 overflow-x-visible;
-    }
-
-    :global(.katex) {
-      font-size: 1.05em;
-      vertical-align: baseline;
-    }
   }
 </style>
