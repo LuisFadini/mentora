@@ -9,6 +9,7 @@
   import Button from "$lib/components/Button.svelte";
   import ErrorText from "$lib/components/ErrorText.svelte";
   import Modal from "$lib/components/Modal.svelte";
+  import PageContainer from "$lib/components/PageContainer.svelte";
   import MarkdownRenderer from "$lib/components/questions/MarkdownRenderer.svelte";
 
   import type { PageProps } from "./$types";
@@ -111,9 +112,7 @@
 <main
   class="min-h-[calc(100vh-4rem)] pt-16 flex items-center justify-center p-4"
 >
-  <section
-    class="flex w-full max-w-3xl flex-col rounded-xl border-2 border-black bg-white p-4 shadow-[8px_8px_0_0_black] sm:p-6"
-  >
+  <PageContainer class="flex w-full max-w-3xl flex-col p-4 sm:p-6" as="section">
     <div class="flex items-start justify-between gap-4">
       <h1 class="text-3xl sm:text-4xl font-black leading-none">
         {question.title}
@@ -213,7 +212,7 @@
       </div>
     </form>
     <ErrorText class="text-center" message={apiError} />
-  </section>
+  </PageContainer>
 </main>
 
 <style lang="postcss">

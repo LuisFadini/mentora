@@ -4,6 +4,7 @@
   import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
   import Button from "$lib/components/Button.svelte";
+  import PageContainer from "$lib/components/PageContainer.svelte";
   import Separator from "$lib/components/Separator.svelte";
 
   import type { PageProps } from "./$types";
@@ -28,8 +29,9 @@
 </script>
 
 <main class="min-h-screen flex items-center justify-center p-4">
-  <section
-    class="flex w-full max-w-3xl flex-col gap-2 rounded-xl border-2 border-black bg-white p-4 shadow-[8px_8px_0_0_black] sm:p-6"
+  <PageContainer
+    class="flex w-full max-w-3xl flex-col gap-2 p-4 sm:p-6"
+    as="section"
   >
     <h1 class="text-3xl font-black leading-none sm:text-4xl">Questões</h1>
 
@@ -102,7 +104,7 @@
         </li>
       {/each}
     </ul>
-  </section>
+  </PageContainer>
 </main>
 
 <style lang="postcss">

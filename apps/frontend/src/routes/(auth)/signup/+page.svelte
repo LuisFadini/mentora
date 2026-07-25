@@ -8,6 +8,7 @@
   import AuthTextField from "$lib/components/auth/AuthTextField.svelte";
   import Button from "$lib/components/Button.svelte";
   import ErrorText from "$lib/components/ErrorText.svelte";
+  import PageContainer from "$lib/components/PageContainer.svelte";
   import * as validators from "$lib/utils/validators";
 
   let name = $state("");
@@ -106,9 +107,7 @@
 </script>
 
 <main class="flex h-screen w-screen items-center justify-center px-4">
-  <div
-    class="w-full max-w-md rounded-xl border-2 border-black bg-white p-6 shadow-[8px_8px_0_0_black]"
-  >
+  <PageContainer class="w-full max-w-md">
     <AuthHeader
       header="Crie sua conta"
       subtitle="Insira seus dados para criar sua conta."
@@ -179,7 +178,7 @@
         text="Já tem uma conta?"
       />
     </form>
-  </div>
+  </PageContainer>
 </main>
 
 <style lang="postcss">

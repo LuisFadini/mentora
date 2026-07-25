@@ -6,6 +6,7 @@
   import Avatar from "$lib/components/Avatar.svelte";
   import Button from "$lib/components/Button.svelte";
   import ErrorText from "$lib/components/ErrorText.svelte";
+  import PageContainer from "$lib/components/PageContainer.svelte";
 
   import type { PageProps } from "./$types";
 
@@ -39,9 +40,7 @@
 <main class="h-screen w-screen flex flex-col gap-2 justify-center items-center">
   {#if data.session && data.session.authenticated}
     {const user = data.session.user}
-    <div
-      class="w-full max-w-sm sm:max-w-lg lg:max-w-xl rounded-xl border-2 border-black bg-white p-6 shadow-[8px_8px_0_0_black]"
-    >
+    <PageContainer class="w-full max-w-sm sm:max-w-lg lg:max-w-xl">
       <div class="flex flex-row justify-between">
         <div class="flex flex-col">
           <h2 class="text-3xl font-bold">
@@ -79,7 +78,7 @@
       </Button>
 
       <ErrorText class="text-center" message={logoutError} />
-    </div>
+    </PageContainer>
   {:else}
     <h1 class="text-center text-5xl font-semibold text-gray-800">
       “Seu caminho até a aprovação <span
