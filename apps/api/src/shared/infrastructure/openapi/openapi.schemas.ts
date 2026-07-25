@@ -1,23 +1,11 @@
 import { OpenAPISchemaBuilder, schemaRef } from "@mentora/openapi-builder";
+import { defaultMetadataStorage } from "class-transformer/cjs/storage.js";
 import { validationMetadatasToSchemas } from "class-validator-jsonschema";
 
-import { fixArrayRef } from "./utils.ts";
-
-const classValidatorSchemas = validationMetadatasToSchemas();
-
-fixArrayRef(
-  classValidatorSchemas,
-  "CreateQuestionDTO",
-  "answers",
-  "CreateAnswerDTO",
-);
-
-fixArrayRef(
-  classValidatorSchemas,
-  "UpdateQuestionDTO",
-  "answers",
-  "UpdateAnswerDTO",
-);
+const classValidatorSchemas = validationMetadatasToSchemas({
+  classTransformerMetadataStorage: defaultMetadataStorage,
+  refPointerPrefix: "#/components/schemas/",
+});
 
 export const schemas = {
   User: new OpenAPISchemaBuilder()
@@ -79,21 +67,13 @@ export const schemas = {
 
   QuestionTip: new OpenAPISchemaBuilder()
     .setDescription("Question tip entity")
-    .addProperty("id", { type: "string", format: "uuid" })
-    .addProperty("questionId", { type: "string", format: "uuid" })
+    .addProperty("id", { type: "string", format: "uuid" }, true)
+    .addProperty("questionId", { type: "string", format: "uuid" }, true)
     .addProperty("order", { type: "integer", minimum: 0 }, true)
     .addProperty("content", { type: "string" }, true)
     .addProperty("createdAt", { type: "string", format: "date-time" }, true)
     .addProperty("updatedAt", { type: "string", format: "date-time" }, true)
     .build(),
-  // export type QuestionTip = {
-  //   id?: string;
-  //   questionId?: string;
-  //   order: number;
-  //   content: string;
-  //   createdAt: Date;
-  //   updatedAt: Date;
-  // };
 
   ...classValidatorSchemas,
 };

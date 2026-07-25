@@ -41,9 +41,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build shared packages
-        run: pnpm -r --filter "./packages/*" build
-
       - name: Validate lint
         run: pnpm lint
 

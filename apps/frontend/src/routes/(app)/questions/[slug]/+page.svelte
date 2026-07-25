@@ -1,20 +1,24 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import type { PageProps } from "./$types";
-  import { resolve } from "$app/paths";
-  import Modal from "$lib/components/Modal.svelte";
+
   import { goto } from "$app/navigation";
-  import { validateQuestion } from "$lib/api/questions/validate-question";
-  import ErrorText from "$lib/components/ErrorText.svelte";
-  import type { QuestionTip } from "$lib/api/questions/types";
+  import { resolve } from "$app/paths";
   import { getQuestionTip } from "$lib/api/questions/get-question-tip";
-  import { renderMarkdown } from "$lib/render-markdown";
+  import type { QuestionTip } from "$lib/api/questions/types";
+  import { validateQuestion } from "$lib/api/questions/validate-question";
+  import Button from "$lib/components/Button.svelte";
+  import ErrorText from "$lib/components/ErrorText.svelte";
+  import Modal from "$lib/components/Modal.svelte";
+  import PageContainer from "$lib/components/PageContainer.svelte";
+  import MarkdownRenderer from "$lib/components/questions/MarkdownRenderer.svelte";
+
+  import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
   const { question } = $derived(data);
 
   let tipsUsed = $state(0);
-  let tips = $state<QuestionTip[]>([]);
+  const tips = $state<QuestionTip[]>([]);
   let isLoadingTip = $state(false);
 
   let selectedAnswer = $state("");
@@ -34,7 +38,7 @@
     try {
       const tip = await getQuestionTip(question.id, tipsUsed + 1);
 
-      tips.push({ ...tip, content: await renderMarkdown(tip.content) });
+      tips.push(tip);
       tipsUsed++;
     } catch (err) {
       console.error("Failed to fetch tip:", err);
@@ -68,36 +72,38 @@
     }
   }
 
-  function onClose() {
-    goto(resolve("/(app)/questions"));
+  async function onClose() {
+    await goto(resolve("/(app)/questions"));
   }
 </script>
 
 <svelte:head>
   <link
-    rel="stylesheet"
+    crossorigin="anonymous"
     href="https://cdn.jsdelivr.net/npm/katex@0.17.0/dist/katex.min.css"
     integrity="sha384-vlBdW0r3AcZO/HboRPznQNowvexd3fY8qHOWkBi5q7KGgqJ+F48+DceybYmrVbmB"
-    crossorigin="anonymous"
+    rel="stylesheet"
   />
 </svelte:head>
 
-<Modal bind:showModal {onClose}>
+<Modal {onClose} bind:showModal>
   {#if isCorrect === true}
     <Icon
-      icon="ph:circle-wavy-check-fill"
       class="size-1/2 mx-auto text-green-500"
+      icon="ph:circle-wavy-check-fill"
     />
 
     <h1 class="text-2xl font-bold text-center">Parabéns, você acertou!</h1>
   {:else}
-    <Icon icon="ph:x-circle-fill" class="size-1/2 mx-auto text-red-500" />
+    <Icon class="size-1/2 mx-auto text-red-500" icon="ph:x-circle-fill" />
     <h1 class="text-2xl font-bold">A resposta correta seria:</h1>
     <div class="mt-2">
       {#if correctAnswerId}
-        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-        {@html question.answers.find((a) => a.id === correctAnswerId)?.html ??
-          ""}
+        <MarkdownRenderer
+          class=""
+          markdown={question.answers.find((a) => a.id === correctAnswerId)
+            ?.content ?? ""}
+        />
       {/if}
     </div>
   {/if}
@@ -106,20 +112,19 @@
 <main
   class="min-h-[calc(100vh-4rem)] pt-16 flex items-center justify-center p-4"
 >
-  <section
-    class="flex w-full max-w-3xl flex-col rounded-xl border-2 border-black bg-white p-4 shadow-[8px_8px_0_0_black] sm:p-6"
-  >
+  <PageContainer class="flex w-full max-w-3xl flex-col p-4 sm:p-6" as="section">
     <div class="flex items-start justify-between gap-4">
       <h1 class="text-3xl sm:text-4xl font-black leading-none">
         {question.title}
       </h1>
 
-      <a
-        href={resolve("/(app)/questions")}
-        class="flex size-9 items-center justify-center rounded-lg border-2 border-black bg-red-500 shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_black] active:translate-x-0 active:translate-y-0"
-      >
-        <Icon icon="ph:x-bold" />
-      </a>
+      <Button
+        class="size-9 p-0"
+        icon="ph:x-bold"
+        onclick={async () => await goto(resolve("/(app)/questions"))}
+        shadowVariant="sm"
+        variant="danger"
+      />
     </div>
 
     <div class="flex flex-wrap items-center gap-2">
@@ -139,20 +144,15 @@
         <h2 class="text-lg font-black">Dicas:</h2>
 
         {#each tips as tip (tip.id)}
-          <div
+          <MarkdownRenderer
             class="rounded-lg border-2 border-black bg-yellow-100 p-4 shadow-[4px_4px_0_0_black]"
-          >
-            <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-            {@html tip.content}
-          </div>
+            markdown={tip.content}
+          />
         {/each}
       </section>
     {/if}
 
-    <div class="question-content">
-      <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-      {@html question.html}
-    </div>
+    <MarkdownRenderer markdown={question.content} />
 
     <form class="flex flex-col gap-5 mt-2" novalidate onsubmit={handleSubmit}>
       <div class="flex flex-col gap-3">
@@ -162,53 +162,57 @@
             for="answer-{answer.id}"
           >
             <input
-              type="radio"
-              name="answer"
               id="answer-{answer.id}"
-              value={answer.id}
-              disabled={isLoading || isCorrect !== null}
-              bind:group={selectedAnswer}
+              name="answer"
               class="h-4 w-4 accent-black"
+              disabled={isLoading || isCorrect !== null}
+              type="radio"
+              value={answer.id}
+              bind:group={selectedAnswer}
             />
 
-            <div class="text-sm leading-relaxed">
-              <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-              {@html answer.html}
-            </div>
+            <MarkdownRenderer
+              class="text-sm leading-relaxed"
+              markdown={answer.content}
+            />
           </label>
         {/each}
       </div>
 
       <div class="flex items-center justify-between gap-3">
         {#if data.tipsAvailable > 0}
-          <button
-            type="button"
+          <Button
+            class="px-4 font-black"
             disabled={tipsUsed === data.tipsAvailable}
             onclick={useTip}
-            class="flex items-center cursor-pointer gap-2 rounded-lg border-2 border-black px-5 py-3 font-black text-white bg-blue-500 shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:bg-neutral-300 disabled:text-neutral-500 disabled:shadow-none disabled:cursor-not-allowed disabled:translate-x-0 disabled:translate-y-0"
           >
             {#if isLoadingTip}
               Carregando...
             {:else}
-              {data.tipsAvailable - tipsUsed} tips available
+              {data.tipsAvailable - tipsUsed}
+              {data.tipsAvailable - tipsUsed === 1
+                ? "dica disponível"
+                : "dicas disponíveis"}
             {/if}
-          </button>
+          </Button>
         {:else}
           <div></div>
         {/if}
 
-        <button
-          type="submit"
+        <Button
+          class="font-black px-4"
           disabled={!selectedAnswer || isLoading || isCorrect !== null}
-          class="flex items-center cursor-pointer gap-2 rounded-lg border-2 border-black px-5 py-3 font-black text-white bg-blue-500 shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:bg-neutral-300 disabled:text-neutral-500 disabled:shadow-none disabled:cursor-not-allowed disabled:translate-x-0 disabled:translate-y-0"
+          icon="ph:check-bold"
+          iconClass="text-lg"
+          iconPosition="right"
+          type="submit"
         >
           {isLoading ? "Enviando..." : "Enviar"}
-          <Icon icon="ph:check-bold" class="text-lg" />
-        </button>
+        </Button>
       </div>
     </form>
-    <ErrorText message={apiError} class="text-center" />
-  </section>
+    <ErrorText class="text-center" message={apiError} />
+  </PageContainer>
 </main>
 
 <style lang="postcss">
@@ -216,105 +220,5 @@
 
   :global(body) {
     @apply inset-0 h-full w-full bg-blue-100 bg-[linear-gradient(to_right,#80808018_1px,transparent_1px),linear-gradient(to_bottom,#80808018_1px,transparent_1px)] bg-size-[48px_48px];
-  }
-
-  .question-content {
-    @apply mx-auto mt-6 w-full max-w-prose text-base leading-relaxed text-neutral-800;
-
-    :global(h1) {
-      @apply mt-8 mb-4 text-3xl font-black;
-    }
-
-    :global(h2) {
-      @apply mt-8 mb-3 text-2xl font-extrabold;
-    }
-
-    :global(h3) {
-      @apply mt-6 mb-2 text-xl font-bold;
-    }
-
-    :global(h1:first-child),
-    :global(h2:first-child),
-    :global(h3:first-child) {
-      @apply mt-0;
-    }
-
-    :global(strong) {
-      @apply font-bold;
-    }
-
-    :global(em) {
-      @apply italic;
-    }
-
-    :global(p) {
-      @apply my-4 text-justify;
-    }
-
-    :global(ul),
-    :global(ol) {
-      @apply my-4 ml-6 space-y-2;
-    }
-
-    :global(ul) {
-      @apply list-disc;
-    }
-
-    :global(ol) {
-      @apply list-decimal;
-    }
-
-    :global(li) {
-      @apply pl-1;
-    }
-
-    :global(blockquote) {
-      @apply my-5 rounded-r-lg border-l-4 border-blue-500 bg-blue-50 px-4 py-3 italic;
-    }
-
-    :global(table) {
-      @apply my-6 w-full border-collapse overflow-hidden rounded-lg border-2 border-black;
-    }
-
-    :global(th) {
-      @apply border-2 border-black bg-blue-200 px-4 py-2 text-center font-black;
-    }
-
-    :global(td) {
-      @apply border-2 border-black px-4 py-2 text-center;
-    }
-
-    :global(tbody tr:nth-child(even)) {
-      @apply bg-neutral-100;
-    }
-
-    :global(code) {
-      @apply rounded bg-neutral-200 px-1.5 py-0.5 font-mono text-sm;
-    }
-
-    :global(pre) {
-      @apply my-5 overflow-x-auto rounded-lg border-2 border-black bg-neutral-900 p-4 text-white;
-
-      code {
-        @apply bg-transparent p-0 text-inherit;
-      }
-    }
-
-    :global(a) {
-      @apply font-semibold text-blue-700 underline decoration-2 underline-offset-2 hover:text-blue-900;
-    }
-
-    :global(hr) {
-      @apply my-8 border-black;
-    }
-
-    :global(.katex-display) {
-      @apply my-6 overflow-x-visible;
-    }
-
-    :global(.katex) {
-      font-size: 1.05em;
-      vertical-align: baseline;
-    }
   }
 </style>

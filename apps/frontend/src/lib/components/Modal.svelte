@@ -2,6 +2,8 @@
   import type { Snippet } from "svelte";
   import { twMerge } from "tailwind-merge";
 
+  import Button from "./Button.svelte";
+
   type Props = {
     showModal: boolean;
     class?: string;
@@ -65,23 +67,19 @@
 
 <dialog
   bind:this={dialog}
-  onclose={handleClose}
-  oncancel={handleClose}
-  onclick={handleBackdropClick}
   class={twMerge(
     `fixed left-1/2 top-1/2 w-[92vw] sm:w-full sm:max-w-lg max-h-[85vh] overflow-y-auto -translate-x-1/2 -translate-y-1/2 rounded-xl border-2 border-black bg-white p-4 sm:p-6 shadow-[6px_6px_0_0_black] backdrop:bg-black/30 backdrop:backdrop-blur-[2px]`,
     className,
   )}
+  oncancel={handleClose}
+  onclick={handleBackdropClick}
+  onclose={handleClose}
 >
   {@render children?.()}
 
-  <form method="dialog" class="mt-6 flex justify-center">
-    <button
-      type="button"
-      onclick={handleClose}
-      class="cursor-pointer rounded-lg border-2 border-black bg-red-500 px-4 py-2 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_black]"
+  <form class="mt-6 flex justify-center" method="dialog">
+    <Button class="font-bold px-4 py-2" onclick={handleClose} variant="danger"
+      >Fechar</Button
     >
-      Fechar
-    </button>
   </form>
 </dialog>

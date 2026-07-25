@@ -2,13 +2,13 @@ import { removeUndefined } from "@mentora/utils";
 
 import type { PersistedQuestion } from "../../shared/infrastructure/db/repositories/question.repository.ts";
 import type { IQuestionTipsRepository } from "../../shared/interfaces/repository.interface.ts";
-import { type IRepository } from "../../shared/interfaces/repository.interface.ts";
+import type { IRepository } from "../../shared/interfaces/repository.interface.ts";
 import type { CreateQuestionDTO } from "./dto/create-question.dto.ts";
 import type { CreateQuestionTipDTO } from "./dto/create-question-tip.dto.ts";
 import type { UpdateQuestionDTO } from "./dto/update-question.dto.ts";
 import type { UpdateQuestionTipDTO } from "./dto/update-question-tip.dto.ts";
 import type { ValidateQuestionDTO } from "./dto/validate-question.dto.ts";
-import { type Answer, type Question } from "./question.types.ts";
+import type { Answer, Question } from "./question.types.ts";
 
 export class QuestionService {
   constructor(
@@ -88,7 +88,7 @@ export class QuestionService {
         correct: incoming.correct,
         createdAt: now,
         updatedAt: now,
-      } as Answer);
+      });
     }
 
     return this.questionRepository.update({

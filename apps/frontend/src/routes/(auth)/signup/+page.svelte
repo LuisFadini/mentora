@@ -1,14 +1,15 @@
-<script>
-  import * as validators from "$lib/utils/validators";
-  import AuthFooterLink from "$lib/components/auth/AuthFooterLink.svelte";
-  import AuthHeader from "$lib/components/auth/AuthHeader.svelte";
-  import AuthSubmitButton from "$lib/components/auth/AuthSubmitButton.svelte";
-  import AuthTextField from "$lib/components/auth/AuthTextField.svelte";
-  import { createUser } from "$lib/api/users/create-user";
-  import { ApiError } from "$lib/api/api-error";
-  import ErrorText from "$lib/components/ErrorText.svelte";
+<script lang="ts">
   import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
+  import { ApiError } from "$lib/api/api-error";
+  import { createUser } from "$lib/api/users/create-user";
+  import AuthFooterLink from "$lib/components/auth/AuthFooterLink.svelte";
+  import AuthHeader from "$lib/components/auth/AuthHeader.svelte";
+  import AuthTextField from "$lib/components/auth/AuthTextField.svelte";
+  import Button from "$lib/components/Button.svelte";
+  import ErrorText from "$lib/components/ErrorText.svelte";
+  import PageContainer from "$lib/components/PageContainer.svelte";
+  import * as validators from "$lib/utils/validators";
 
   let name = $state("");
   let email = $state("");
@@ -83,7 +84,7 @@
         password,
       });
 
-      goto(resolve("/login?created=1"));
+      await goto(resolve("/login?created=1"));
     } catch (error) {
       if (error instanceof ApiError) {
         switch (error.status) {
@@ -106,9 +107,7 @@
 </script>
 
 <main class="flex h-screen w-screen items-center justify-center px-4">
-  <div
-    class="w-full max-w-md rounded-xl border-2 border-black bg-white p-6 shadow-[8px_8px_0_0_black]"
-  >
+  <PageContainer class="w-full max-w-md">
     <AuthHeader
       header="Crie sua conta"
       subtitle="Insira seus dados para criar sua conta."
@@ -117,65 +116,69 @@
     <form class="flex flex-col gap-5" novalidate onsubmit={handleSubmit}>
       <AuthTextField
         id="name"
-        label="Nome"
-        type="text"
         icon="ph:user-bold"
+        label="Nome"
+        onValidate={validateName}
         placeholder="Seu nome"
+        type="text"
         bind:value={name}
         bind:error={nameError}
         bind:focused={nameFocused}
-        onValidate={validateName}
       />
 
       <AuthTextField
         id="email"
-        label="E-mail"
-        type="email"
         icon="ph:envelope-simple-bold"
+        label="E-mail"
+        onValidate={validateEmail}
         placeholder="voce@exemplo.com"
+        type="email"
         bind:value={email}
         bind:error={emailError}
         bind:focused={emailFocused}
-        onValidate={validateEmail}
       />
 
       <AuthTextField
         id="password"
-        label="Senha"
-        type="password"
         icon="ph:lock-bold"
+        label="Senha"
+        onValidate={validatePassword}
         placeholder="••••••••"
+        type="password"
         bind:value={password}
         bind:error={passwordError}
         bind:focused={passwordFocused}
-        onValidate={validatePassword}
       />
 
       <AuthTextField
         id="confirmPassword"
-        label="Confirme sua senha"
-        type="password"
         icon="ph:lock-bold"
+        label="Confirme sua senha"
+        onValidate={validateConfirmPassword}
         placeholder="••••••••"
+        type="password"
         bind:value={confirmPassword}
         bind:error={confirmPasswordError}
         bind:focused={confirmPasswordFocused}
-        onValidate={validateConfirmPassword}
       />
 
-      <AuthSubmitButton disabled={!isValid || loading} type="submit">
+      <Button
+        class="mt-2 font-black"
+        disabled={!isValid || loading}
+        type="submit"
+      >
         {loading ? "Criando conta..." : "Criar conta"}
-      </AuthSubmitButton>
+      </Button>
 
-      <ErrorText message={apiError} class="text-center" />
+      <ErrorText class="text-center" message={apiError} />
 
       <AuthFooterLink
-        text="Já tem uma conta?"
-        href="/login"
         action="Fazer login"
+        href="/login"
+        text="Já tem uma conta?"
       />
     </form>
-  </div>
+  </PageContainer>
 </main>
 
 <style lang="postcss">

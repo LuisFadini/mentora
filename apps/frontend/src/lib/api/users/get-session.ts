@@ -1,4 +1,5 @@
 import type { Permission } from "@mentora/permissions";
+
 import { ApiError } from "../api-error";
 import { apiFetch } from "../client";
 

@@ -5,8 +5,8 @@ import { requireSelfParam } from "../../shared/middlewares/require-self-param.mi
 import { validateBodyDTO } from "../../shared/middlewares/validate-body-dto.middleware.ts";
 import { CreateUserDTO } from "./dto/create-user.dto.ts";
 import { UpdateUserDTO } from "./dto/update-user.dto.ts";
-import { type GetUserParams } from "./params/get-user.params.ts";
-import { type UserController } from "./users.controller.ts";
+import type { GetUserParams } from "./params/get-user.params.ts";
+import type { UserController } from "./users.controller.ts";
 
 export function createUsersRoutes(
   controller: UserController,

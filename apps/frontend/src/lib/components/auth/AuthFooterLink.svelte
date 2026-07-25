@@ -1,11 +1,9 @@
 <script lang="ts">
-  import { resolve } from "$app/paths";
-  import type { PathnameWithSearchOrHash } from "$app/types";
-  import type { RouteIdWithSearchOrHash } from "$app/types";
+  import type { ResolvedPathname } from "$app/types";
 
   type Props = {
     text: string;
-    href: RouteIdWithSearchOrHash | PathnameWithSearchOrHash;
+    href: ResolvedPathname;
     action: string;
   };
 
@@ -15,7 +13,7 @@
 <div class="mt-4 text-center text-sm text-neutral-600">
   {text}
 
-  <a href={resolve(href)} class="ml-1 font-black text-blue-600 hover:underline">
+  <a class="ml-1 font-black text-blue-600 hover:underline" {href}>
     {action}
   </a>
 </div>

@@ -1,7 +1,16 @@
+minimumReleaseAge: 7200
+minimumReleaseAgeExclude:
+  - "@mentora/*"
+  - "@luisfadini/*"
+  - "@types/*"
+
+
 packages:
   - "apps/*"
   - "packages/*"
+
 allowBuilds:
   '@tailwindcss/oxide': true
   argon2: true
   esbuild: true
+  "@luisfadini/class-validator-jsonschema": true

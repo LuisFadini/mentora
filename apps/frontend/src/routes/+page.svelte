@@ -1,12 +1,14 @@
 <script lang="ts">
-  import Icon from "@iconify/svelte";
-  import type { PageProps } from "./$types";
-  import { closeSession } from "$lib/api/users/close-session";
   import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
   import { ApiError } from "$lib/api/api-error";
+  import { closeSession } from "$lib/api/users/close-session";
   import Avatar from "$lib/components/Avatar.svelte";
+  import Button from "$lib/components/Button.svelte";
   import ErrorText from "$lib/components/ErrorText.svelte";
+  import PageContainer from "$lib/components/PageContainer.svelte";
+
+  import type { PageProps } from "./$types";
 
   const { data }: PageProps = $props();
   const hours = new Date().getHours();
@@ -15,7 +17,7 @@
 
   async function logout() {
     try {
-      let success = await closeSession(fetch);
+      const success = await closeSession(fetch);
 
       if (success)
         await goto(resolve("/"), {
@@ -38,9 +40,7 @@
 <main class="h-screen w-screen flex flex-col gap-2 justify-center items-center">
   {#if data.session && data.session.authenticated}
     {const user = data.session.user}
-    <div
-      class="w-full max-w-sm sm:max-w-lg lg:max-w-xl rounded-xl border-2 border-black bg-white p-6 shadow-[8px_8px_0_0_black]"
-    >
+    <PageContainer class="w-full max-w-sm sm:max-w-lg lg:max-w-xl">
       <div class="flex flex-row justify-between">
         <div class="flex flex-col">
           <h2 class="text-3xl font-bold">
@@ -63,19 +63,22 @@
           </h1>
         </div>
 
-        <Avatar name={user.name} avatarUrl={user.avatarUrl} class="size-36" />
+        <Avatar name={user.name} class="size-36" avatarUrl={user.avatarUrl} />
       </div>
 
-      <button
+      <Button
+        class="font-bold mt-2"
+        icon="ph:sign-out-bold"
+        iconPosition="right"
         onclick={logout}
-        class="mt-2 flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-black bg-red-500 px-6 py-3 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+        shadowVariant="base"
+        variant="danger"
       >
         Sair
-        <Icon icon="ph:sign-out-bold" />
-      </button>
+      </Button>
 
-      <ErrorText message={logoutError} class="text-center" />
-    </div>
+      <ErrorText class="text-center" message={logoutError} />
+    </PageContainer>
   {:else}
     <h1 class="text-center text-5xl font-semibold text-gray-800">
       “Seu caminho até a aprovação <span

@@ -1,9 +1,18 @@
 <script lang="ts">
-  import { resolve } from "$app/paths";
   import Icon from "@iconify/svelte";
 
-  const { data } = $props();
+  import { goto } from "$app/navigation";
+  import { resolve } from "$app/paths";
+  import Button from "$lib/components/Button.svelte";
+  import PageContainer from "$lib/components/PageContainer.svelte";
+  import Separator from "$lib/components/Separator.svelte";
+
+  import type { PageProps } from "./$types";
+
+  const { data }: PageProps = $props();
   const { questions } = $derived(data);
+
+  let select: HTMLSelectElement;
 
   const subjects = $derived([
     "Todas",
@@ -20,24 +29,26 @@
 </script>
 
 <main class="min-h-screen flex items-center justify-center p-4">
-  <section
-    class="flex w-full max-w-3xl flex-col gap-2 rounded-xl border-2 border-black bg-white p-4 shadow-[8px_8px_0_0_black] sm:p-6"
+  <PageContainer
+    class="flex w-full max-w-3xl flex-col gap-2 p-4 sm:p-6"
+    as="section"
   >
     <h1 class="text-3xl font-black leading-none sm:text-4xl">Questões</h1>
 
     <div class="flex flex-col gap-1.5">
-      <label for="subject" class="font-semibold">Matéria</label>
+      <label class="font-semibold" for="subject">Matéria</label>
 
       <div
         class="flex items-center gap-2 rounded-lg border-2 border-black bg-white px-3 transition-all focus-within:-translate-x-1 focus-within:-translate-y-1 focus-within:shadow-[6px_6px_0_0_black]"
       >
-        <Icon icon="ph:book-open-text" class="text-xl" />
+        <Icon class="text-xl" icon="ph:book-open-text" />
 
         <select
+          bind:this={select}
           id="subject"
-          bind:value={selectedSubject}
-          onchange={(e) => e.currentTarget.blur()}
           class="w-full cursor-pointer appearance-none bg-transparent py-3 outline-none"
+          onchange={() => select.blur()}
+          bind:value={selectedSubject}
         >
           {#each subjects as subject (subject)}
             <option value={subject}>
@@ -46,13 +57,11 @@
           {/each}
         </select>
 
-        <Icon icon="ph:caret-down" class="pointer-events-none text-xl" />
+        <Icon class="pointer-events-none text-xl" icon="ph:caret-down" />
       </div>
     </div>
 
-    <hr
-      class="h-2 rounded-xl border-2 border-black bg-blue-400 shadow-[2px_2px_0_0_black]"
-    />
+    <Separator orientation="horizontal" />
 
     <ul class="flex flex-col gap-2">
       {#each filteredQuestions as question (question.id)}
@@ -83,16 +92,19 @@
             </div>
           </div>
 
-          <a
-            href={resolve("/(app)/questions/[slug]", { slug: question.id })}
-            class="w-full shrink-0 rounded-lg border-2 border-black bg-blue-500 px-5 py-2 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:w-auto"
+          <Button
+            class="w-full shrink-0 py-2 font-bold sm:w-auto"
+            onclick={async () =>
+              await goto(
+                resolve("/(app)/questions/[slug]", { slug: question.id }),
+              )}
           >
             Fazer
-          </a>
+          </Button>
         </li>
       {/each}
     </ul>
-  </section>
+  </PageContainer>
 </main>
 
 <style lang="postcss">
