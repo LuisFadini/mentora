@@ -8,6 +8,7 @@
 
   import Avatar from "./Avatar.svelte";
   import Button from "./Button.svelte";
+  import Separator from "./Separator.svelte";
 
   type Props = {
     session?: Session;
@@ -47,6 +48,11 @@
 
     return links;
   });
+
+  async function redirect(url: ResolvedPathname) {
+    closeMenu();
+    await goto(url);
+  }
 </script>
 
 <header class="fixed inset-x-0 top-0 z-50 border-b-2 border-black bg-white">
@@ -97,7 +103,7 @@
           icon="ph:sign-in-bold"
           iconClass="text-lg"
           iconPosition="right"
-          onclick={async () => await goto(resolve("/login"))}
+          onclick={async () => await redirect("/login")}
           variant="primary"
         >
           Login
@@ -132,6 +138,8 @@
           </li>
         {/each}
 
+        <Separator class="flex sm:hidden bg-blue-200 shadow-none" />
+
         {#if session && session.authenticated}
           {const user = session.user}
           <div
@@ -149,10 +157,10 @@
           </div>
         {:else}
           <Button
-            class="mt-2 flex sm:hidden font-bold"
+            class="flex sm:hidden font-bold"
             icon="ph:sign-in-bold"
             iconPosition="right"
-            onclick={async () => await goto(resolve("/login"))}
+            onclick={async () => await redirect("/login")}
             variant="primary"
           >
             Login

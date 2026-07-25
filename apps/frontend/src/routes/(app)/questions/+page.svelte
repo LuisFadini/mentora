@@ -4,11 +4,14 @@
   import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
   import Button from "$lib/components/Button.svelte";
+  import Separator from "$lib/components/Separator.svelte";
 
   import type { PageProps } from "./$types";
 
   const { data }: PageProps = $props();
   const { questions } = $derived(data);
+
+  let select: HTMLSelectElement;
 
   const subjects = $derived([
     "Todas",
@@ -39,9 +42,10 @@
         <Icon class="text-xl" icon="ph:book-open-text" />
 
         <select
+          bind:this={select}
           id="subject"
           class="w-full cursor-pointer appearance-none bg-transparent py-3 outline-none"
-          onchange={(e) => e.currentTarget.blur()}
+          onchange={() => select.blur()}
           bind:value={selectedSubject}
         >
           {#each subjects as subject (subject)}
@@ -55,9 +59,7 @@
       </div>
     </div>
 
-    <hr
-      class="h-2 rounded-xl border-2 border-black bg-blue-400 shadow-[2px_2px_0_0_black]"
-    />
+    <Separator orientation="horizontal" />
 
     <ul class="flex flex-col gap-2">
       {#each filteredQuestions as question (question.id)}
