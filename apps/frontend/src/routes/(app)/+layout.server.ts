@@ -8,4 +8,8 @@ export const load: LayoutServerLoad = async ({ parent }) => {
   if (!session || !session.authenticated) {
     redirect(303, "/login");
   }
+
+  return {
+    session,
+  };
 };

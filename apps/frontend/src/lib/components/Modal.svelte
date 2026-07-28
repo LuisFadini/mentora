@@ -2,6 +2,8 @@
   import type { Snippet } from "svelte";
   import { twMerge } from "tailwind-merge";
 
+  import type { ButtonVariant } from "$lib/types";
+
   import Button from "./Button.svelte";
 
   type Props = {
@@ -9,6 +11,8 @@
     class?: string;
     children?: Snippet;
     onClose?: () => void;
+    closeButtonVariant?: ButtonVariant;
+    closeButtonText?: string;
   };
 
   let {
@@ -16,6 +20,8 @@
     children,
     class: className = "",
     onClose,
+    closeButtonVariant = "danger",
+    closeButtonText = "Fechar",
   }: Props = $props();
 
   let dialog: HTMLDialogElement;
@@ -78,8 +84,12 @@
   {@render children?.()}
 
   <form class="mt-6 flex justify-center" method="dialog">
-    <Button class="font-bold px-4 py-2" onclick={handleClose} variant="danger"
-      >Fechar</Button
+    <Button
+      class="font-bold px-4 py-2"
+      onclick={handleClose}
+      variant={closeButtonVariant}
     >
+      {closeButtonText}
+    </Button>
   </form>
 </dialog>

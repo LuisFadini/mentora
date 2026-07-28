@@ -4,8 +4,7 @@
   import type { HTMLButtonAttributes } from "svelte/elements";
   import { twMerge } from "tailwind-merge";
 
-  type ButtonVariant = "primary" | "secondary" | "danger";
-  type ShadowVariant = "sm" | "base" | "lg" | "xl";
+  import type { ButtonVariant, ShadowVariant } from "$lib/types";
 
   type Props = HTMLButtonAttributes & {
     children?: Snippet;
@@ -34,7 +33,8 @@
   const variantClasses: Record<ButtonVariant, string> = {
     primary:
       "bg-blue-500 text-white disabled:bg-blue-200 disabled:text-neutral-500",
-    secondary: "bg-yellow-300",
+    secondary:
+      "bg-yellow-300 text-black disabled:bg-yellow-100 disabled:text-neutral-600",
     danger:
       "bg-red-500 text-white hover:bg-red-600 disabled:bg-red-400 disabled:text-neutral-600",
   };

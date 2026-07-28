@@ -3,6 +3,7 @@ export const messages = {
   passwordMin: "A senha deve ter pelo menos 8 caracteres.",
   emailInvalid: "Digite um e-mail válido.",
   passwordMismatch: "As senhas não coincidem.",
+  invalidUrl: "URL inválida",
 };
 
 export function minLength(
@@ -37,4 +38,22 @@ export function matches(
   if (!trimmed) return "";
 
   return trimmed === expected ? "" : message;
+}
+
+export function url(value: string | undefined) {
+  if (!value) {
+    return "";
+  }
+
+  try {
+    const url = new URL(value);
+
+    if (!["http:", "https:"].includes(url.protocol)) {
+      return messages.invalidUrl;
+    }
+
+    return "";
+  } catch {
+    return messages.invalidUrl;
+  }
 }
