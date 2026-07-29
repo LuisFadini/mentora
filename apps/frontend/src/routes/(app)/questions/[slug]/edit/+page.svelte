@@ -1,49 +1,69 @@
 <script lang="ts">
-  //let { params }: PageProps = $props();
-  import type { PageProps } from "./$types";
-  import QuestionTextField from "$lib/components/question/+QuestionTextField.svelte";
+  import ErrorText from "$lib/components/ErrorText.svelte";
+  import QuestionTextField from "$lib/components/question/QuestionTextField.svelte";
   import AnswerField from "$lib/components/question/AnswerField.svelte";
+  import BtnField from "$lib/components/question/QuestionButtonField.svelte";
+  import MarkDown from "$lib/components/question/MarkDownEditor.svelte";
+  import type { PageProps } from "./$types";
   import { updateQuestion } from "$lib/api/questions/update-question";
   import { ApiError } from "$lib/api/api-error";
+  import { goto } from "$app/navigation";
+  import { resolve } from "$app/paths";
   let { params }: PageProps = $props();
 
   let error = $state("");
 
-  let isAnswers: boolean = $state(false);
+  let gambiarraCounter = $state(0);
+
   let title = $state("");
   let subject = $state("");
   let content = $state("");
   let source = $state("");
+
   let answer_1 = $state("");
   let answer_2 = $state("");
-  let corret_1: boolean = $state(false);
-  let corret_2: boolean = $state(false);
+  let answer_3 = $state("");
+  let answer_4 = $state("");
+
+  let corret_1 = $state(false);
+  let corret_2 = $state(false);
+  let corret_3 = $state(false);
+  let corret_4 = $state(false);
 
   let isBlank = $derived(
     title.trim() != "" &&
       subject.trim() != "" &&
-      content.trim() != "" &&
+      source.trim() != "" &&
       answer_1.trim() != "" &&
-      answer_2.trim() != "",
+      answer_2.trim() != "" &&
+      corret_1 == false &&
+      corret_2 == false &&
+      corret_3 == false &&
+      corret_4 == false,
   );
+
   async function submitChanges() {
-    if (!isBlank) return;
+    if (!isBlank && content == "") return;
     try {
       await updateQuestion(params.slug, {
-        newTitle: title.trim(),
-        newContent: content.trim(),
-        newSource: source.trim(),
-        newSubjects: [subject.trim()],
-        newAnswers: [
-          { content: answer_1, correct: corret_1 },
-          { content: answer_2, correct: corret_2 },
+        id: params.slug,
+        title: title.trim(),
+        content: content.trim(),
+        source: source.trim(),
+        subjects: [subject.trim()],
+        answers: [
+          { content: answer_1, correct: corret_1, delete: false },
+          { content: answer_2, correct: corret_2, delete: false },
+          { content: answer_3, correct: corret_3, delete: false },
+          { content: answer_4, correct: corret_4, delete: false },
         ],
       });
+      goto(resolve("/questions"));
     } catch (err) {
       if (err instanceof ApiError) {
         switch (err.status) {
           case 400:
-            error = "";
+            error = "Bad Request";
             break;
           default:
             error = "Error ao atualizar questao";
@@ -60,13 +80,12 @@
   <div
     class="flex w-full max-w-4xl flex-col gap-2 rounded-xl border-2 border-black bg-white p-4 shadow-[8px_8px_0_0_black] sm:p-6"
   >
-    {error}
     <div class="flex flex-col justify-center items-center">
-      <h1 class="relative inline-block text-4xl font-black leading-none my-2">
+      <h1 class="relative inline-block text-4xl font-black leading-none my-4">
         <span class="bg-blue-100"> Editor Questao </span>
       </h1>
       <form onsubmit={submitChanges} class="flex flex-col gap-1.5">
-        {#if !isAnswers}
+        {#if gambiarraCounter === 0}
           <QuestionTextField
             title="Titulo Novo"
             bind:bindValue={title}
@@ -77,18 +96,14 @@
             bind:bindValue={subject}
             placeValue="Insira outra Materia"
           />
-
           <QuestionTextField
             title="Fonte"
             bind:bindValue={source}
             placeValue="Insira outra Fonte"
           />
-          <QuestionTextField
-            title="Enunciado"
-            bind:bindValue={content}
-            placeValue="Insira Outro Enunciado"
-          />
-        {:else if isAnswers}
+        {:else if gambiarraCounter === 1}
+          <MarkDown title="Conteudo" bind:composer_s={content} />
+        {:else if gambiarraCounter === 2}
           <AnswerField
             title="Resposta 1"
             bind:bindAnswer={answer_1}
@@ -101,31 +116,24 @@
             bind:bindisCorrent={corret_2}
             placeValue="Insira Nova Resposta"
           />
+
+          <AnswerField
+            title="Resposta 3"
+            bind:bindAnswer={answer_3}
+            bind:bindisCorrent={corret_3}
+            placeValue="Insira Nova Resposta"
+          />
+
+          <AnswerField
+            title="Resposta 4"
+            bind:bindAnswer={answer_4}
+            bind:bindisCorrent={corret_4}
+            placeValue="Insira Nova Resposta"
+          />
         {/if}
-        <div class="flex justify-around gap-3 my-3">
-          <div>
-            <button
-              onclick={() => (isAnswers = false)}
-              class="shrink-0 rounded-lg border-2 border-black bg-blue-500 px-5 py-2 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:w-auto enabled:bg-blue-500 enabled:shadow-[4px_4px_0_0_black] enabled:hover:translate-x-0.5 enabled:hover:translate-y-0.5 enabled:hover:shadow-none disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500"
-              disabled={!isAnswers}
-            >
-              Return
-            </button>
-            <button
-              type="submit"
-              class="shrink-0 rounded-lg border-2 border-black bg-blue-500 px-5 py-2 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:w-auto"
-              >Update</button
-            >
-            <button
-              onclick={() => (isAnswers = true)}
-              class="mx-1 shrink-0 rounded-lg border-2 border-black bg-blue-500 px-5 py-2 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:w-auto enabled:hover:translate-x-0.5 enabled:hover:translate-y-0.5 enabled:hover:shadow-none disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500"
-              disabled={isAnswers}
-            >
-              Next
-            </button>
-          </div>
-        </div>
+        <BtnField option="Update" bind:counter={gambiarraCounter} />
       </form>
+      <ErrorText message={error} class="text-center" />
     </div>
   </div>
 </main>

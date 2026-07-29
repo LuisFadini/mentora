@@ -1,9 +1,10 @@
 <script lang="ts">
   let {
     title,
+    placeValue,
+
     bindAnswer = $bindable(),
     bindisCorrent = $bindable(),
-    placeValue,
   } = $props();
 </script>
 

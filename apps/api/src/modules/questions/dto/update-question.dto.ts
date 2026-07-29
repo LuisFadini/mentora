@@ -1,6 +1,5 @@
 import { Type } from "class-transformer";
 import { IsArray, IsOptional, IsString, ValidateNested } from "class-validator";
-
 import { UpdateAnswerDTO } from "./update-answer.dto.ts";
 
 export class UpdateQuestionDTO {

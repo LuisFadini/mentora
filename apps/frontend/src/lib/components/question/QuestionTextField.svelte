@@ -3,7 +3,11 @@
 </script>
 
 <div class="flex flex-col gap-1.5">
-  <label for={title}>{title}</label>
+  <label
+    for={title}
+    class="relative inline-block text-2xl font-black leading-none my-1"
+    >{title}</label
+  >
 
   <div
     class="flex items-center gap-2 rounded-lg border-2 border-black bg-white px-3 transition-all focus-within:-translate-x-1 focus-within:-translate-y-1 focus-within:shadow-[6px_6px_0_0_black]"
