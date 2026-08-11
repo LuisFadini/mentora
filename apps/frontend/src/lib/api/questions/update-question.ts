@@ -21,9 +21,9 @@ export async function updateQuestion(id: string, question: UpdateQuestionDTO) {
     method: "PUT",
     body: JSON.stringify(question),
   });
-  let ers: UpdateQuestionDTO = {
-    ...question
-  }
+  const ers: UpdateQuestionDTO = {
+    ...question,
+  };
   console.log(ers);
   if (!response.ok) {
     throw new ApiError(response.status, await response.text());

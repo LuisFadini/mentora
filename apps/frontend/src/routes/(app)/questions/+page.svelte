@@ -105,9 +105,8 @@
       {/each}
     </ul>
     <a
-      href={resolve("/(app)/questions/create")}
       class="w-full shrink-0 rounded-lg border-2 border-black bg-blue-500 px-5 py-2 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:w-auto"
-      >Criar Nova</a
+      href={resolve("/(app)/questions/create")}>Criar Nova</a
     >
   </PageContainer>
 </main>

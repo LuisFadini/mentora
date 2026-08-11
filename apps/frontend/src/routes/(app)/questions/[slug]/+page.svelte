@@ -180,11 +180,25 @@
       </div>
 
       <div class="flex items-center justify-between gap-3">
-        <a
-          href={resolve("/questions/[slug]/edit", { slug: question.id })}
-          class="flex items-center cursor-pointer gap-2 rounded-lg border-2 border-black px-5 py-3 font-black text-white bg-blue-500 shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-          >Edit</a
-        >
+        {#if data.tipsAvailable > 0}
+          <Button
+            class="px-4 font-black"
+            disabled={tipsUsed === data.tipsAvailable}
+            onclick={useTip}
+          >
+            {#if isLoadingTip}
+              Carregando...
+            {:else}
+              {data.tipsAvailable - tipsUsed}
+              {data.tipsAvailable - tipsUsed === 1
+                ? "dica disponível"
+                : "dicas disponíveis"}
+            {/if}
+          </Button>
+        {:else}
+          <div></div>
+        {/if}
+
         <Button
           disabled={!selectedAnswer || isLoading || isCorrect !== null}
           icon="ph:check-bold"

@@ -16,9 +16,9 @@
   >
     <input type="checkbox" bind:checked={bindisCorrent} />
     <input
-      bind:value={bindAnswer}
-      placeholder={placeValue}
       class="w-full py-3 outline-none placeholder:text-neutral-400"
+      placeholder={placeValue}
+      bind:value={bindAnswer}
     />
   </div>
 </div>

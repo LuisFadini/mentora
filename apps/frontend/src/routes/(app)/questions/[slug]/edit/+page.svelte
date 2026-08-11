@@ -1,14 +1,15 @@
 <script lang="ts">
-  import ErrorText from "$lib/components/ErrorText.svelte";
-  import QuestionTextField from "$lib/components/question/QuestionTextField.svelte";
-  import AnswerField from "$lib/components/question/AnswerField.svelte";
-  import BtnField from "$lib/components/question/QuestionButtonField.svelte";
-  import MarkDown from "$lib/components/question/MarkDownEditor.svelte";
-  import type { PageProps } from "./$types";
-  import { updateQuestion } from "$lib/api/questions/update-question";
-  import { ApiError } from "$lib/api/api-error";
   import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
+  import { ApiError } from "$lib/api/api-error";
+  import { updateQuestion } from "$lib/api/questions/update-question";
+  import ErrorText from "$lib/components/ErrorText.svelte";
+  import AnswerField from "$lib/components/question/AnswerField.svelte";
+  import MarkDown from "$lib/components/question/MarkDownEditor.svelte";
+  import BtnField from "$lib/components/question/QuestionButtonField.svelte";
+  import QuestionTextField from "$lib/components/question/QuestionTextField.svelte";
+
+  import type { PageProps } from "./$types";
   let { params }: PageProps = $props();
 
   let error = $state("");
@@ -58,7 +59,7 @@
           { content: answer_4, correct: corret_4, delete: false },
         ],
       });
-      goto(resolve("/questions"));
+      await goto(resolve("/questions"));
     } catch (err) {
       if (err instanceof ApiError) {
         switch (err.status) {
@@ -84,56 +85,56 @@
       <h1 class="relative inline-block text-4xl font-black leading-none my-4">
         <span class="bg-blue-100"> Editor Questao </span>
       </h1>
-      <form onsubmit={submitChanges} class="flex flex-col gap-1.5">
+      <form class="flex flex-col gap-1.5" onsubmit={submitChanges}>
         {#if gambiarraCounter === 0}
           <QuestionTextField
+            placeValue="Insira Novo Titulo"
             title="Titulo Novo"
             bind:bindValue={title}
-            placeValue="Insira Novo Titulo"
           />
           <QuestionTextField
+            placeValue="Insira outra Materia"
             title="Materias Novas"
             bind:bindValue={subject}
-            placeValue="Insira outra Materia"
           />
           <QuestionTextField
+            placeValue="Insira outra Fonte"
             title="Fonte"
             bind:bindValue={source}
-            placeValue="Insira outra Fonte"
           />
         {:else if gambiarraCounter === 1}
           <MarkDown title="Conteudo" bind:composer_s={content} />
         {:else if gambiarraCounter === 2}
           <AnswerField
+            placeValue="Insira Nova Resposta"
             title="Resposta 1"
             bind:bindAnswer={answer_1}
             bind:bindisCorrent={corret_1}
-            placeValue="Insira Nova Resposta"
           />
           <AnswerField
+            placeValue="Insira Nova Resposta"
             title="Resposta 2"
             bind:bindAnswer={answer_2}
             bind:bindisCorrent={corret_2}
-            placeValue="Insira Nova Resposta"
           />
 
           <AnswerField
+            placeValue="Insira Nova Resposta"
             title="Resposta 3"
             bind:bindAnswer={answer_3}
             bind:bindisCorrent={corret_3}
-            placeValue="Insira Nova Resposta"
           />
 
           <AnswerField
+            placeValue="Insira Nova Resposta"
             title="Resposta 4"
             bind:bindAnswer={answer_4}
             bind:bindisCorrent={corret_4}
-            placeValue="Insira Nova Resposta"
           />
         {/if}
         <BtnField option="Update" bind:counter={gambiarraCounter} />
       </form>
-      <ErrorText message={error} class="text-center" />
+      <ErrorText class="text-center" message={error} />
     </div>
   </div>
 </main>

@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { createQuestion } from "$lib/api/questions/create-question";
-  import { ApiError } from "$lib/api/api-error";
   import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
+  import { ApiError } from "$lib/api/api-error";
+  import { createQuestion } from "$lib/api/questions/create-question";
   import ErrorText from "$lib/components/ErrorText.svelte";
-  import QuestionTextField from "$lib/components/question/QuestionTextField.svelte";
-  import ButtonSection from "$lib/components/question/QuestionButtonField.svelte";
   import AnswerField from "$lib/components/question/AnswerField.svelte";
   import MarkDown from "$lib/components/question/MarkDownEditor.svelte";
+  import ButtonSection from "$lib/components/question/QuestionButtonField.svelte";
+  import QuestionTextField from "$lib/components/question/QuestionTextField.svelte";
 
   let sectionCounter = $state(0);
   let questionTitle = $state("");
@@ -56,7 +56,7 @@
           { correct: isCorrect_4, content: questionAnswer_4.trim() },
         ],
       });
-      goto(resolve("/questions"));
+      await goto(resolve("/questions"));
     } catch (err) {
       // Nota Pessoal : Iremos Ver se o error tem haver com a api -> se tem o constructor do ApiError
       if (err instanceof ApiError) {
@@ -85,62 +85,62 @@
       </h1>
 
       <form
-        onsubmit={submitQuestion}
         class="flex flex-col justify-center items-center gap-2.5"
+        onsubmit={submitQuestion}
       >
         {#if sectionCounter === 0}
           <QuestionTextField
+            placeValue="Titulo"
             title="Titulo"
             bind:bindValue={questionTitle}
-            placeValue="Titulo"
           />
 
           <QuestionTextField
+            placeValue="Materia"
             title="Materia"
             bind:bindValue={questionSubjects_1}
-            placeValue="Materia"
           />
 
           <QuestionTextField
+            placeValue="Vestibular"
             title="Fonte"
             bind:bindValue={questionSource}
-            placeValue="Vestibular"
           />
         {:else if sectionCounter === 1}
           <MarkDown title="Enunciado" bind:composer_s={questionEnunciado} />
           <!-- <ContentField title="Conteudo" bind:composer={editorComposer} /> -->
         {:else if sectionCounter === 2}
           <AnswerField
+            placeValue="Digite Resposta"
             title="Resposta 1"
             bind:bindAnswer={questionAnswer_1}
             bind:bindisCorrent={isCorrect_1}
-            placeValue="Digite Resposta"
           />
 
           <AnswerField
+            placeValue="Digite Resposta"
             title="Resposta 2"
             bind:bindAnswer={questionAnswer_2}
             bind:bindisCorrent={isCorrect_2}
-            placeValue="Digite Resposta"
           />
 
           <AnswerField
+            placeValue="Digite Resposta"
             title="Resposta 3"
             bind:bindAnswer={questionAnswer_3}
             bind:bindisCorrent={isCorrect_3}
-            placeValue="Digite Resposta"
           />
 
           <AnswerField
+            placeValue="Digite Resposta"
             title="Resposta 4"
             bind:bindAnswer={questionAnswer_4}
             bind:bindisCorrent={isCorrect_4}
-            placeValue="Digite Resposta"
           />
         {/if}
-        <ButtonSection option={"Create"} bind:counter={sectionCounter} />
+        <ButtonSection option="Create" bind:counter={sectionCounter} />
       </form>
-      <ErrorText message={error} class="text-center" />
+      <ErrorText class="text-center" message={error} />
     </div>
   </div>
 </main>
