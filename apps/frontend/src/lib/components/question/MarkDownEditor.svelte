@@ -14,8 +14,8 @@
     ListPlugin,
     RichTextPlugin,
   } from "svelte-lexical";
-  import { theme } from "svelte-lexical/dist/themes/default";
 
+  // import { theme } from "svelte-lexical/dist/themes/default";
   import MarkDownTB from "./MarkDownToolBar.svelte";
 
   type Props = {
@@ -27,7 +27,7 @@
   let composer: Composer;
   let editor;
   const initialConfig = {
-    theme: theme,
+    // theme: theme,
     namespace: "contentMarkdown",
     nodes: [HeadingNode, ListNode, ListItemNode, AutoLinkNode],
 

@@ -40,14 +40,12 @@
     "remark-rehype": "^11.1.2",
     "svelte": "^5.56.6",
     "svelte-check": "^4.7.3",
+    "svelte-lexical": "^0.6.4",
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.3.3",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "typescript-eslint": "^8.65.0",
     "unified": "^11.0.5",
     "vite": "^8.1.5"
-  },
-  "dependencies": {
-    "svelte-lexical": "^0.6.4"
   }
 }

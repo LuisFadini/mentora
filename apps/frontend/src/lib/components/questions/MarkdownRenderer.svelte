@@ -102,7 +102,7 @@
     :global(pre) {
       @apply my-5 overflow-x-auto rounded-lg border-2 border-black bg-neutral-900 p-4 text-white;
 
-      code {
+      :global(code) {
         @apply bg-transparent p-0 text-inherit;
       }
     }
