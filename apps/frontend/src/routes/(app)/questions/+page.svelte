@@ -76,7 +76,7 @@
             <div
               class="flex flex-wrap items-center gap-2 text-sm text-neutral-600"
             >
-              <!--<div class="flex flex-wrap gap-2">
+              <div class="flex flex-wrap gap-2">
                 {#each question.subjects as subject (subject)}
                   <span
                     class="rounded-full border-2 border-blue-400 bg-blue-200 px-2"
@@ -84,7 +84,7 @@
                     {subject}
                   </span>
                 {/each}
-              </div>-->
+              </div>
 
               <span class="hidden sm:inline text-neutral-500">•</span>
 

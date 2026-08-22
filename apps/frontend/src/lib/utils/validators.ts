@@ -3,6 +3,12 @@ export const messages = {
   passwordMin: "A senha deve ter pelo menos 8 caracteres.",
   emailInvalid: "Digite um e-mail válido.",
   passwordMismatch: "As senhas não coincidem.",
+
+  titleMin: "O título deve ter pelo menos 8 caracteres.",
+  subjectMin: "A matéria deve ter pelo menos 4 caracteres.",
+  sourceMin: "A fonte deve ter pelo menos 4 caracteres.",
+  bodyRequired: "O corpo da questão é obrigatório.",
+  answerRequired: "O texto da resposta é obrigatório.",
 };
 
 export function minLength(
