@@ -1,6 +1,10 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
 
+  import { goto } from "$app/navigation";
+  import { resolve } from "$app/paths";
+  import { ApiError } from "$lib/api/api-error";
+  import { createQuestion } from "$lib/api/questions/create-question";
   import Button from "$lib/components/Button.svelte";
   import ErrorText from "$lib/components/ErrorText.svelte";
   import InputField from "$lib/components/InputField.svelte";
@@ -31,6 +35,8 @@
   let sourceError = $state("");
   let bodyError = $state("");
   let answerError = $state("");
+
+  let loading = $state(false);
   let apiError = $state("");
 
   const previewReady = $derived(
@@ -130,6 +136,10 @@
     validateSource();
     validateBody();
 
+    if (subjects.length === 0) {
+      subjectError = validators.messages.subjectMin;
+    }
+
     return (
       !titleError &&
       !sourceError &&
@@ -143,10 +153,38 @@
     list.splice(index, 1);
   }
 
-  function submit() {
-    if (!validateForm()) return;
+  async function submit() {
+    if (!validateForm() || loading) return;
 
-    apiError = "Não implementado";
+    loading = true;
+
+    try {
+      await createQuestion({
+        title: title.trim(),
+        source: source.trim(),
+        subjects: subjects.map((subject) => subject.trim()),
+        content: body.trim(),
+        answers: answers.map((answer, i) => ({
+          content: answer.trim(),
+          correct: i === correctAnswer,
+        })),
+      });
+      await goto(resolve("/(app)/questions"));
+    } catch (error) {
+      if (error instanceof ApiError) {
+        switch (error.status) {
+          case 400:
+            apiError = "Dados de questão inválidos.";
+            break;
+          default:
+            apiError = "Dados de questão inválidos.";
+        }
+      } else {
+        apiError = "Não foi possível conectar ao servidor.";
+      }
+    } finally {
+      loading = false;
+    }
   }
 </script>
 
@@ -163,7 +201,7 @@
   class="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4 pt-16"
 >
   <PageContainer class="flex w-full max-w-3xl flex-col p-4 sm:p-6" as="section">
-    <Stepper {steps} bind:activeStep />
+    <Stepper canChange={!loading} {steps} bind:activeStep />
 
     <Separator
       class="mx-auto my-2 max-w-4/5 bg-blue-400"
@@ -264,7 +302,7 @@
                   name="answer"
                   class="mt-1 h-4 w-4 shrink-0 accent-black"
                   type="radio"
-                  value={item}
+                  value={index}
                   bind:group={correctAnswer}
                 />
 
@@ -339,6 +377,7 @@
       {#if activeStep > 0}
         <Button
           class="h-12 px-4 font-bold"
+          disabled={loading}
           icon="ph:arrow-left-bold"
           iconClass="text-xl"
           iconPosition="left"
@@ -353,7 +392,9 @@
 
       <Button
         class="h-12 px-4 font-bold"
-        disabled={activeStep === steps.length - 1 && !previewReady}
+        disabled={loading ||
+          (activeStep === steps.length - 1 &&
+            (!previewReady || correctAnswer === null))}
         icon="ph:arrow-right-bold"
         iconClass="text-xl"
         iconPosition="right"
@@ -362,7 +403,15 @@
         type="button"
         variant={activeStep === steps.length - 1 ? "secondary" : "primary"}
       >
-        {activeStep === steps.length - 1 ? "Concluir" : steps[activeStep + 1]}
+        {#if activeStep === steps.length - 1}
+          {#if loading}
+            Criando...
+          {:else}
+            Concluir
+          {/if}
+        {:else}
+          {steps[activeStep + 1]}
+        {/if}
       </Button>
     </div>
 

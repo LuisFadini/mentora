@@ -2,9 +2,14 @@
   type Props = {
     activeStep: number;
     steps: string[];
+    canChange?: boolean;
   };
 
-  let { activeStep = $bindable(0), steps = [] }: Props = $props();
+  let {
+    activeStep = $bindable(0),
+    steps = [],
+    canChange = true,
+  }: Props = $props();
 
   const progress = $derived((activeStep / (steps.length - 1)) * 100);
 </script>
@@ -13,7 +18,6 @@
   <ol class="relative mx-auto flex w-full max-w-xl items-start justify-between">
     <div
       class="absolute left-5 right-5 top-5 z-0 h-0.5 rounded-full bg-black/20"
-      aria-hidden="true"
     >
       <div
         style={`width: ${progress}%`}
@@ -24,10 +28,13 @@
     {#each steps as step, index (step)}
       <li class="relative z-10 flex flex-col items-center">
         <button
-          class="group flex cursor-pointer flex-col items-center gap-2"
-          aria-current={activeStep === index ? "step" : undefined}
-          aria-label={`Ir para ${step}`}
-          onclick={() => (activeStep = index)}
+          class="group flex cursor-pointer flex-col items-center gap-2 disabled:cursor-not-allowed"
+          disabled={!canChange}
+          onclick={() => {
+            if (canChange) {
+              activeStep = index;
+            }
+          }}
           type="button"
         >
           <span
