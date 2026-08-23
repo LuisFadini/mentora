@@ -1,5 +1,6 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
+  import { hasPermission } from "@mentora/permissions";
 
   import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
@@ -10,7 +11,7 @@
   import type { PageProps } from "./$types";
 
   const { data }: PageProps = $props();
-  const { questions } = $derived(data);
+  const { questions, session } = $derived(data);
 
   let select: HTMLSelectElement;
 
@@ -104,10 +105,13 @@
         </li>
       {/each}
     </ul>
-    <a
-      class="w-full shrink-0 rounded-lg border-2 border-black bg-blue-500 px-5 py-2 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:w-auto"
-      href={resolve("/(app)/questions/create")}>Criar Nova</a
-    >
+
+    {#if hasPermission(session.user, "questions.create")}
+      <a
+        class="w-full shrink-0 rounded-lg border-2 border-black bg-blue-500 px-5 py-2 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:w-auto"
+        href={resolve("/(app)/questions/create")}>Criar Nova</a
+      >
+    {/if}
   </PageContainer>
 </main>
 
