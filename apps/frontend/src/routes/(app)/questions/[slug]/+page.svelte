@@ -11,6 +11,7 @@
   import Modal from "$lib/components/Modal.svelte";
   import PageContainer from "$lib/components/PageContainer.svelte";
   import MarkdownRenderer from "$lib/components/questions/MarkdownRenderer.svelte";
+  import QuestionMetadata from "$lib/components/questions/QuestionMetadata.svelte";
 
   import type { PageProps } from "./$types";
 
@@ -113,31 +114,12 @@
   class="min-h-[calc(100vh-4rem)] pt-16 flex items-center justify-center p-4"
 >
   <PageContainer class="flex w-full max-w-3xl flex-col p-4 sm:p-6" as="section">
-    <div class="flex items-start justify-between gap-4">
-      <h1 class="text-3xl sm:text-4xl font-black leading-none">
-        {question.title}
-      </h1>
-
-      <Button
-        class="size-9 p-0"
-        icon="ph:x-bold"
-        onclick={async () => await goto(resolve("/(app)/questions"))}
-        shadowVariant="sm"
-        variant="danger"
-      />
-    </div>
-
-    <div class="flex flex-wrap items-center gap-2">
-      {#each question.subjects as subject (subject)}
-        <span
-          class="border-2 border-black bg-blue-300 rounded-sm px-2 py-0.5 text-[11px] font-bold shadow-[2px_2px_0_0_black]"
-        >
-          {subject}
-        </span>
-      {/each}
-
-      <span class="text-xs text-neutral-600"> Fonte: {question.source} </span>
-    </div>
+    <QuestionMetadata
+      onClose={async () => await goto(resolve("/(app)/questions"))}
+      source={question.source}
+      subjects={question.subjects}
+      title={question.title}
+    />
 
     {#if tips.length}
       <section class="mt-6 space-y-3">
@@ -200,7 +182,6 @@
         {/if}
 
         <Button
-          class="font-black px-4"
           disabled={!selectedAnswer || isLoading || isCorrect !== null}
           icon="ph:check-bold"
           iconClass="text-lg"
