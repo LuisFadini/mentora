@@ -13,7 +13,8 @@ export interface IRepository<TCreate, TPersisted = TCreate> {
   delete(id: string): Promise<boolean>;
 }
 
-export interface IUserRepository extends IRepository<User> {
+export type PersistedUser = User & { id: string };
+export interface IUserRepository extends IRepository<User, PersistedUser> {
   findByEmail(email: string): Promise<User | null>;
 }
 
@@ -22,6 +23,10 @@ export interface ISessionRepository extends Omit<
   "update"
 > {
   touch(id: string, lastSeenAt: Date): Promise<void>;
+  deleteOtherSessions(
+    userId: string,
+    currentSessionId: string,
+  ): Promise<number>;
 }
 
 export type PersistedAnswer = Answer & { id: string; questionId: string };

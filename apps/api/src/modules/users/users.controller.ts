@@ -48,6 +48,7 @@ export class UserController {
       const updatedUser = await this.usersService.updateUser(
         req.params.id,
         req.body,
+        req.session!.id,
       );
 
       if (!updatedUser) {

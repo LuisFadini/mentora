@@ -2,13 +2,18 @@ import { omit, removeUndefined } from "@mentora/utils";
 
 import { ConflictError } from "../../shared/errors/conflict.error.ts";
 import type { IPasswordHasher } from "../../shared/interfaces/password-hasher.interface.ts";
-import type { IUserRepository } from "../../shared/interfaces/repository.interface.ts";
+import type {
+  ISessionRepository,
+  IUserRepository,
+} from "../../shared/interfaces/repository.interface.ts";
+import type { UpdateUserDTO } from "./dto/update-user.dto.ts";
 import type { User } from "./user.types.ts";
 
 export class UsersService {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly passwordHasher: IPasswordHasher,
+    private readonly sessionRepository: ISessionRepository,
   ) {}
 
   async getUsers() {
@@ -43,14 +48,16 @@ export class UsersService {
     return omit(createdUser, ["password"]);
   }
 
-  async updateUser(
-    id: string,
-    data: Partial<Omit<User, "id" | "createdAt" | "updatedAt" | "permissions">>,
-  ) {
+  async updateUser(id: string, data: UpdateUserDTO, currentSessionId: string) {
     const existingUser = await this.userRepository.findById(id);
     if (!existingUser) return null;
 
     const cleanData = removeUndefined(data);
+
+    const emailChanged =
+      cleanData.email !== undefined && cleanData.email !== existingUser.email;
+
+    const passwordChanged = cleanData.password !== undefined;
 
     if (cleanData.email) {
       const userWithSameEmail = await this.userRepository.findByEmail(
@@ -62,7 +69,7 @@ export class UsersService {
       }
     }
 
-    if (cleanData.password) {
+    if (passwordChanged && cleanData.password) {
       cleanData.password = await this.passwordHasher.hash(cleanData.password);
     }
 
@@ -71,6 +78,10 @@ export class UsersService {
       ...cleanData,
       updatedAt: new Date(),
     });
+
+    if (emailChanged || passwordChanged) {
+      await this.sessionRepository.deleteOtherSessions(id, currentSessionId);
+    }
 
     return omit(updatedUser, ["password"]);
   }

@@ -5,7 +5,7 @@ export type User = {
   name: string;
   email: string;
   password: string;
-  avatarUrl?: string | undefined;
+  avatarUrl?: string | null;
   createdAt: Date;
   updatedAt: Date;
   permissions?: Permission[];
