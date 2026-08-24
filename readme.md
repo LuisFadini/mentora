@@ -56,7 +56,7 @@ cd mentora
 
 Instale as dependências:
 
-```bash 
+```bash
 pnpm install
 ```
 

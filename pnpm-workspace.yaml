@@ -4,14 +4,12 @@ minimumReleaseAgeExclude:
   - "@luisfadini/*"
   - "@types/*"
 
-
 packages:
   - "apps/*"
   - "packages/*"
 
 allowBuilds:
-  '@tailwindcss/oxide': true
+  "@tailwindcss/oxide": true
   argon2: true
   esbuild: true
   "@luisfadini/class-validator-jsonschema": true
-  leveldown: true
