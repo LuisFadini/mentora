@@ -4,9 +4,6 @@ import { IsArray, IsOptional, IsString, ValidateNested } from "class-validator";
 import { UpdateAnswerDTO } from "./update-answer.dto.ts";
 
 export class UpdateQuestionDTO {
-  @IsString()
-  id!: string;
-
   @IsOptional()
   @IsString()
   title?: string;
@@ -16,8 +13,9 @@ export class UpdateQuestionDTO {
   @IsString({ each: true })
   subjects?: string[];
 
+  @IsOptional()
   @IsString()
-  source!: string;
+  source?: string;
 
   @IsOptional()
   @IsString()

@@ -3,140 +3,385 @@
   import { resolve } from "$app/paths";
   import { ApiError } from "$lib/api/api-error";
   import { updateQuestion } from "$lib/api/questions/update-question";
+  import Button from "$lib/components/Button.svelte";
   import ErrorText from "$lib/components/ErrorText.svelte";
-  import AnswerField from "$lib/components/question/AnswerField.svelte";
-  import MarkDown from "$lib/components/question/MarkDownEditor.svelte";
-  import BtnField from "$lib/components/question/QuestionButtonField.svelte";
-  import QuestionTextField from "$lib/components/question/QuestionTextField.svelte";
+  import PageContainer from "$lib/components/PageContainer.svelte";
+  import AnswerEditor from "$lib/components/questions/AnswerEditor.svelte";
+  import MarkdownTextarea from "$lib/components/questions/MarkdownTextarea.svelte";
+  import MetadataEditor from "$lib/components/questions/MetadataEditor.svelte";
+  import PreviewRenderer from "$lib/components/questions/PreviewRenderer.svelte";
+  import Stepper from "$lib/components/questions/Stepper.svelte";
+  import Separator from "$lib/components/Separator.svelte";
+  import * as validators from "$lib/utils/validators";
 
   import type { PageProps } from "./$types";
-  let { params }: PageProps = $props();
 
-  let error = $state("");
+  const steps = ["Metadados", "Questão", "Respostas", "Preview"];
 
-  let gambiarraCounter = $state(0);
+  const { data }: PageProps = $props();
+  // svelte-ignore state_referenced_locally
+  const { question } = data;
 
-  let title = $state("");
+  let activeStep = $state(0);
+
+  let title = $state(question.title);
   let subject = $state("");
-  let content = $state("");
-  let source = $state("");
-
-  let answer_1 = $state("");
-  let answer_2 = $state("");
-  let answer_3 = $state("");
-  let answer_4 = $state("");
-
-  let corret_1 = $state(false);
-  let corret_2 = $state(false);
-  let corret_3 = $state(false);
-  let corret_4 = $state(false);
-
-  let isBlank = $derived(
-    title.trim() != "" &&
-      subject.trim() != "" &&
-      source.trim() != "" &&
-      answer_1.trim() != "" &&
-      answer_2.trim() != "" &&
-      corret_1 == false &&
-      corret_2 == false &&
-      corret_3 == false &&
-      corret_4 == false,
+  let source = $state(question.source);
+  let body = $state(question.content);
+  let answer = $state("");
+  let correctAnswer = $state<number | null>(
+    (() => {
+      const index = question.answers.findIndex((answer) => answer.correct);
+      return index >= 0 ? index : null;
+    })(),
   );
 
-  async function submitChanges() {
-    if (!isBlank && content == "") return;
+  const subjects = $state<string[]>([...question.subjects]);
+  const answers = $state<string[]>(question.answers.map((q) => q.content));
+
+  const answerIds = $state<(string | undefined)[]>(
+    question.answers.map((answer) => answer.id),
+  );
+  const deletedAnswerIds = $state<string[]>([]);
+
+  let titleError = $state("");
+  let subjectError = $state("");
+  let sourceError = $state("");
+  let bodyError = $state("");
+  let answerError = $state("");
+
+  let loading = $state(false);
+  let apiError = $state("");
+
+  const previewReady = $derived(
+    Boolean(
+      title.trim() &&
+      source.trim() &&
+      body.trim() &&
+      subjects.length > 0 &&
+      answers.length > 0 &&
+      correctAnswer !== null,
+    ),
+  );
+
+  function validateTitle() {
+    titleError = validators.minLength(title, 8, validators.messages.titleMin);
+  }
+
+  function validateSubject() {
+    subjectError = validators.minLength(
+      subject,
+      4,
+      validators.messages.subjectMin,
+    );
+  }
+
+  function validateSource() {
+    sourceError = validators.minLength(
+      source,
+      4,
+      validators.messages.sourceMin,
+    );
+  }
+
+  function validateBody() {
+    bodyError = validators.minLength(body, 1, validators.messages.bodyRequired);
+  }
+
+  function validateAnswer() {
+    answerError = validators.minLength(
+      answer,
+      1,
+      validators.messages.answerRequired,
+    );
+  }
+
+  function addToList(value: string, list: string[]) {
+    const item = value.trim();
+
+    if (!item) return;
+
+    if (list.some((current) => current.toLowerCase() === item.toLowerCase())) {
+      return;
+    }
+
+    list.push(item);
+  }
+
+  function addSubject() {
+    const value = subject.trim();
+
+    if (!value) {
+      validateSubject();
+      return;
+    }
+
+    addToList(value, subjects);
+
+    subject = "";
+    subjectError = "";
+  }
+
+  function addAnswer() {
+    const value = answer.trim();
+
+    if (!value) {
+      validateAnswer();
+      return;
+    }
+
+    addToList(value, answers);
+
+    answer = "";
+    answerError = "";
+  }
+
+  function handleSubjectKeydown(event: KeyboardEvent) {
+    if (event.key !== "Enter") return;
+
+    event.preventDefault();
+    addSubject();
+  }
+
+  function handleAnswerKeydown(event: KeyboardEvent) {
+    if (event.key !== "Enter" || !(event.ctrlKey || event.metaKey)) return;
+
+    event.preventDefault();
+    addAnswer();
+  }
+
+  function validateForm() {
+    validateTitle();
+    validateSource();
+    validateBody();
+
+    if (subjects.length === 0) {
+      subjectError = validators.messages.subjectMin;
+    }
+
+    if (answer.trim()) {
+      validateAnswer();
+    }
+
+    return (
+      !titleError &&
+      !sourceError &&
+      !bodyError &&
+      !answerError &&
+      subjects.length > 0 &&
+      answers.length > 0 &&
+      correctAnswer !== null
+    );
+  }
+
+  function remove(list: string[], index: number) {
+    list.splice(index, 1);
+  }
+
+  function removeAnswer(_: string[], index: number) {
+    const id = answerIds[index];
+
+    if (id) {
+      deletedAnswerIds.push(id);
+    }
+
+    answers.splice(index, 1);
+    answerIds.splice(index, 1);
+
+    if (correctAnswer === index) {
+      correctAnswer = null;
+    } else if (correctAnswer !== null && correctAnswer > index) {
+      correctAnswer -= 1;
+    }
+  }
+
+  function getUpdateData() {
+    const updatedAnswers = answers.map((content, index) => ({
+      ...(answerIds[index] ? { id: answerIds[index] } : {}),
+      content: content.trim(),
+      correct: index === correctAnswer,
+    }));
+
+    const deletedAnswers = deletedAnswerIds.map((id) => ({
+      id,
+      content: "",
+      correct: false,
+      delete: true,
+    }));
+
+    return {
+      source: source.trim(),
+      title: title.trim(),
+      subjects: subjects.map((subject) => subject.trim()),
+      content: body.trim(),
+      answers: [...updatedAnswers, ...deletedAnswers],
+    };
+  }
+
+  async function submit() {
+    if (!validateForm() || loading) return;
+
+    loading = true;
+
     try {
-      await updateQuestion(params.slug, {
-        id: params.slug,
-        title: title.trim(),
-        content: content.trim(),
-        source: source.trim(),
-        subjects: [subject.trim()],
-        answers: [
-          { content: answer_1, correct: corret_1, delete: false },
-          { content: answer_2, correct: corret_2, delete: false },
-          { content: answer_3, correct: corret_3, delete: false },
-          { content: answer_4, correct: corret_4, delete: false },
-        ],
-      });
-      await goto(resolve("/questions"));
-    } catch (err) {
-      if (err instanceof ApiError) {
-        switch (err.status) {
+      await updateQuestion(question.id, getUpdateData());
+      await goto(resolve("/(app)/questions"));
+    } catch (error) {
+      if (error instanceof ApiError) {
+        switch (error.status) {
           case 400:
-            error = "Bad Request";
+            apiError = "Dados de questão inválidos.";
             break;
+
+          case 403:
+            apiError = "Você não tem permissão para editar esta questão.";
+            break;
+
+          case 404:
+            apiError = "Questão não encontrada.";
+            break;
+
           default:
-            error = "Error ao atualizar questao";
-            break;
+            apiError = "Não foi possível salvar a questão.";
         }
       } else {
-        error = "Error na Conexao com o Servidor";
+        apiError = "Não foi possível conectar ao servidor.";
       }
+    } finally {
+      loading = false;
     }
   }
 </script>
 
-<main class="min-h-screen flex items-center justify-center p-4">
-  <div
-    class="flex w-full max-w-4xl flex-col gap-2 rounded-xl border-2 border-black bg-white p-4 shadow-[8px_8px_0_0_black] sm:p-6"
-  >
-    <div class="flex flex-col justify-center items-center">
-      <h1 class="relative inline-block text-4xl font-black leading-none my-4">
-        <span class="bg-blue-100"> Editor Questao </span>
-      </h1>
-      <form class="flex flex-col gap-1.5" onsubmit={submitChanges}>
-        {#if gambiarraCounter === 0}
-          <QuestionTextField
-            placeValue="Insira Novo Titulo"
-            title="Titulo Novo"
-            bind:bindValue={title}
-          />
-          <QuestionTextField
-            placeValue="Insira outra Materia"
-            title="Materias Novas"
-            bind:bindValue={subject}
-          />
-          <QuestionTextField
-            placeValue="Insira outra Fonte"
-            title="Fonte"
-            bind:bindValue={source}
-          />
-        {:else if gambiarraCounter === 1}
-          <MarkDown title="Conteudo" bind:composer_s={content} />
-        {:else if gambiarraCounter === 2}
-          <AnswerField
-            placeValue="Insira Nova Resposta"
-            title="Resposta 1"
-            bind:bindAnswer={answer_1}
-            bind:bindisCorrent={corret_1}
-          />
-          <AnswerField
-            placeValue="Insira Nova Resposta"
-            title="Resposta 2"
-            bind:bindAnswer={answer_2}
-            bind:bindisCorrent={corret_2}
-          />
+<svelte:head>
+  <link
+    crossorigin="anonymous"
+    href="https://cdn.jsdelivr.net/npm/katex@0.17.0/dist/katex.min.css"
+    integrity="sha384-vlBdW0r3AcZO/HboRPznQNowvexd3fY8qHOWkBi5q7KGgqJ+F48+DceybYmrVbmB"
+    rel="stylesheet"
+  />
+</svelte:head>
 
-          <AnswerField
-            placeValue="Insira Nova Resposta"
-            title="Resposta 3"
-            bind:bindAnswer={answer_3}
-            bind:bindisCorrent={corret_3}
-          />
+<main
+  class="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4 pt-16"
+>
+  <PageContainer class="flex w-full max-w-3xl flex-col p-4 sm:p-6" as="section">
+    <Stepper canChange={!loading} {steps} bind:activeStep />
 
-          <AnswerField
-            placeValue="Insira Nova Resposta"
-            title="Resposta 4"
-            bind:bindAnswer={answer_4}
-            bind:bindisCorrent={corret_4}
+    <Separator
+      class="mx-auto my-2 max-w-4/5 bg-blue-400"
+      orientation="horizontal"
+    />
+
+    <div class="flex min-h-70 flex-col gap-3">
+      {#if activeStep === 0}
+        <MetadataEditor
+          {handleSubjectKeydown}
+          {remove}
+          {subjects}
+          {validateSource}
+          {validateSubject}
+          {validateTitle}
+          bind:title
+          bind:titleError
+          bind:subject
+          bind:subjectError
+          bind:source
+          bind:sourceError
+        />
+      {:else if activeStep === 1}
+        <MarkdownTextarea
+          id="body"
+          class="min-h-60"
+          label="Corpo da questão"
+          onValidate={validateBody}
+          placeholder="Escreva a questão..."
+          bind:value={body}
+          bind:error={bodyError}
+        />
+      {:else if activeStep === 2}
+        <AnswerEditor
+          {answers}
+          {handleAnswerKeydown}
+          remove={removeAnswer}
+          {validateAnswer}
+          bind:answer
+          bind:answerError
+          bind:correctAnswer
+        />
+      {:else}
+        {#if previewReady}
+          <PreviewRenderer
+            {answers}
+            {body}
+            onClose={() => (activeStep = 0)}
+            {source}
+            {subjects}
+            {title}
           />
+        {:else}
+          <div class="m-auto flex h-full items-center justify-center">
+            <h1 class="text-3xl font-bold">Nada a ser visto ainda</h1>
+          </div>
         {/if}
-        <BtnField option="Update" bind:counter={gambiarraCounter} />
-      </form>
-      <ErrorText class="text-center" message={error} />
+      {/if}
     </div>
-  </div>
+
+    <div class="mt-6 flex justify-between gap-4">
+      {#if activeStep > 0}
+        <Button
+          class="h-12 px-4 font-bold"
+          disabled={loading}
+          icon="ph:arrow-left-bold"
+          iconClass="text-xl"
+          iconPosition="left"
+          onclick={() => activeStep--}
+          type="button"
+        >
+          {steps[activeStep - 1]}
+        </Button>
+      {:else}
+        <Button
+          class="h-12 px-4 font-bold"
+          disabled={loading}
+          icon="ph:arrow-left-bold"
+          iconClass="text-xl"
+          iconPosition="left"
+          onclick={async () => await goto(resolve("/(app)/questions"))}
+          type="button"
+          variant="danger"
+        >
+          Cancelar
+        </Button>
+      {/if}
+
+      <Button
+        class="h-12 px-4 font-bold"
+        disabled={loading ||
+          (activeStep === steps.length - 1 &&
+            (!previewReady || correctAnswer === null))}
+        icon="ph:arrow-right-bold"
+        iconClass="text-xl"
+        iconPosition="right"
+        onclick={() =>
+          activeStep === steps.length - 1 ? submit() : activeStep++}
+        type="button"
+        variant={activeStep === steps.length - 1 ? "secondary" : "primary"}
+      >
+        {#if activeStep === steps.length - 1}
+          {#if loading}
+            Salvando...
+          {:else}
+            Salvar
+          {/if}
+        {:else}
+          {steps[activeStep + 1]}
+        {/if}
+      </Button>
+    </div>
+
+    <ErrorText class="text-center" message={apiError} />
+  </PageContainer>
 </main>
 
 <style lang="postcss">

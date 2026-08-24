@@ -18,8 +18,10 @@ export async function createQuestion(question: CreateQuestionDTO) {
     method: "POST",
     body: JSON.stringify(question),
   });
+
   if (!response.ok) {
     throw new ApiError(response.status, await response.text());
   }
+
   return true;
 }

@@ -93,24 +93,53 @@
             </div>
           </div>
 
-          <Button
-            class="w-full shrink-0 py-2 font-bold sm:w-auto"
-            onclick={async () =>
-              await goto(
-                resolve("/(app)/questions/[slug]", { slug: question.id }),
-              )}
-          >
-            Fazer
-          </Button>
+          {#if !hasPermission(session.user, "questions.update")}
+            <Button
+              class="w-full shrink-0 py-2 font-bold sm:w-auto"
+              onclick={async () =>
+                await goto(
+                  resolve("/(app)/questions/[slug]", { slug: question.id }),
+                )}
+            >
+              Fazer
+            </Button>
+          {:else}
+            <div class="flex flex-row gap-2">
+              <Button
+                class="w-full shrink-0 py-2 font-bold sm:w-auto"
+                icon="ph:note-pencil-bold"
+                onclick={async () =>
+                  await goto(
+                    resolve("/(app)/questions/[slug]/edit", {
+                      slug: question.id,
+                    }),
+                  )}
+                variant="secondary"
+              />
+              <Button
+                class="w-full shrink-0 py-2 font-bold sm:w-auto"
+                onclick={async () =>
+                  await goto(
+                    resolve("/(app)/questions/[slug]", {
+                      slug: question.id,
+                    }),
+                  )}
+              >
+                Fazer
+              </Button>
+            </div>
+          {/if}
         </li>
       {/each}
     </ul>
 
     {#if hasPermission(session.user, "questions.create")}
-      <a
-        class="w-full shrink-0 rounded-lg border-2 border-black bg-blue-500 px-5 py-2 font-bold text-white shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none sm:w-auto"
-        href={resolve("/(app)/questions/create")}>Criar Nova</a
+      <Button
+        class="font-bold py-3"
+        onclick={async () => await goto(resolve("/(app)/questions/create"))}
       >
+        Criar nova
+      </Button>
     {/if}
   </PageContainer>
 </main>

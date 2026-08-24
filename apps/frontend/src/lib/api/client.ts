@@ -6,11 +6,11 @@ export async function apiFetch(
   fetchFn: typeof fetch = fetch,
 ) {
   return fetchFn(`${API_URL}${path}`, {
+    ...init,
     credentials: "include",
     headers: {
-      "Content-Type": "application/json",
       ...init?.headers,
+      "Content-Type": "application/json",
     },
-    ...init,
   });
 }
