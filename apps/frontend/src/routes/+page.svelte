@@ -66,16 +66,28 @@
         <Avatar name={user.name} class="size-36" avatarUrl={user.avatarUrl} />
       </div>
 
-      <Button
-        class="font-bold mt-2"
-        icon="ph:sign-out-bold"
-        iconPosition="right"
-        onclick={logout}
-        shadowVariant="base"
-        variant="danger"
-      >
-        Sair
-      </Button>
+      <div class="mx-2 mt-2 flex flex-col gap-2 sm:flex-row sm:justify-between">
+        <Button
+          class="w-full font-bold sm:w-auto"
+          icon="ph:gear-bold"
+          iconPosition="right"
+          onclick={async () => await goto(resolve("/(app)/user/settings"))}
+          shadowVariant="base"
+        >
+          Configurações
+        </Button>
+
+        <Button
+          class="w-full font-bold sm:w-auto"
+          icon="ph:sign-out-bold"
+          iconPosition="right"
+          onclick={logout}
+          shadowVariant="base"
+          variant="danger"
+        >
+          Sair
+        </Button>
+      </div>
 
       <ErrorText class="text-center" message={logoutError} />
     </PageContainer>

@@ -83,7 +83,11 @@
     <div class="flex items-center gap-3">
       {#if session && session.authenticated}
         {const user = session.user}
-        <div class="hidden sm:flex items-center gap-3">
+        <button
+          class="hidden sm:flex items-center gap-3 cursor-pointer"
+          onclick={async () => await redirect("/user/settings")}
+          type="button"
+        >
           <span
             class="max-w-32 truncate text-right font-bold text-black"
             title={user.name}
@@ -96,7 +100,7 @@
             class="size-11 shrink-0"
             avatarUrl={user.avatarUrl}
           />
-        </div>
+        </button>
       {:else}
         <Button
           class="hidden sm:flex px-4 py-2 font-bold text-white"
@@ -142,8 +146,10 @@
 
         {#if session && session.authenticated}
           {const user = session.user}
-          <div
-            class="mb-4 flex sm:hidden items-center gap-3 rounded-lg border-2 border-black bg-gray-50 p-3"
+          <button
+            class="mb-4 flex sm:hidden items-center gap-3 rounded-lg border-2 border-black bg-gray-50 p-3 cursor-pointer"
+            onclick={async () => await redirect("/user/settings")}
+            type="button"
           >
             <Avatar
               name={user.name}
@@ -154,7 +160,7 @@
             <span class="min-w-0 flex-1 truncate font-bold" title={user.name}>
               {user.name}
             </span>
-          </div>
+          </button>
         {:else}
           <Button
             class="flex sm:hidden font-bold"
