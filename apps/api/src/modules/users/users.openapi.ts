@@ -71,6 +71,23 @@ export const usersPaths = new OpenAPIPathBuilder()
           },
         ],
         requestBody: jsonBody(schemaRef("UpdateUserDTO")),
+      })
+      .addMethod("delete", {
+        summary: "Delete user",
+        operationId: "deleteUser",
+        responses: new OpenAPIResponseBuilder()
+          .addResponse("200", "User deleted")
+          .addResponse("404", "User not found"),
+        tags: ["Users"],
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            description: "User UUID",
+            schema: { type: "string", format: "uuid" },
+          },
+        ],
       }),
   )
   .build();

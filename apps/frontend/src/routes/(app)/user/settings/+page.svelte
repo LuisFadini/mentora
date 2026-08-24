@@ -1,5 +1,8 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
+  import { resolve } from "$app/paths";
   import { ApiError } from "$lib/api/api-error";
+  import { deleteUser } from "$lib/api/users/delete-user";
   import { updateUser, type UpdateUserDTO } from "$lib/api/users/update-user";
   import Avatar from "$lib/components/Avatar.svelte";
   import Button from "$lib/components/Button.svelte";
@@ -171,8 +174,6 @@
       window.location.reload();
     } catch (error) {
       if (error instanceof ApiError) {
-        console.error(error);
-
         switch (error.status) {
           case 400:
             apiError = "Dados inválidos.";
@@ -197,9 +198,31 @@
     }
   }
 
-  function deleteAccount() {
-    apiError = "Não implementado";
+  async function deleteAccount() {
+    apiError = "";
     showConfirmAccountDeletionModal = false;
+
+    loading = true;
+
+    try {
+      await deleteUser(session.user.id);
+      await goto(resolve("/"), { invalidateAll: true });
+    } catch (error) {
+      if (error instanceof ApiError) {
+        switch (error.status) {
+          case 404:
+            apiError = "Usuário não encontrado.";
+            break;
+
+          default:
+            apiError = "Erro ao deletar usuário.";
+        }
+      } else {
+        apiError = "Não foi possível conectar ao servidor.";
+      }
+    } finally {
+      loading = false;
+    }
   }
 
   function openChangeAvatarModal() {

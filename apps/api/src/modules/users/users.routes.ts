@@ -35,6 +35,12 @@ export function createUsersRoutes(
     validateBodyDTO(UpdateUserDTO),
     controller.updateUser,
   );
+  router.delete(
+    "/:id",
+    authMiddleware,
+    requireSelfParam<GetUserParams>("id"),
+    controller.deleteUser,
+  );
 
   return router;
 }

@@ -6,8 +6,8 @@ import type {
   ISessionRepository,
   IUserRepository,
 } from "../../shared/interfaces/repository.interface.ts";
+import type { CreateUserDTO } from "./dto/create-user.dto.ts";
 import type { UpdateUserDTO } from "./dto/update-user.dto.ts";
-import type { User } from "./user.types.ts";
 
 export class UsersService {
   constructor(
@@ -27,9 +27,7 @@ export class UsersService {
     return omit(user, ["password"]);
   }
 
-  async createUser(
-    data: Omit<User, "createdAt" | "updatedAt" | "permissions">,
-  ) {
+  async createUser(data: CreateUserDTO) {
     const existingUser = await this.userRepository.findByEmail(data.email);
 
     if (existingUser) {
@@ -84,5 +82,11 @@ export class UsersService {
     }
 
     return omit(updatedUser, ["password"]);
+  }
+
+  async deleteUser(id: string) {
+    const user = await this.userRepository.delete(id);
+    if (!user) return null;
+    return true;
   }
 }
