@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { ApiError } from "$lib/api/api-error";
+  import { updateUser, type UpdateUserDTO } from "$lib/api/users/update-user";
   import Avatar from "$lib/components/Avatar.svelte";
   import Button from "$lib/components/Button.svelte";
   import ErrorText from "$lib/components/ErrorText.svelte";
@@ -14,9 +16,13 @@
   const { session } = $derived(data);
 
   let apiError = $state("");
+  let loading = $state(false);
 
   let name = $state("");
   let email = $state("");
+  let password = $state("");
+  let confirmPassword = $state("");
+
   let avatarUrl = $state("");
   let avatarDraft = $state("");
 
@@ -29,13 +35,9 @@
 
     name = session.user.name;
     email = session.user.email;
-
     avatarUrl = session.user.avatarUrl ?? "";
     avatarDraft = avatarUrl;
   });
-
-  let password = $state("");
-  let confirmPassword = $state("");
 
   let nameError = $state("");
   let emailError = $state("");
@@ -49,10 +51,13 @@
   let confirmPasswordFocused = $state(false);
   let avatarUrlFocused = $state(false);
 
+  const originalAvatarUrl = $derived(session.user.avatarUrl ?? "");
+
   const dataChanged = $derived(
-    name !== session.user.name ||
-      email !== session.user.email ||
-      avatarUrl !== (session.user.avatarUrl ?? ""),
+    name.trim() !== session.user.name ||
+      email.trim() !== session.user.email ||
+      avatarUrl !== originalAvatarUrl ||
+      password.trim() !== "",
   );
 
   const hasErrors = $derived(
@@ -69,16 +74,26 @@
   let showChangeAvatarModal = $state(false);
 
   function validateName() {
-    nameError = validators.minLength(name, 4, validators.messages.nameMin);
+    nameError = validators.minLength(
+      name.trim(),
+      4,
+      validators.messages.nameMin,
+    );
   }
 
   function validateEmail() {
-    emailError = validators.email(email);
+    emailError = validators.email(email.trim());
   }
 
   function validatePassword() {
+    if (!password.trim()) {
+      passwordError = "";
+      confirmPasswordError = "";
+      return;
+    }
+
     passwordError = validators.minLength(
-      password,
+      password.trim(),
       8,
       validators.messages.passwordMin,
     );
@@ -87,12 +102,19 @@
   }
 
   function validateConfirmPassword() {
+    if (!password.trim() && !confirmPassword.trim()) {
+      confirmPasswordError = "";
+      return;
+    }
+
     confirmPasswordError =
       password !== confirmPassword ? validators.messages.passwordMismatch : "";
   }
 
   function validateAvatarUrl() {
-    avatarUrlError = validators.url(avatarUrl);
+    const value = avatarDraft.trim();
+
+    avatarUrlError = value ? validators.url(value) : "";
   }
 
   function validateForm() {
@@ -104,14 +126,100 @@
     return !(nameError || emailError || passwordError || confirmPasswordError);
   }
 
-  function save() {
+  function getUpdateData(): UpdateUserDTO {
+    const data: UpdateUserDTO = {};
+
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+    const trimmedAvatarUrl = avatarUrl.trim();
+
+    if (trimmedName !== session.user.name) {
+      data.name = trimmedName;
+    }
+
+    if (trimmedEmail !== session.user.email) {
+      data.email = trimmedEmail;
+    }
+
+    if (trimmedPassword) {
+      data.password = trimmedPassword;
+    }
+
+    const originalAvatarUrl = session.user.avatarUrl ?? "";
+
+    if (trimmedAvatarUrl !== originalAvatarUrl) {
+      data.avatarUrl = trimmedAvatarUrl || null;
+    }
+
+    return data;
+  }
+
+  async function save() {
+    apiError = "";
+
     if (!validateForm()) return;
-    apiError = "Não implementado";
+
+    const updateData = getUpdateData();
+
+    if (Object.keys(updateData).length === 0) return;
+
+    loading = true;
+
+    try {
+      await updateUser(session.user.id, updateData);
+      window.location.reload();
+    } catch (error) {
+      if (error instanceof ApiError) {
+        console.error(error);
+
+        switch (error.status) {
+          case 400:
+            apiError = "Dados inválidos.";
+            break;
+
+          case 404:
+            apiError = "Usuário não encontrado.";
+            break;
+
+          case 409:
+            apiError = "Este e-mail já está sendo usado.";
+            break;
+
+          default:
+            apiError = "Erro ao atualizar os dados.";
+        }
+      } else {
+        apiError = "Não foi possível conectar ao servidor.";
+      }
+    } finally {
+      loading = false;
+    }
   }
 
   function deleteAccount() {
     apiError = "Não implementado";
     showConfirmAccountDeletionModal = false;
+  }
+
+  function openChangeAvatarModal() {
+    avatarDraft = avatarUrl;
+    avatarUrlError = "";
+    showChangeAvatarModal = true;
+  }
+
+  function removeAvatar() {
+    avatarDraft = "";
+    avatarUrlError = "";
+  }
+
+  function confirmAvatarChange() {
+    validateAvatarUrl();
+
+    if (avatarUrlError) return;
+
+    avatarUrl = avatarDraft.trim();
+    showChangeAvatarModal = false;
   }
 </script>
 
@@ -122,6 +230,7 @@
   bind:showModal={showConfirmAccountDeletionModal}
 >
   <h1 class="text-3xl font-bold text-center">Deletar conta?</h1>
+
   <Button class="mx-auto mt-6" onclick={deleteAccount} variant="danger">
     Confirmar
   </Button>
@@ -147,10 +256,7 @@
       <Button
         class="flex-1"
         disabled={!avatarDraft && !avatarUrl}
-        onclick={() => {
-          avatarDraft = "";
-          avatarUrlError = "";
-        }}
+        onclick={removeAvatar}
         variant="secondary"
       >
         Remover
@@ -158,17 +264,9 @@
 
       <Button
         class="flex-1"
-        onclick={() => {
-          validateAvatarUrl();
-
-          if (avatarUrlError) return;
-
-          avatarUrl = avatarDraft;
-          showChangeAvatarModal = false;
-        }}
+        disabled={!!avatarUrlError}
+        onclick={confirmAvatarChange}>Confirmar</Button
       >
-        Confirmar
-      </Button>
     </div>
   </div>
 </Modal>
@@ -234,19 +332,12 @@
 
       <div class="flex flex-row items-center gap-4 mx-auto lg:flex-col">
         <Avatar
-          name={name || data.session.user.name}
+          name={name || session.user.name}
           class="size-24 sm:size-28 lg:size-32"
-          avatarUrl={avatarUrl || data.session.user.avatarUrl}
+          avatarUrl={avatarUrl || undefined}
         />
 
-        <Button
-          onclick={() => {
-            avatarDraft = avatarUrl;
-            avatarUrlError = "";
-            showChangeAvatarModal = true;
-          }}
-          variant="secondary"
-        >
+        <Button onclick={openChangeAvatarModal} variant="secondary">
           Alterar foto
         </Button>
       </div>
@@ -257,6 +348,7 @@
     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
       <Button
         class="w-full sm:w-auto"
+        disabled={loading}
         onclick={() => {
           showConfirmAccountDeletionModal = true;
         }}
@@ -267,12 +359,13 @@
 
       <Button
         class="w-full sm:w-auto"
-        disabled={!dataChanged || hasErrors}
+        disabled={!dataChanged || hasErrors || loading}
         onclick={save}
       >
         Salvar alterações
       </Button>
     </div>
+
     <ErrorText class="text-center" message={apiError} />
   </PageContainer>
 </main>
