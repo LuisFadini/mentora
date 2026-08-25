@@ -13,6 +13,7 @@
     error: string;
     focused?: boolean;
     onValidate?: () => void;
+    onKeydown?: (event: KeyboardEvent) => void;
   };
 
   let propsId = $props.id();
@@ -27,6 +28,7 @@
     error = $bindable(),
     focused = $bindable(false),
     onValidate,
+    onKeydown,
   }: Props = $props();
 
   function handleInput() {
@@ -56,6 +58,7 @@
       }}
       onfocus={() => (focused = true)}
       oninput={handleInput}
+      onkeydown={onKeydown}
       {placeholder}
       {type}
       bind:value

@@ -1,5 +1,6 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
+  import { hasPermission } from "@mentora/permissions";
 
   import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
@@ -10,7 +11,7 @@
   import type { PageProps } from "./$types";
 
   const { data }: PageProps = $props();
-  const { questions } = $derived(data);
+  const { questions, session } = $derived(data);
 
   let select: HTMLSelectElement;
 
@@ -92,18 +93,54 @@
             </div>
           </div>
 
-          <Button
-            class="w-full shrink-0 py-2 font-bold sm:w-auto"
-            onclick={async () =>
-              await goto(
-                resolve("/(app)/questions/[slug]", { slug: question.id }),
-              )}
-          >
-            Fazer
-          </Button>
+          {#if !hasPermission(session.user, "questions.update")}
+            <Button
+              class="w-full shrink-0 py-2 font-bold sm:w-auto"
+              onclick={async () =>
+                await goto(
+                  resolve("/(app)/questions/[slug]", { slug: question.id }),
+                )}
+            >
+              Fazer
+            </Button>
+          {:else}
+            <div class="flex flex-row gap-2">
+              <Button
+                class="w-full shrink-0 py-2 font-bold sm:w-auto"
+                icon="ph:note-pencil-bold"
+                onclick={async () =>
+                  await goto(
+                    resolve("/(app)/questions/[slug]/edit", {
+                      slug: question.id,
+                    }),
+                  )}
+                variant="secondary"
+              />
+              <Button
+                class="w-full shrink-0 py-2 font-bold sm:w-auto"
+                onclick={async () =>
+                  await goto(
+                    resolve("/(app)/questions/[slug]", {
+                      slug: question.id,
+                    }),
+                  )}
+              >
+                Fazer
+              </Button>
+            </div>
+          {/if}
         </li>
       {/each}
     </ul>
+
+    {#if hasPermission(session.user, "questions.create")}
+      <Button
+        class="font-bold py-3"
+        onclick={async () => await goto(resolve("/(app)/questions/create"))}
+      >
+        Criar nova
+      </Button>
+    {/if}
   </PageContainer>
 </main>
 

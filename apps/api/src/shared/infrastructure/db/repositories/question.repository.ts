@@ -105,6 +105,7 @@ export class QuestionRepository implements IRepository<
       .set({
         title: entity.title,
         subjects: entity.subjects,
+        source: entity.source,
         content: entity.content,
         updatedAt: new Date(),
       })
@@ -121,7 +122,7 @@ export class QuestionRepository implements IRepository<
 
     const incomingIds = new Set(
       entity.answers
-        .map((a) => a.id)
+        .map((answer) => answer.id)
         .filter((id): id is string => id !== undefined),
     );
 

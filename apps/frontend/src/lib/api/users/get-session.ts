@@ -10,7 +10,7 @@ export type User = {
   avatarUrl?: string;
   createdAt: string;
   updatedAt: string;
-  permissions: Permission[];
+  permissions?: Permission[];
 };
 
 export type Session =
