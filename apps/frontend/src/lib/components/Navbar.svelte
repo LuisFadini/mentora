@@ -59,20 +59,20 @@
   <div
     class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 lg:px-8"
   >
-    <a class="flex flex-row gap-2 items-center" href={resolve("/")}>
+    <a class="flex flex-row items-center gap-2" href={resolve("/")}>
       <img
         class="h-12 rounded-md bg-gray-600"
         alt=""
         src="https://api.dicebear.com/10.x/triangles/svg?seed=Mentora"
       />
-      <p class="text-2xl font-bold hidden lg:block">Mentora</p>
+      <p class="hidden text-2xl font-bold lg:block">Mentora</p>
     </a>
 
     <nav class="hidden lg:block">
       <ul class="flex items-center gap-8">
         {#each headerLinks as link (link.text)}
           <li
-            class="text-2xl font-bold hover:underline decoration-2 transition-all text-gray-900 hover:text-blue-400 duration-150"
+            class="text-2xl font-bold text-gray-900 decoration-2 transition-all duration-150 hover:text-blue-400 hover:underline"
           >
             <a href={link.href}>{link.text}</a>
           </li>
@@ -84,7 +84,7 @@
       {#if session && session.authenticated}
         {const user = session.user}
         <button
-          class="hidden sm:flex items-center gap-3 cursor-pointer"
+          class="hidden cursor-pointer items-center gap-3 sm:flex"
           onclick={async () => await redirect("/user/settings")}
           type="button"
         >
@@ -103,7 +103,7 @@
         </button>
       {:else}
         <Button
-          class="hidden sm:flex px-4 py-2 font-bold text-white"
+          class="hidden px-4 py-2 font-bold text-white sm:flex"
           icon="ph:sign-in-bold"
           iconClass="text-lg"
           iconPosition="right"
@@ -115,7 +115,7 @@
       {/if}
 
       <Button
-        class="size-11 flex lg:hidden"
+        class="flex size-11 lg:hidden"
         aria-label="Abrir menu"
         icon={mobileMenuOpen ? "ph:x-bold" : "ph:list-bold"}
         iconClass="text-2xl"
@@ -127,7 +127,7 @@
 
   {#if mobileMenuOpen}
     <div
-      class="absolute top-full left-0 right-0 border-y-2 border-black bg-white p-4 shadow-[0_6px_0_0_black] lg:hidden"
+      class="absolute top-full right-0 left-0 border-y-2 border-black bg-white p-4 shadow-[0_6px_0_0_black] lg:hidden"
     >
       <ul class="flex flex-col gap-3">
         {#each headerLinks as link (link.text)}
@@ -142,12 +142,12 @@
           </li>
         {/each}
 
-        <Separator class="flex sm:hidden bg-blue-200 shadow-none" />
+        <Separator class="flex bg-blue-200 shadow-none sm:hidden" />
 
         {#if session && session.authenticated}
           {const user = session.user}
           <button
-            class="mb-4 flex sm:hidden items-center gap-3 rounded-lg border-2 border-black bg-gray-50 p-3 cursor-pointer"
+            class="mb-4 flex cursor-pointer items-center gap-3 rounded-lg border-2 border-black bg-gray-50 p-3 sm:hidden"
             onclick={async () => await redirect("/user/settings")}
             type="button"
           >
@@ -163,7 +163,7 @@
           </button>
         {:else}
           <Button
-            class="flex sm:hidden font-bold"
+            class="flex font-bold sm:hidden"
             icon="ph:sign-in-bold"
             iconPosition="right"
             onclick={async () => await redirect("/login")}

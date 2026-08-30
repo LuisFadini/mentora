@@ -17,7 +17,7 @@
 <nav>
   <ol class="relative mx-auto flex w-full max-w-xl items-start justify-between">
     <div
-      class="absolute left-5 right-5 top-5 z-0 h-0.5 rounded-full bg-black/20"
+      class="absolute top-5 right-5 left-5 z-0 h-0.5 rounded-full bg-black/20"
     >
       <div
         style={`width: ${progress}%`}
@@ -52,7 +52,7 @@
 
           <span
             class={[
-              "whitespace-nowrap text-sm font-bold transition-colors",
+              "text-sm font-bold whitespace-nowrap transition-colors",
               activeStep === index ? "text-black" : "text-gray-500",
             ]}
           >

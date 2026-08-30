@@ -41,7 +41,7 @@
   <textarea
     {id}
     class={twMerge(
-      "min-h-32 flex-1 resize-none rounded-lg border-2 border-black bg-white px-2 py-2 outline-none transition-all focus:-translate-x-1 focus:-translate-y-1 focus:shadow-[6px_6px_0_0_black]",
+      "min-h-32 flex-1 resize-none rounded-lg border-2 border-black bg-white px-2 py-2 transition-all outline-none focus:-translate-x-1 focus:-translate-y-1 focus:shadow-[6px_6px_0_0_black]",
       className,
     )}
     class:border-green-500={!error && value.trim() !== "" && !focused}

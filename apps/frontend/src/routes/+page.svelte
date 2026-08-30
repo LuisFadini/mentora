@@ -37,7 +37,7 @@
   }
 </script>
 
-<main class="h-screen w-screen flex flex-col gap-2 justify-center items-center">
+<main class="flex h-screen w-screen flex-col items-center justify-center gap-2">
   {#if data.session && data.session.authenticated}
     {const user = data.session.user}
     <PageContainer class="w-full max-w-sm sm:max-w-lg lg:max-w-xl">
@@ -54,11 +54,11 @@
           </h2>
 
           <h1
-            class="relative inline-block w-fit text-4xl font-black leading-none"
+            class="relative inline-block w-fit text-4xl leading-none font-black"
           >
             <span class="relative z-10">{user.name}!</span>
             <span
-              class="absolute -bottom-0.5 left-[-2.5%] h-3 w-[110%] z-0 -skew-x-6 bg-blue-300"
+              class="absolute -bottom-0.5 left-[-2.5%] z-0 h-3 w-[110%] -skew-x-6 bg-blue-300"
             ></span>
           </h1>
         </div>
@@ -94,7 +94,7 @@
   {:else}
     <h1 class="text-center text-5xl font-semibold text-gray-800">
       “Seu caminho até a aprovação <span
-        class="bg-blue-400/60 -m-1 p-1 rounded-md border-2 border-zinc-500/50 text-nowrap"
+        class="-m-1 rounded-md border-2 border-zinc-500/50 bg-blue-400/60 p-1 text-nowrap"
       >
         começa aqui
       </span>”

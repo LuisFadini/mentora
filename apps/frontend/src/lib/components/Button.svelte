@@ -55,7 +55,7 @@
 <button
   style={shadowStyle}
   class={twMerge(
-    "cursor-pointer disabled:cursor-not-allowed flex items-center justify-center rounded-lg border-2 border-black transition-all",
+    "flex cursor-pointer items-center justify-center rounded-lg border-2 border-black transition-all disabled:cursor-not-allowed",
     "enabled:shadow-[var(--button-shadow-size)_var(--button-shadow-size)_0_0_black] enabled:hover:translate-(--button-shadow-size) enabled:hover:shadow-none",
     iconOnly ? "aspect-square p-3" : "gap-2 px-6 py-3",
     variantClasses[variant],

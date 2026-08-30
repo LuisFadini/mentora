@@ -60,5 +60,5 @@
     />
   </div>
 
-  <ErrorText class="text-sm text-start" message={error} />
+  <ErrorText class="text-start text-sm" message={error} />
 </div>

@@ -13,7 +13,7 @@
 
 <div class="flex flex-col gap-5">
   <div class="flex items-start justify-between gap-4">
-    <h1 class="text-3xl font-black leading-none sm:text-4xl">
+    <h1 class="text-3xl leading-none font-black sm:text-4xl">
       {title}
     </h1>
 

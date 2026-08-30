@@ -252,9 +252,13 @@
   closeButtonVariant="primary"
   bind:showModal={showConfirmAccountDeletionModal}
 >
-  <h1 class="text-3xl font-bold text-center">Deletar conta?</h1>
+  <h1 class="text-center text-3xl font-bold">Deletar conta?</h1>
 
-  <Button class="mx-auto mt-6" onclick={deleteAccount} variant="danger">
+  <Button
+    class="mx-auto mt-6 font-bold"
+    onclick={deleteAccount}
+    variant="danger"
+  >
     Confirmar
   </Button>
 </Modal>
@@ -277,7 +281,7 @@
 
     <div class="flex gap-2">
       <Button
-        class="flex-1"
+        class="flex-1 font-semibold"
         disabled={!avatarDraft && !avatarUrl}
         onclick={removeAvatar}
         variant="secondary"
@@ -286,7 +290,7 @@
       </Button>
 
       <Button
-        class="flex-1"
+        class="flex-1 font-semibold"
         disabled={!!avatarUrlError}
         onclick={confirmAvatarChange}>Confirmar</Button
       >
@@ -295,15 +299,15 @@
 </Modal>
 
 <main
-  class="min-h-[calc(100vh-4rem)] pt-16 flex items-center justify-center p-4 sm:p-6"
+  class="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4 pt-16 sm:p-6"
 >
-  <PageContainer class="w-full max-w-3xl flex flex-col gap-6">
+  <PageContainer class="flex w-full max-w-3xl flex-col gap-6">
     <h1 class="text-center text-3xl font-bold">Configurações</h1>
 
     <Separator class="mx-auto w-4/5 bg-blue-400" />
 
     <div class="flex flex-col-reverse gap-8 lg:flex-row lg:items-start">
-      <div class="flex flex-1 flex-col gap-4 w-full max-w-2xl">
+      <div class="flex w-full max-w-2xl flex-1 flex-col gap-4">
         <TextField
           id="name"
           icon="ph:user-bold"
@@ -353,14 +357,18 @@
         />
       </div>
 
-      <div class="flex flex-row items-center gap-4 mx-auto lg:flex-col">
+      <div class="mx-auto flex flex-row items-center gap-4 lg:flex-col">
         <Avatar
           name={name || session.user.name}
           class="size-24 sm:size-28 lg:size-32"
           avatarUrl={avatarUrl || undefined}
         />
 
-        <Button onclick={openChangeAvatarModal} variant="secondary">
+        <Button
+          class="font-medium"
+          onclick={openChangeAvatarModal}
+          variant="secondary"
+        >
           Alterar foto
         </Button>
       </div>
@@ -370,7 +378,7 @@
 
     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
       <Button
-        class="w-full sm:w-auto"
+        class="w-full font-medium sm:w-auto"
         disabled={loading}
         onclick={() => {
           showConfirmAccountDeletionModal = true;
@@ -381,7 +389,7 @@
       </Button>
 
       <Button
-        class="w-full sm:w-auto"
+        class="w-full font-bold sm:w-auto"
         disabled={!dataChanged || hasErrors || loading}
         onclick={save}
       >
