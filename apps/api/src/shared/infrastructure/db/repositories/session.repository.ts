@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 
 import type { Session } from "../../../../modules/auth/auth.types.ts";
 import type { ISessionRepository } from "../../../interfaces/repository.interface.ts";
@@ -61,5 +61,22 @@ export class SessionRepository implements ISessionRepository {
       .returning({ id: sessionsTable.id });
 
     return rows.length > 0;
+  }
+
+  async deleteOtherSessions(
+    userId: string,
+    currentSessionId: string,
+  ): Promise<number> {
+    const rows = await this.db
+      .delete(sessionsTable)
+      .where(
+        and(
+          eq(sessionsTable.userId, userId),
+          ne(sessionsTable.id, currentSessionId),
+        ),
+      )
+      .returning({ id: sessionsTable.id });
+
+    return rows.length;
   }
 }

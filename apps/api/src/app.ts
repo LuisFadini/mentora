@@ -48,7 +48,11 @@ export function createApp(db: DB): Express {
 
   const passwordHasher = new Argon2idPasswordHasher();
 
-  const usersService = new UsersService(userRepository, passwordHasher);
+  const usersService = new UsersService(
+    userRepository,
+    passwordHasher,
+    sessionRepository,
+  );
   const usersController = new UserController(usersService);
   app.use(
     "/users",

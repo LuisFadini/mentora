@@ -29,12 +29,12 @@
   );
 </script>
 
-<main class="min-h-screen flex items-center justify-center p-4">
+<main class="flex min-h-screen items-center justify-center p-4">
   <PageContainer
     class="flex w-full max-w-3xl flex-col gap-2 p-4 sm:p-6"
     as="section"
   >
-    <h1 class="text-3xl font-black leading-none sm:text-4xl">Questões</h1>
+    <h1 class="text-3xl leading-none font-black sm:text-4xl">Questões</h1>
 
     <div class="flex flex-col gap-1.5">
       <label class="font-semibold" for="subject">Matéria</label>
@@ -87,7 +87,7 @@
                 {/each}
               </div>
 
-              <span class="hidden sm:inline text-neutral-500">•</span>
+              <span class="hidden text-neutral-500 sm:inline">•</span>
 
               <p>Fonte: {question.source}</p>
             </div>
@@ -135,7 +135,7 @@
 
     {#if hasPermission(session.user, "questions.create")}
       <Button
-        class="font-bold py-3"
+        class="py-3 font-bold"
         onclick={async () => await goto(resolve("/(app)/questions/create"))}
       >
         Criar nova

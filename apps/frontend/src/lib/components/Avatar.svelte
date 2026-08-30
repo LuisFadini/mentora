@@ -20,5 +20,5 @@
     className,
   )}
   alt={name}
-  src={avatarUrl ?? fallback}
+  src={avatarUrl || fallback}
 />

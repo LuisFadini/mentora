@@ -1,7 +1,10 @@
 import { eq } from "drizzle-orm";
 
 import type { User } from "../../../../modules/users/user.types.ts";
-import type { IUserRepository } from "../../../interfaces/repository.interface.ts";
+import type {
+  IUserRepository,
+  PersistedUser,
+} from "../../../interfaces/repository.interface.ts";
 import type { DB } from "../index.ts";
 import { usersTable } from "../schema.ts";
 
@@ -10,25 +13,25 @@ type DbUser = typeof usersTable.$inferSelect;
 export class UserRepository implements IUserRepository {
   constructor(private db: DB) {}
 
-  private toDomainUser(dbUser: DbUser): User {
+  private toDomainUser(dbUser: DbUser): PersistedUser {
     return {
       id: dbUser.id,
       name: dbUser.name,
       email: dbUser.email,
       password: dbUser.password,
-      avatarUrl: dbUser.avatarUrl ?? undefined,
+      avatarUrl: dbUser.avatarUrl ?? null,
       createdAt: dbUser.createdAt,
       updatedAt: dbUser.updatedAt,
       permissions: dbUser.permissions ?? [],
     };
   }
 
-  async findAll(): Promise<User[]> {
+  async findAll(): Promise<PersistedUser[]> {
     const rows = await this.db.select().from(usersTable);
     return rows.map((r) => this.toDomainUser(r));
   }
 
-  async findById(id: string): Promise<User | null> {
+  async findById(id: string): Promise<PersistedUser | null> {
     const rows = await this.db
       .select()
       .from(usersTable)
@@ -38,7 +41,7 @@ export class UserRepository implements IUserRepository {
     return rows[0] ? this.toDomainUser(rows[0]) : null;
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+  async findByEmail(email: string): Promise<PersistedUser | null> {
     const rows = await this.db
       .select()
       .from(usersTable)
@@ -48,7 +51,7 @@ export class UserRepository implements IUserRepository {
     return rows[0] ? this.toDomainUser(rows[0]) : null;
   }
 
-  async create(entity: User): Promise<User> {
+  async create(entity: User): Promise<PersistedUser> {
     const [row] = await this.db.insert(usersTable).values(entity).returning();
 
     if (!row) {
@@ -58,7 +61,7 @@ export class UserRepository implements IUserRepository {
     return this.toDomainUser(row);
   }
 
-  async update(entity: User): Promise<User> {
+  async update(entity: User): Promise<PersistedUser> {
     if (!entity.id) {
       throw new Error("User id is required for update");
     }

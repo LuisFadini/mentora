@@ -90,13 +90,13 @@
 <Modal {onClose} bind:showModal>
   {#if isCorrect === true}
     <Icon
-      class="size-1/2 mx-auto text-green-500"
+      class="mx-auto size-1/2 text-green-500"
       icon="ph:circle-wavy-check-fill"
     />
 
-    <h1 class="text-2xl font-bold text-center">Parabéns, você acertou!</h1>
+    <h1 class="text-center text-2xl font-bold">Parabéns, você acertou!</h1>
   {:else}
-    <Icon class="size-1/2 mx-auto text-red-500" icon="ph:x-circle-fill" />
+    <Icon class="mx-auto size-1/2 text-red-500" icon="ph:x-circle-fill" />
     <h1 class="text-2xl font-bold">A resposta correta seria:</h1>
     <div class="mt-2">
       {#if correctAnswerId}
@@ -111,7 +111,7 @@
 </Modal>
 
 <main
-  class="min-h-[calc(100vh-4rem)] pt-16 flex items-center justify-center p-4"
+  class="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4 pt-16"
 >
   <PageContainer class="flex w-full max-w-3xl flex-col p-4 sm:p-6" as="section">
     <QuestionMetadata
@@ -136,11 +136,11 @@
 
     <MarkdownRenderer markdown={question.content} />
 
-    <form class="flex flex-col gap-5 mt-2" novalidate onsubmit={handleSubmit}>
+    <form class="mt-2 flex flex-col gap-5" novalidate onsubmit={handleSubmit}>
       <div class="flex flex-col gap-3">
         {#each question.answers as answer (answer.id)}
           <label
-            class="group flex cursor-pointer items-center gap-3 border-2 border-black rounded-lg bg-white px-4 py-4 shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_black] active:translate-x-0 active:translate-y-0 active:shadow-none has-checked:translate-x-0.5 has-checked:translate-y-0.5 has-checked:shadow-none has-checked:bg-blue-200"
+            class="group flex cursor-pointer items-center gap-3 rounded-lg border-2 border-black bg-white px-4 py-4 shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_black] active:translate-x-0 active:translate-y-0 active:shadow-none has-checked:translate-x-0.5 has-checked:translate-y-0.5 has-checked:bg-blue-200 has-checked:shadow-none"
             for="answer-{answer.id}"
           >
             <input
@@ -164,7 +164,7 @@
       <div class="flex items-center justify-between gap-3">
         {#if data.tipsAvailable > 0}
           <Button
-            class="px-4 font-black"
+            class="px-4 font-semibold"
             disabled={tipsUsed === data.tipsAvailable}
             onclick={useTip}
           >
@@ -182,6 +182,7 @@
         {/if}
 
         <Button
+          class="font-bold"
           disabled={!selectedAnswer || isLoading || isCorrect !== null}
           icon="ph:check-bold"
           iconClass="text-lg"

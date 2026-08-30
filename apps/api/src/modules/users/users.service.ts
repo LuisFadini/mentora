@@ -2,13 +2,18 @@ import { omit, removeUndefined } from "@mentora/utils";
 
 import { ConflictError } from "../../shared/errors/conflict.error.ts";
 import type { IPasswordHasher } from "../../shared/interfaces/password-hasher.interface.ts";
-import type { IUserRepository } from "../../shared/interfaces/repository.interface.ts";
-import type { User } from "./user.types.ts";
+import type {
+  ISessionRepository,
+  IUserRepository,
+} from "../../shared/interfaces/repository.interface.ts";
+import type { CreateUserDTO } from "./dto/create-user.dto.ts";
+import type { UpdateUserDTO } from "./dto/update-user.dto.ts";
 
 export class UsersService {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly passwordHasher: IPasswordHasher,
+    private readonly sessionRepository: ISessionRepository,
   ) {}
 
   async getUsers() {
@@ -22,9 +27,7 @@ export class UsersService {
     return omit(user, ["password"]);
   }
 
-  async createUser(
-    data: Omit<User, "createdAt" | "updatedAt" | "permissions">,
-  ) {
+  async createUser(data: CreateUserDTO) {
     const existingUser = await this.userRepository.findByEmail(data.email);
 
     if (existingUser) {
@@ -43,14 +46,16 @@ export class UsersService {
     return omit(createdUser, ["password"]);
   }
 
-  async updateUser(
-    id: string,
-    data: Partial<Omit<User, "id" | "createdAt" | "updatedAt" | "permissions">>,
-  ) {
+  async updateUser(id: string, data: UpdateUserDTO, currentSessionId: string) {
     const existingUser = await this.userRepository.findById(id);
     if (!existingUser) return null;
 
     const cleanData = removeUndefined(data);
+
+    const emailChanged =
+      cleanData.email !== undefined && cleanData.email !== existingUser.email;
+
+    const passwordChanged = cleanData.password !== undefined;
 
     if (cleanData.email) {
       const userWithSameEmail = await this.userRepository.findByEmail(
@@ -62,7 +67,7 @@ export class UsersService {
       }
     }
 
-    if (cleanData.password) {
+    if (passwordChanged && cleanData.password) {
       cleanData.password = await this.passwordHasher.hash(cleanData.password);
     }
 
@@ -72,6 +77,16 @@ export class UsersService {
       updatedAt: new Date(),
     });
 
+    if (emailChanged || passwordChanged) {
+      await this.sessionRepository.deleteOtherSessions(id, currentSessionId);
+    }
+
     return omit(updatedUser, ["password"]);
+  }
+
+  async deleteUser(id: string) {
+    const user = await this.userRepository.delete(id);
+    if (!user) return null;
+    return true;
   }
 }

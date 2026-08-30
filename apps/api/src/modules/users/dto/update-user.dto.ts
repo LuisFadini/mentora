@@ -23,5 +23,5 @@ export class UpdateUserDTO {
 
   @IsOptional()
   @IsUrl()
-  avatarUrl?: string;
+  avatarUrl?: string | null;
 }

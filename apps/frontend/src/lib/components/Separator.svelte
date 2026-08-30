@@ -23,7 +23,7 @@
 <hr
   {style}
   class={twMerge(
-    "border-2 border-black rounded-xl bg-blue-500 shadow-[2px_2px_0_0_black]",
+    "rounded-xl border-2 border-black bg-blue-500 shadow-[2px_2px_0_0_black]",
     orientation === "horizontal" ? "h-2" : "w-2",
     className,
   )}
