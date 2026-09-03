@@ -8,7 +8,7 @@ import type {
 import type { DB } from "../index.ts";
 import { questionAttemptTable } from "../schema.ts";
 
-export class QuestionAttemptRepository implements IAttemptRepository {
+export class AttemptRepository implements IAttemptRepository {
   constructor(private db: DB) {}
 
   async findAll(): Promise<PersistedAttempt[]> {
@@ -23,6 +23,13 @@ export class QuestionAttemptRepository implements IAttemptRepository {
       .limit(1);
 
     return row ?? null;
+  }
+
+  async findByUserId(userId: string): Promise<PersistedAttempt[]> {
+    return await this.db
+      .select()
+      .from(questionAttemptTable)
+      .where(eq(questionAttemptTable.userId, userId));
   }
 
   async create(entity: Attempt): Promise<PersistedAttempt> {

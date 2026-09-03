@@ -5,6 +5,9 @@ import { pinoHttp } from "pino-http";
 
 import { config } from "./config/env.ts";
 import { logger } from "./logger.ts";
+import { AttemptController } from "./modules/attempts/attempts.controller.ts";
+import { createAttemptsRoutes } from "./modules/attempts/attempts.routes.ts";
+import { AttemptService } from "./modules/attempts/attempts.service.ts";
 import { AuthController } from "./modules/auth/auth.controller.ts";
 import { createAuthRoutes } from "./modules/auth/auth.routes.ts";
 import { AuthService } from "./modules/auth/auth.service.ts";
@@ -16,6 +19,7 @@ import { createUsersRoutes } from "./modules/users/users.routes.ts";
 import { UsersService } from "./modules/users/users.service.ts";
 import type { DB } from "./shared/infrastructure/db/index.ts";
 import { AnswerRepository } from "./shared/infrastructure/db/repositories/answer.repository.ts";
+import { AttemptRepository } from "./shared/infrastructure/db/repositories/attempt.repository.ts";
 import { QuestionRepository } from "./shared/infrastructure/db/repositories/question.repository.ts";
 import { QuestionTipRepository } from "./shared/infrastructure/db/repositories/question-tip.repository.ts";
 import { SessionRepository } from "./shared/infrastructure/db/repositories/session.repository.ts";
@@ -83,6 +87,11 @@ export function createApp(db: DB): Express {
     "/questions",
     createQuestionsRoutes(questionsController, authMiddleware),
   );
+
+  const attemptRepository = new AttemptRepository(db);
+  const attemptService = new AttemptService(attemptRepository);
+  const attemptController = new AttemptController(attemptService);
+  app.use("/attempts", createAttemptsRoutes(attemptController, authMiddleware));
 
   return app;
 }

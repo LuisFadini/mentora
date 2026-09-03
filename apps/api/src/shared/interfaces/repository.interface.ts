@@ -61,7 +61,9 @@ export interface IQuestionTipsRepository extends IRepository<
 
 export type PersistedAttempt = Attempt & { id: string };
 
-export type IAttemptRepository = Omit<
+export interface IAttemptRepository extends Omit<
   IRepository<Attempt, PersistedAttempt>,
   "update"
->;
+> {
+  findByUserId(userId: string): Promise<PersistedAttempt[]>;
+}
