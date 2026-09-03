@@ -109,3 +109,34 @@ export const questionTipsTable = sqliteTable(
     uniqueIndex("tips_question_order_unique").on(table.questionId, table.order),
   ],
 );
+
+export const questionAttemptTable = sqliteTable(
+  "question_attempts",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => uuidv7()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => usersTable.id, {
+        onDelete: "cascade",
+      }),
+    questionId: text("question_id")
+      .notNull()
+      .references(() => questionsTable.id, {
+        onDelete: "cascade",
+      }),
+    answerId: text("answer_id")
+      .notNull()
+      .references(() => answersTable.id, {
+        onDelete: "cascade",
+      }),
+    tipsUsed: integer("tips_used").notNull(),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => [
+    check("question_attempts_tips_used_check", sql`${table.tipsUsed} >= 0`),
+  ],
+);
