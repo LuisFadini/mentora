@@ -75,5 +75,15 @@ export const schemas = {
     .addProperty("updatedAt", { type: "string", format: "date-time" }, true)
     .build(),
 
+  Attempt: new OpenAPISchemaBuilder()
+    .setDescription("Question attempt entity")
+    .addProperty("id", { type: "string", format: "uuid" }, true)
+    .addProperty("userId", { type: "string", format: "uuid" }, true)
+    .addProperty("questionId", { type: "string", format: "uuid" }, true)
+    .addProperty("answerId", { type: "string", format: "uuid" }, true)
+    .addProperty("tipsUsed", { type: "integer", minimum: 0 }, true)
+    .addProperty("createdAt", { type: "string", format: "date-time" }, true)
+    .build(),
+
   ...classValidatorSchemas,
 };
