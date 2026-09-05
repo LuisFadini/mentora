@@ -40,7 +40,7 @@
 <main class="flex h-screen w-screen flex-col items-center justify-center gap-2">
   {#if data.session && data.session.authenticated}
     {const user = data.session.user}
-    <PageContainer class="w-full max-w-sm sm:max-w-lg lg:max-w-xl">
+    <PageContainer class="sm:max-w-lh w-full max-w-sm lg:max-w-2xl">
       <div class="flex flex-row justify-between">
         <div class="flex flex-col">
           <h2 class="text-3xl font-bold">
@@ -66,19 +66,29 @@
         <Avatar name={user.name} class="size-36" avatarUrl={user.avatarUrl} />
       </div>
 
-      <div class="mx-2 mt-2 flex flex-col gap-2 sm:flex-row sm:justify-between">
+      <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
         <Button
-          class="w-full font-bold sm:w-auto"
+          class="w-full font-bold"
           icon="ph:gear-bold"
           iconPosition="right"
-          onclick={async () => await goto(resolve("/(app)/user/settings"))}
+          onclick={() => goto(resolve("/(app)/user/settings"))}
           shadowVariant="base"
         >
           Configurações
         </Button>
 
         <Button
-          class="w-full font-bold sm:w-auto"
+          class="w-full font-bold"
+          icon="ph:clock-counter-clockwise-bold"
+          iconPosition="right"
+          onclick={() => goto(resolve("/(app)/user/history"))}
+          shadowVariant="base"
+        >
+          Histórico
+        </Button>
+
+        <Button
+          class="w-full font-bold"
           icon="ph:sign-out-bold"
           iconPosition="right"
           onclick={logout}

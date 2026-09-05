@@ -79,8 +79,8 @@ export const schemas = {
     .setDescription("Question attempt entity")
     .addProperty("id", { type: "string", format: "uuid" }, true)
     .addProperty("userId", { type: "string", format: "uuid" }, true)
-    .addProperty("questionId", { type: "string", format: "uuid" }, true)
-    .addProperty("answerId", { type: "string", format: "uuid" }, true)
+    .addProperty("question", schemaRef("Question"), true)
+    .addProperty("answer", schemaRef("Answer"), true)
     .addProperty("tipsUsed", { type: "integer", minimum: 0 }, true)
     .addProperty("createdAt", { type: "string", format: "date-time" }, true)
     .build(),

@@ -88,7 +88,7 @@ export function createApp(db: DB): Express {
     createQuestionsRoutes(questionsController, authMiddleware),
   );
 
-  const attemptRepository = new AttemptRepository(db);
+  const attemptRepository = new AttemptRepository(db, questionRepository);
   const attemptService = new AttemptService(attemptRepository);
   const attemptController = new AttemptController(attemptService);
   app.use("/attempts", createAttemptsRoutes(attemptController, authMiddleware));
