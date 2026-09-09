@@ -3,6 +3,7 @@
 
   import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
+  import { createAttempt } from "$lib/api/attempts/create-attempt";
   import { getQuestionTip } from "$lib/api/questions/get-question-tip";
   import type { QuestionTip } from "$lib/api/questions/types";
   import { validateQuestion } from "$lib/api/questions/validate-question";
@@ -63,6 +64,16 @@
 
       isCorrect = result.correct;
       correctAnswerId = result.correctAnswerId;
+
+      try {
+        await createAttempt({
+          questionId: question.id,
+          answerId: selectedAnswer,
+          tipsUsed,
+        });
+      } catch (error) {
+        console.log(error);
+      }
 
       showModal = true;
     } catch (err) {

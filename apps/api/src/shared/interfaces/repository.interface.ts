@@ -1,3 +1,7 @@
+import type {
+  Attempt,
+  CreateAttempt,
+} from "../../modules/attempts/attempt.types.ts";
 import type { Session } from "../../modules/auth/auth.types.ts";
 import type {
   Answer,
@@ -56,4 +60,13 @@ export interface IQuestionTipsRepository extends IRepository<
     questionId: string,
     questionTips: QuestionTip[],
   ): Promise<PersistedQuestionTip[]>;
+}
+
+export type PersistedAttempt = Attempt & { id: string };
+
+export interface IAttemptRepository extends Omit<
+  IRepository<CreateAttempt, PersistedAttempt>,
+  "update"
+> {
+  findByUserId(userId: string): Promise<PersistedAttempt[]>;
 }
