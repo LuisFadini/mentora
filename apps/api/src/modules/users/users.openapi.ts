@@ -90,4 +90,34 @@ export const usersPaths = new OpenAPIPathBuilder()
         ],
       }),
   )
+  .addPath(
+    "/users/{id}/avatar",
+    new OpenAPIMethodBuilder().addMethod("get", {
+      summary: "Get user avatar",
+      operationId: "getUserAvatar",
+      responses: new OpenAPIResponseBuilder()
+        .addResponse("200", "User avatar", {
+          content: {
+            "image/jpeg": {
+              schema: {
+                type: "string",
+                format: "binary",
+              },
+            },
+          },
+        })
+        .addResponse("404", "User avatar not found"),
+      tags: ["Users"],
+      parameters: [
+        {
+          name: "id",
+          in: "path",
+          required: true,
+          description: "User UUID",
+          schema: { type: "string", format: "uuid" },
+        },
+      ],
+    }),
+  )
+
   .build();

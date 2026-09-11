@@ -1,6 +1,8 @@
 import { omit, removeUndefined } from "@mentora/utils";
+import sharp from "sharp";
 
 import { ConflictError } from "../../shared/errors/conflict.error.ts";
+import type { IFileStorage } from "../../shared/interfaces/file-storage.interface.ts";
 import type { IPasswordHasher } from "../../shared/interfaces/password-hasher.interface.ts";
 import type {
   ISessionRepository,
@@ -14,7 +16,10 @@ export class UsersService {
     private readonly userRepository: IUserRepository,
     private readonly passwordHasher: IPasswordHasher,
     private readonly sessionRepository: ISessionRepository,
+    private readonly fileStorage: IFileStorage,
   ) {}
+
+  private fileStorageKey = (id: string) => `users/${id}.jpg`;
 
   async getUsers() {
     const users = await this.userRepository.findAll();
@@ -25,6 +30,12 @@ export class UsersService {
     const user = await this.userRepository.findById(id);
     if (!user) return null;
     return omit(user, ["password"]);
+  }
+
+  async getUserAvatar(id: string) {
+    const user = await this.userRepository.findById(id);
+    if (!user) return null;
+    return await this.fileStorage.get(this.fileStorageKey(id));
   }
 
   async createUser(data: CreateUserDTO) {
@@ -48,6 +59,7 @@ export class UsersService {
 
   async updateUser(id: string, data: UpdateUserDTO, currentSessionId: string) {
     const existingUser = await this.userRepository.findById(id);
+
     if (!existingUser) return null;
 
     const cleanData = removeUndefined(data);
@@ -71,9 +83,43 @@ export class UsersService {
       cleanData.password = await this.passwordHasher.hash(cleanData.password);
     }
 
+    let avatarUrl = existingUser.avatarUrl ?? null;
+
+    if (cleanData.avatar === null) {
+      await this.fileStorage.delete(this.fileStorageKey(id));
+      avatarUrl = null;
+      delete cleanData.avatar;
+    } else if (cleanData.avatar) {
+      const base64 = cleanData.avatar.includes(";base64,")
+        ? cleanData.avatar.split(";base64,")[1]!
+        : cleanData.avatar;
+      const jpegImage = await sharp(Buffer.from(base64, "base64"))
+        .rotate()
+        .resize(500, 500, {
+          fit: "cover",
+          position: "centre",
+        })
+        .jpeg({
+          quality: 80,
+          mozjpeg: true,
+        })
+        .toBuffer();
+
+      await this.fileStorage.put(
+        this.fileStorageKey(id),
+        jpegImage,
+        "image/jpeg",
+      );
+
+      avatarUrl = `/users/${id}/avatar`;
+
+      delete cleanData.avatar;
+    }
+
     const updatedUser = await this.userRepository.update({
       ...existingUser,
       ...cleanData,
+      avatarUrl,
       updatedAt: new Date(),
     });
 
@@ -87,6 +133,7 @@ export class UsersService {
   async deleteUser(id: string) {
     const user = await this.userRepository.delete(id);
     if (!user) return null;
+    await this.fileStorage.delete(this.fileStorageKey(id));
     return true;
   }
 }

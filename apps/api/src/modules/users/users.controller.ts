@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 
+import { logger } from "../../logger.ts";
 import { ConflictError } from "../../shared/errors/conflict.error.ts";
 import type { CreateUserDTO } from "./dto/create-user.dto.ts";
 import type { UpdateUserDTO } from "./dto/update-user.dto.ts";
@@ -18,6 +19,18 @@ export class UserController {
     const user = await this.usersService.getUserById(req.params.id);
     if (!user) return res.status(404).json({ message: "User not found" });
     return res.json(user);
+  };
+
+  getUserAvatar = async (req: Request<GetUserParams>, res: Response) => {
+    const avatarBuffer = await this.usersService.getUserAvatar(req.user!.id!);
+
+    if (!avatarBuffer)
+      return res.status(404).json({ message: "User avatar not found" });
+
+    res.set("Content-Type", "image/jpeg");
+    res.set("Cache-Control", "public, max-age=3600");
+
+    return res.send(avatarBuffer);
   };
 
   createUser = async (
@@ -57,6 +70,7 @@ export class UserController {
 
       return res.status(200).json(updatedUser);
     } catch (error) {
+      logger.error(error);
       if (error instanceof ConflictError) {
         return res.status(409).json({
           message: error.message,

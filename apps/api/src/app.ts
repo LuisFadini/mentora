@@ -26,14 +26,15 @@ import { SessionRepository } from "./shared/infrastructure/db/repositories/sessi
 import { UserRepository } from "./shared/infrastructure/db/repositories/user.repository.ts";
 import { createOpenAPiRoutes } from "./shared/infrastructure/openapi/openapi.routes.ts";
 import { Argon2idPasswordHasher } from "./shared/infrastructure/security/argon2-password-hasher.ts";
+import type { IFileStorage } from "./shared/interfaces/file-storage.interface.ts";
 import { makeAuthMiddleware } from "./shared/middlewares/auth.middleware.ts";
 import { makeGuestMiddleware } from "./shared/middlewares/guest.middleware.ts";
 
-export function createApp(db: DB): Express {
+export function createApp(db: DB, fileStorage: IFileStorage): Express {
   const app = express();
 
   if (!config.isTest) app.use(pinoHttp({ logger }));
-  app.use(express.json());
+  app.use(express.json({ limit: "2mb" }));
   app.use(cookieParser());
   app.use(
     cors({
@@ -56,6 +57,7 @@ export function createApp(db: DB): Express {
     userRepository,
     passwordHasher,
     sessionRepository,
+    fileStorage,
   );
   const usersController = new UserController(usersService);
   app.use(

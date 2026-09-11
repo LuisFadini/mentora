@@ -22,6 +22,12 @@ export function createUsersRoutes(
     requireSelfParam<GetUserParams>("id"),
     controller.getUser,
   );
+  router.get(
+    "/:id/avatar",
+    authMiddleware,
+    requireSelfParam<GetUserParams>("id"),
+    controller.getUserAvatar,
+  );
   router.post(
     "/",
     guestMiddleware,

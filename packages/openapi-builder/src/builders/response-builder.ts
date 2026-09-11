@@ -6,7 +6,10 @@ export class OpenAPIResponseBuilder {
   addResponse(
     statusCode: string,
     description: string,
-    content?: Record<string, { schema: unknown }>,
+    content?: Record<
+      string,
+      { schema?: Record<string, unknown> } | { [key: string]: unknown }
+    >,
   ): this {
     this.responses[statusCode] = { description, content };
     return this;
