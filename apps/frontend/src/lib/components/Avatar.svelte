@@ -1,6 +1,8 @@
 <script lang="ts">
   import { twMerge } from "tailwind-merge";
 
+  import { API_URL } from "$lib/api/client";
+
   type Props = {
     name: string;
     avatarUrl?: string;
@@ -12,6 +14,14 @@
   const fallback = $derived(
     `https://api.dicebear.com/10.x/identicon/svg?seed=${encodeURIComponent(name)}`,
   );
+
+  const src = $derived(
+    avatarUrl
+      ? avatarUrl.startsWith("data:image/")
+        ? avatarUrl
+        : `${API_URL}${avatarUrl}`
+      : fallback,
+  );
 </script>
 
 <img
@@ -20,5 +30,5 @@
     className,
   )}
   alt={name}
-  src={avatarUrl || fallback}
+  {src}
 />

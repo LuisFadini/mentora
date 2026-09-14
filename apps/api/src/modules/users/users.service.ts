@@ -34,7 +34,7 @@ export class UsersService {
 
   async getUserAvatar(id: string) {
     const user = await this.userRepository.findById(id);
-    if (!user) return null;
+    if (!user || !user.avatarUrl) return null;
     return await this.fileStorage.get(this.fileStorageKey(id));
   }
 

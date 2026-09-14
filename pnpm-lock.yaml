@@ -348,6 +348,10 @@ importers:
         version: 13.1.3
 
   apps/frontend:
+    dependencies:
+      svelte-easy-crop:
+        specifier: ^5.0.1
+        version: 5.0.1(svelte@5.56.6(@typescript-eslint/types@8.65.0))
     devDependencies:
       '@eslint/js':
         specifier: ^10.0.1
@@ -3437,6 +3441,11 @@ packages:
     peerDependencies:
       svelte: ^4.0.0 || ^5.0.0-next.0
       typescript: '>=5.0.0'
+
+  svelte-easy-crop@5.0.1:
+    resolution: {integrity: sha512-Dq2rgmPsSEo+K8k49TFGXZAJwJa537AR6hW1RqKEdYj7QKlc4Ya7l4VlSYWlOV8/uAiQ10VyGRdSVAUcZiMwjg==}
+    peerDependencies:
+      svelte: ^5.0.0
 
   svelte-eslint-parser@1.8.0:
     resolution: {integrity: sha512-mikR1qwIVy3t5WthUoAXkMwxkXvabZP9FJgdx35Ei7EbGWmctva1Pih16Koeor/bdNNq8NXHlwKGS6NkYTawLg==}
@@ -6577,6 +6586,10 @@ snapshots:
       typescript: '@typescript/typescript6@6.0.2'
     transitivePeerDependencies:
       - picomatch
+
+  svelte-easy-crop@5.0.1(svelte@5.56.6(@typescript-eslint/types@8.65.0)):
+    dependencies:
+      svelte: 5.56.6(@typescript-eslint/types@8.65.0)
 
   svelte-eslint-parser@1.8.0(svelte@5.56.6(@typescript-eslint/types@8.65.0)):
     dependencies:

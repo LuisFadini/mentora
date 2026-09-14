@@ -5,13 +5,14 @@ export interface UpdateUserDTO {
   name?: string;
   email?: string;
   password?: string;
-  avatarUrl?: string | null;
+  avatar?: string | null;
 }
 
 export async function updateUser(id: string, data: UpdateUserDTO) {
   const response = await apiFetch(`/users/${id}`, {
     method: "PATCH",
     body: JSON.stringify(data),
+    cache: "reload",
   });
 
   if (!response.ok) {
