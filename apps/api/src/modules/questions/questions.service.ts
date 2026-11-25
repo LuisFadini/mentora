@@ -1,12 +1,15 @@
 import { removeUndefined } from "@mentora/utils";
+import sharp from "sharp";
 
 import type { PersistedQuestion } from "../../shared/infrastructure/db/repositories/question.repository.ts";
+import type { IFileStorage } from "../../shared/interfaces/file-storage.interface.ts";
 import type { IQuestionTipsRepository } from "../../shared/interfaces/repository.interface.ts";
 import type { IRepository } from "../../shared/interfaces/repository.interface.ts";
 import type { CreateQuestionDTO } from "./dto/create-question.dto.ts";
 import type { CreateQuestionTipDTO } from "./dto/create-question-tip.dto.ts";
 import type { UpdateQuestionDTO } from "./dto/update-question.dto.ts";
 import type { UpdateQuestionTipDTO } from "./dto/update-question-tip.dto.ts";
+import type { UploadQuestionImageDTO } from "./dto/upload-question-image.dto.ts";
 import type { ValidateQuestionDTO } from "./dto/validate-question.dto.ts";
 import type { Answer, Question } from "./question.types.ts";
 
@@ -17,7 +20,11 @@ export class QuestionService {
       PersistedQuestion
     >,
     private readonly questionTipsRepository: IQuestionTipsRepository,
+    private readonly fileStorage: IFileStorage,
   ) {}
+
+  private fileStorageKey = (id: string, image: number) =>
+    `question/${id}/${image}.jpg`;
 
   async getQuestions(): Promise<Question[]> {
     return this.questionRepository.findAll();
@@ -25,6 +32,12 @@ export class QuestionService {
 
   async getQuestionById(id: string) {
     return this.questionRepository.findById(id);
+  }
+
+  async getQuestionImage(id: string, image: number) {
+    const question = await this.questionRepository.findById(id);
+    if (!question) return null;
+    return await this.fileStorage.get(this.fileStorageKey(id, image));
   }
 
   async createQuestion(question: CreateQuestionDTO) {
@@ -38,6 +51,52 @@ export class QuestionService {
       createdAt: now,
       updatedAt: now,
     });
+  }
+
+  async uploadQuestionImage(id: string, data: UploadQuestionImageDTO) {
+    const question = await this.questionRepository.findById(id);
+
+    if (!question) return null;
+
+    const base64 = data.image.includes(";base64,")
+      ? data.image.split(";base64,")[1]!
+      : data.image;
+
+    const imageBuffer = Buffer.from(base64, "base64");
+
+    if (imageBuffer.length === 0 || imageBuffer.length > 10 * 1024 * 1024) {
+      throw new Error("Invalid image or image exceeds 10 MB");
+    }
+
+    const jpegImage = await sharp(imageBuffer)
+      .rotate()
+      .resize(2000, 2000, {
+        fit: "inside",
+        withoutEnlargement: true,
+      })
+      .jpeg({
+        quality: 85,
+        mozjpeg: true,
+      })
+      .toBuffer();
+
+    let imageId = 1;
+
+    while (await this.fileStorage.get(this.fileStorageKey(id, imageId))) {
+      imageId++;
+    }
+
+    await this.fileStorage.put(
+      this.fileStorageKey(id, imageId),
+      jpegImage,
+      "image/jpeg",
+    );
+
+    return {
+      id: imageId,
+      url: `/questions/${id}/${imageId}`,
+      markdown: `![image](/questions/${id}/${imageId})`,
+    };
   }
 
   async updateQuestion(id: string, data: UpdateQuestionDTO) {
