@@ -1,11 +1,4 @@
-import {
-  IsDefined,
-  IsEmail,
-  IsOptional,
-  IsString,
-  IsUrl,
-  MinLength,
-} from "class-validator";
+import { IsDefined, IsEmail, IsString, MinLength } from "class-validator";
 
 export class CreateUserDTO {
   @IsDefined()
@@ -21,8 +14,4 @@ export class CreateUserDTO {
   @IsDefined()
   @IsEmail()
   email!: string;
-
-  @IsOptional()
-  @IsUrl()
-  avatarUrl?: string;
 }

@@ -4,7 +4,7 @@
   import { ApiError } from "$lib/api/api-error";
   import { deleteUser } from "$lib/api/users/delete-user";
   import { updateUser, type UpdateUserDTO } from "$lib/api/users/update-user";
-  import Avatar from "$lib/components/Avatar.svelte";
+  import AvatarPicker from "$lib/components/AvatarPicker.svelte";
   import Button from "$lib/components/Button.svelte";
   import ErrorText from "$lib/components/ErrorText.svelte";
   import TextField from "$lib/components/InputField.svelte";
@@ -27,7 +27,6 @@
   let confirmPassword = $state("");
 
   let avatarUrl = $state("");
-  let avatarDraft = $state("");
 
   let initialized = false;
 
@@ -39,20 +38,17 @@
     name = session.user.name;
     email = session.user.email;
     avatarUrl = session.user.avatarUrl ?? "";
-    avatarDraft = avatarUrl;
   });
 
   let nameError = $state("");
   let emailError = $state("");
   let passwordError = $state("");
   let confirmPasswordError = $state("");
-  let avatarUrlError = $state("");
 
   let nameFocused = $state(false);
   let emailFocused = $state(false);
   let passwordFocused = $state(false);
   let confirmPasswordFocused = $state(false);
-  let avatarUrlFocused = $state(false);
 
   const originalAvatarUrl = $derived(session.user.avatarUrl ?? "");
 
@@ -64,17 +60,10 @@
   );
 
   const hasErrors = $derived(
-    Boolean(
-      nameError ||
-      emailError ||
-      passwordError ||
-      confirmPasswordError ||
-      avatarUrlError,
-    ),
+    Boolean(nameError || emailError || passwordError || confirmPasswordError),
   );
 
   let showConfirmAccountDeletionModal = $state(false);
-  let showChangeAvatarModal = $state(false);
 
   function validateName() {
     nameError = validators.minLength(
@@ -114,12 +103,6 @@
       password !== confirmPassword ? validators.messages.passwordMismatch : "";
   }
 
-  function validateAvatarUrl() {
-    const value = avatarDraft.trim();
-
-    avatarUrlError = value ? validators.url(value) : "";
-  }
-
   function validateForm() {
     validateName();
     validateEmail();
@@ -135,7 +118,6 @@
     const trimmedName = name.trim();
     const trimmedEmail = email.trim();
     const trimmedPassword = password.trim();
-    const trimmedAvatarUrl = avatarUrl.trim();
 
     if (trimmedName !== session.user.name) {
       data.name = trimmedName;
@@ -149,10 +131,8 @@
       data.password = trimmedPassword;
     }
 
-    const originalAvatarUrl = session.user.avatarUrl ?? "";
-
-    if (trimmedAvatarUrl !== originalAvatarUrl) {
-      data.avatarUrl = trimmedAvatarUrl || null;
+    if (avatarUrl !== originalAvatarUrl) {
+      data.avatar = avatarUrl || null;
     }
 
     return data;
@@ -171,6 +151,7 @@
 
     try {
       await updateUser(session.user.id, updateData);
+
       window.location.reload();
     } catch (error) {
       if (error instanceof ApiError) {
@@ -201,12 +182,14 @@
   async function deleteAccount() {
     apiError = "";
     showConfirmAccountDeletionModal = false;
-
     loading = true;
 
     try {
       await deleteUser(session.user.id);
-      await goto(resolve("/"), { invalidateAll: true });
+
+      await goto(resolve("/"), {
+        invalidateAll: true,
+      });
     } catch (error) {
       if (error instanceof ApiError) {
         switch (error.status) {
@@ -223,26 +206,6 @@
     } finally {
       loading = false;
     }
-  }
-
-  function openChangeAvatarModal() {
-    avatarDraft = avatarUrl;
-    avatarUrlError = "";
-    showChangeAvatarModal = true;
-  }
-
-  function removeAvatar() {
-    avatarDraft = "";
-    avatarUrlError = "";
-  }
-
-  function confirmAvatarChange() {
-    validateAvatarUrl();
-
-    if (avatarUrlError) return;
-
-    avatarUrl = avatarDraft.trim();
-    showChangeAvatarModal = false;
   }
 </script>
 
@@ -261,41 +224,6 @@
   >
     Confirmar
   </Button>
-</Modal>
-
-<Modal closeButtonText="Cancelar" bind:showModal={showChangeAvatarModal}>
-  <div class="flex flex-col gap-4">
-    <Avatar {name} class="mx-auto size-24" avatarUrl={avatarDraft} />
-
-    <TextField
-      id="avatar"
-      icon="ph:user-bold"
-      label="Link da foto de perfil"
-      onValidate={validateAvatarUrl}
-      placeholder="https://..."
-      type="url"
-      bind:value={avatarDraft}
-      bind:error={avatarUrlError}
-      bind:focused={avatarUrlFocused}
-    />
-
-    <div class="flex gap-2">
-      <Button
-        class="flex-1 font-semibold"
-        disabled={!avatarDraft && !avatarUrl}
-        onclick={removeAvatar}
-        variant="secondary"
-      >
-        Remover
-      </Button>
-
-      <Button
-        class="flex-1 font-semibold"
-        disabled={!!avatarUrlError}
-        onclick={confirmAvatarChange}>Confirmar</Button
-      >
-    </div>
-  </div>
 </Modal>
 
 <main
@@ -357,21 +285,7 @@
         />
       </div>
 
-      <div class="mx-auto flex flex-row items-center gap-4 lg:flex-col">
-        <Avatar
-          name={name || session.user.name}
-          class="size-24 sm:size-28 lg:size-32"
-          avatarUrl={avatarUrl || undefined}
-        />
-
-        <Button
-          class="font-medium"
-          onclick={openChangeAvatarModal}
-          variant="secondary"
-        >
-          Alterar foto
-        </Button>
-      </div>
+      <AvatarPicker name={name || session.user.name} bind:avatarUrl />
     </div>
 
     <Separator />

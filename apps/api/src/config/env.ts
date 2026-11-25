@@ -11,6 +11,7 @@ export interface Config {
   NODE_ENV: NodeEnvironment;
   PORT: number;
   DATABASE_URL: string;
+  FILE_STORAGE: string;
   SESSION_DURATION: number;
   SESSION_REFRESH_INTERVAL: number;
   isDevelopment: boolean;
@@ -47,21 +48,37 @@ function parsePort(value?: string): number {
 }
 
 function parseDatabaseURL(value?: string): string {
-  const url = value ?? "file:../../data/db.sqlite";
+  const uri = value ?? "file:../../data/db.sqlite";
 
-  if (!url.startsWith("file:")) {
+  if (!uri.startsWith("file:")) {
     throw new Error(
       "Invalid database connection string. Must start with 'file:'.",
     );
   }
 
-  if (url === "file:") {
+  if (uri === "file:") {
     throw new Error(
       "Invalid database connection string. Missing SQLite database path.",
     );
   }
 
-  return url;
+  return uri;
+}
+
+function parseFileStoragePath(value?: string): string {
+  const uri = value ?? "file:../../data/storage";
+
+  if (!uri.startsWith("file:")) {
+    throw new Error("Invalid file storage URI. Must start with 'file:'.");
+  }
+
+  const filePath = uri.slice("file:".length);
+
+  if (!filePath) {
+    throw new Error("Invalid file storage URI. Missing storage path.");
+  }
+
+  return filePath;
 }
 
 function parseDuration(value: string = "24h"): number {
@@ -81,6 +98,7 @@ export function loadConfig(): Config {
     NODE_ENV,
     PORT: parsePort(process.env["PORT"]),
     DATABASE_URL: parseDatabaseURL(process.env["DATABASE_URL"]),
+    FILE_STORAGE: parseFileStoragePath(process.env["FILE_STORAGE"]),
     SESSION_DURATION: parseDuration(process.env["SESSION_DURATION"]),
     SESSION_REFRESH_INTERVAL: parseDuration(
       process.env["SESSION_REFRESH_INTERVAL"],

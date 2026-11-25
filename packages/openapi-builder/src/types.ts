@@ -2,7 +2,12 @@ export type MethodsType = "get" | "post" | "put" | "patch" | "delete";
 
 export interface ResponseObject {
   description: string;
-  content?: Record<string, { schema: unknown }> | undefined;
+  content?:
+    | Record<
+        string,
+        { schema?: Record<string, unknown> } | { [key: string]: unknown }
+      >
+    | undefined;
   headers?: object;
 }
 

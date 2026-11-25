@@ -20,6 +20,17 @@ export class UserController {
     return res.json(user);
   };
 
+  getUserAvatar = async (req: Request<GetUserParams>, res: Response) => {
+    const avatarBuffer = await this.usersService.getUserAvatar(req.user!.id!);
+
+    if (!avatarBuffer)
+      return res.status(404).json({ message: "User avatar not found" });
+
+    res.set("Content-Type", "image/jpeg");
+
+    return res.send(avatarBuffer);
+  };
+
   createUser = async (
     req: Request<unknown, unknown, CreateUserDTO>,
     res: Response,
