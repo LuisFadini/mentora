@@ -1,0 +1,116 @@
+
+services:
+  mentora:
+    image: ghcr.io/luisfadini/mentora:latest
+    restart: unless-stopped
+    init: true
+    command: ["frontend"]
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 3000
+      ORIGIN: https://${DOMAIN}
+      PUBLIC_API_URL: https://${DOMAIN}/api
+    networks:
+      - traefik
+    depends_on:
+      - api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+
+      # Frontend HTTPS
+      - "traefik.http.routers.mentora.rule=Host(`${DOMAIN}`) && !PathPrefix(`/api`)"
+      - "traefik.http.routers.mentora.entrypoints=websecure"
+      - "traefik.http.routers.mentora.tls.certresolver=le"
+      - "traefik.http.routers.mentora.priority=10"
+      - "traefik.http.routers.mentora.service=mentora"
+      - "traefik.http.services.mentora.loadbalancer.server.port=3000"
+
+      # HTTP -> HTTPS
+      - "traefik.http.routers.mentora-redirect.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.mentora-redirect.entrypoints=web"
+      - "traefik.http.routers.mentora-redirect.priority=100"
+      - "traefik.http.routers.mentora-redirect.middlewares=redirect-to-https"
+      - "traefik.http.routers.mentora-redirect.service=mentora"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
+
+  api:
+    image: ghcr.io/luisfadini/mentora:latest
+    restart: unless-stopped
+    init: true
+    command: ["api"]
+    environment:
+      NODE_ENV: production
+      PORT: 8080
+      DATABASE_URL: file:/data/db.sqlite
+      FILE_STORAGE: file:/data/storage
+      SESSION_DURATION: 24h
+      SESSION_REFRESH_INTERVAL: 15m
+    volumes:
+      - mentora_data:/data
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+
+      # API HTTPS
+      - "traefik.http.routers.mentora-api.rule=Host(`${DOMAIN}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.mentora-api.entrypoints=websecure"
+      - "traefik.http.routers.mentora-api.tls.certresolver=le"
+      - "traefik.http.routers.mentora-api.priority=100"
+      - "traefik.http.routers.mentora-api.service=mentora-api"
+      - "traefik.http.routers.mentora-api.middlewares=mentora-api-strip"
+      - "traefik.http.middlewares.mentora-api-strip.stripprefix.prefixes=/api"
+      - "traefik.http.services.mentora-api.loadbalancer.server.port=8080"
+
+  cloudflare-ddns:
+    image: favonia/cloudflare-ddns:latest
+    restart: always
+    network_mode: host
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      CLOUDFLARE_API_TOKEN: ${CF_DNS_API_TOKEN}
+      DOMAINS: ${DOMAIN}
+      PROXIED: "true"
+      EMOJI: "false"
+      QUIET: "true"
+
+  traefik:
+    image: traefik:v3
+    restart: unless-stopped
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=traefik"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.le.acme.email=${CERT_EMAIL}"
+      - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.le.acme.dnschallenge=true"
+      - "--certificatesresolvers.le.acme.dnschallenge.provider=cloudflare"
+    networks:
+      - traefik
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./letsencrypt:/letsencrypt
+    environment:
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+    labels:
+      - "traefik.enable=false"
+
+volumes:
+  mentora_data:
+
+networks:
+  traefik:
+    name: traefik

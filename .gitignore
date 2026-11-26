@@ -30,3 +30,9 @@ vite.config.ts.timestamp-*
 
 # Local tools
 bruno/
+
+# Infra
+*.tfstate*
+.terraform*
+variables.auto.tfvars
+letsencrypt
