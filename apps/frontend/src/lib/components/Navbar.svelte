@@ -45,9 +45,9 @@
   >
     <a class="flex flex-row items-center gap-2" href={resolve("/")}>
       <img
-        class="h-12 rounded-md bg-gray-600"
-        alt=""
-        src="https://api.dicebear.com/10.x/triangles/svg?seed=Mentora"
+        class="h-12 rounded-md bg-blue-300"
+        alt="logo"
+        src="/logo-sem-fundo.png"
       />
       <p class="hidden text-2xl font-bold lg:block">Mentora</p>
     </a>

@@ -64,10 +64,10 @@
 
     <Separator orientation="horizontal" />
 
-    <ul class="flex flex-col gap-2">
+    <ul class="flex max-h-[40vh] flex-col gap-3 overflow-y-auto px-1 py-2">
       {#each filteredQuestions as question (question.id)}
         <li
-          class="flex flex-col gap-4 rounded-xl border-2 border-black px-4 py-3 shadow-[4px_4px_0_0_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_black] sm:flex-row sm:items-center sm:justify-between"
+          class="flex flex-col gap-4 rounded-xl border-2 border-black bg-white px-4 py-3 shadow-[4px_4px_0_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#000] sm:flex-row sm:items-center sm:justify-between"
         >
           <div class="flex min-w-0 flex-1 flex-col gap-1">
             <p class="text-lg font-semibold sm:text-xl">
@@ -103,10 +103,9 @@
             >
               Fazer
             </Button>
-          {:else}
-            <div class="flex flex-row gap-2">
+          {:else}<div class="flex w-full flex-row gap-2 sm:w-auto">
               <Button
-                class="w-full shrink-0 py-2 font-bold sm:w-auto"
+                class="shrink-0 py-2 font-bold"
                 icon="ph:note-pencil-bold"
                 onclick={async () =>
                   await goto(
@@ -117,7 +116,7 @@
                 variant="secondary"
               />
               <Button
-                class="w-full shrink-0 py-2 font-bold sm:w-auto"
+                class="min-w-0 flex-1 py-2 font-bold sm:flex-none"
                 onclick={async () =>
                   await goto(
                     resolve("/(app)/questions/[slug]", {

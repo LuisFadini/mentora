@@ -1,6 +1,7 @@
 import { type Request, type Response, Router } from "express";
 import yaml from "yaml";
 
+import { config as envConfig } from "../../../config/env.ts";
 import { openApiSpec } from "./openapi.spec.ts";
 
 export function createOpenAPiRoutes(): Router {
@@ -19,7 +20,7 @@ export function createOpenAPiRoutes(): Router {
 
   router.get("/", (_req: Request, res: Response) => {
     const config = {
-      url: "/openapi.json",
+      url: envConfig.isDevelopment ? "/openapi.json" : "/api/openapi.json",
       hideClientButton: true,
       telemetry: false,
       showDeveloperTools: "never",
