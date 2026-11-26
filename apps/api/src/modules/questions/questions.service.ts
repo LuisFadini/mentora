@@ -224,4 +224,8 @@ export class QuestionService {
   async deleteQuestionTip(id: string) {
     return await this.questionTipsRepository.delete(id);
   }
+
+  async deleteQuestion(id: string) {
+    return await this.questionRepository.delete(id);
+  }
 }

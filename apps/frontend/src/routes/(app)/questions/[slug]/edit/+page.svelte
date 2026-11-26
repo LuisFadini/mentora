@@ -2,6 +2,7 @@
   import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
   import { ApiError } from "$lib/api/api-error";
+  import { deleteQuestion } from "$lib/api/questions/delete-question";
   import { updateQuestion } from "$lib/api/questions/update-question";
   import Button from "$lib/components/Button.svelte";
   import ErrorText from "$lib/components/ErrorText.svelte";
@@ -251,6 +252,43 @@
       loading = false;
     }
   }
+
+  async function handleDelete() {
+    if (loading) return;
+
+    const confirmed = confirm(
+      "Tem certeza que deseja excluir esta questão? Esta ação não pode ser desfeita.",
+    );
+
+    if (!confirmed) return;
+
+    loading = true;
+    apiError = "";
+
+    try {
+      await deleteQuestion(question.id);
+      await goto(resolve("/(app)/questions"));
+    } catch (error) {
+      if (error instanceof ApiError) {
+        switch (error.status) {
+          case 403:
+            apiError = "Você não tem permissão para excluir esta questão.";
+            break;
+
+          case 404:
+            apiError = "Questão não encontrada.";
+            break;
+
+          default:
+            apiError = "Não foi possível excluir a questão.";
+        }
+      } else {
+        apiError = "Não foi possível conectar ao servidor.";
+      }
+    } finally {
+      loading = false;
+    }
+  }
 </script>
 
 <svelte:head>
@@ -328,32 +366,47 @@
     </div>
 
     <div class="mt-6 flex justify-between gap-4">
-      {#if activeStep > 0}
-        <Button
-          class="h-12 px-4 font-bold"
-          disabled={loading}
-          icon="ph:arrow-left-bold"
-          iconClass="text-xl"
-          iconPosition="left"
-          onclick={() => activeStep--}
-          type="button"
-        >
-          {steps[activeStep - 1]}
-        </Button>
-      {:else}
-        <Button
-          class="h-12 px-4 font-bold"
-          disabled={loading}
-          icon="ph:arrow-left-bold"
-          iconClass="text-xl"
-          iconPosition="left"
-          onclick={async () => await goto(resolve("/(app)/questions"))}
-          type="button"
-          variant="danger"
-        >
-          Cancelar
-        </Button>
-      {/if}
+      <div class="flex gap-2">
+        {#if activeStep > 0}
+          <Button
+            class="h-12 px-4 font-bold"
+            disabled={loading}
+            icon="ph:arrow-left-bold"
+            iconClass="text-xl"
+            iconPosition="left"
+            onclick={() => activeStep--}
+            type="button"
+          >
+            {steps[activeStep - 1]}
+          </Button>
+        {:else}
+          <Button
+            class="h-12 px-4 font-bold"
+            disabled={loading}
+            icon="ph:arrow-left-bold"
+            iconClass="text-xl"
+            iconPosition="left"
+            onclick={async () => await goto(resolve("/(app)/questions"))}
+            type="button"
+            variant="danger"
+          >
+            Cancelar
+          </Button>
+
+          <Button
+            class="h-12 px-4 font-bold"
+            disabled={loading}
+            icon="ph:trash-bold"
+            iconClass="text-xl"
+            iconPosition="left"
+            onclick={handleDelete}
+            type="button"
+            variant="danger"
+          >
+            Excluir
+          </Button>
+        {/if}
+      </div>
 
       <Button
         class="h-12 px-4 font-bold"
