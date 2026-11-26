@@ -45,6 +45,13 @@ export function createQuestionsRoutes(
     validateBodyDTO(UpdateQuestionDTO),
     questionController.updateQuestion,
   );
+  router.delete(
+    "/:id",
+    authMiddleware,
+    requirePermission(permissions.questions.delete),
+    validateUUIDV7Param<GetQuestionParams>("id"),
+    questionController.deleteQuestion,
+  );
   router.post(
     "/:id/validate",
     authMiddleware,

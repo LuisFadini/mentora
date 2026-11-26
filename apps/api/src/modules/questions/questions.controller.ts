@@ -65,6 +65,16 @@ export class QuestionController {
     return res.status(200).json(updatedQuestion);
   };
 
+  deleteQuestion = async (req: Request<GetQuestionParams>, res: Response) => {
+    const deleted = await this.questionService.deleteQuestion(req.params.id);
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Question not found" });
+    }
+
+    return res.status(204).send();
+  };
+
   validateQuestion = async (
     req: Request<GetQuestionParams, unknown, ValidateQuestionDTO>,
     res: Response,

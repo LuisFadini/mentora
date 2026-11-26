@@ -16,7 +16,7 @@ const gitignorePath = fileURLToPath(new URL(".gitignore", import.meta.url));
 export default defineConfig([
   includeIgnoreFile(gitignorePath),
   {
-    ignores: ["apps/frontend/**", "**/*.config.{js,ts}"],
+    ignores: ["apps/frontend/**", "**/*.config.{js,ts}", "scripts/**"],
   },
 
   js.configs.recommended,
