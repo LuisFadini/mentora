@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { hasPermission } from "@mentora/permissions";
-
   import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
   import type { ResolvedPathname } from "$app/types";
@@ -31,23 +29,9 @@
     text: string;
   };
 
-  const headerLinks = $derived.by(() => {
-    const links: HeaderLink[] = [
-      { href: resolve("/questions"), text: "Questões" },
-    ];
-
-    if (session?.authenticated) {
-      if (hasPermission(session.user, "materials.access")) {
-        links.push({ href: resolve("/"), text: "Conteúdos" });
-      }
-
-      if (hasPermission(session.user, "forum.access")) {
-        links.push({ href: resolve("/"), text: "Fórum" });
-      }
-    }
-
-    return links;
-  });
+  const headerLinks: HeaderLink[] = [
+    { href: resolve("/questions"), text: "Questões" },
+  ];
 
   async function redirect(url: ResolvedPathname) {
     closeMenu();

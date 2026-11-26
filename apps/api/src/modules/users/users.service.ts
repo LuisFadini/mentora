@@ -1,3 +1,4 @@
+import { permissions } from "@mentora/permissions";
 import { omit, removeUndefined } from "@mentora/utils";
 import sharp from "sharp";
 
@@ -45,12 +46,17 @@ export class UsersService {
       throw new ConflictError("Email already in use");
     }
 
+    const isFirstUser = (await this.userRepository.findAll()).length === 0;
+
     const hashedPassword = await this.passwordHasher.hash(data.password);
     const now = new Date();
 
     const createdUser = await this.userRepository.create({
       ...data,
       password: hashedPassword,
+      permissions: isFirstUser
+        ? Object.values(permissions).flatMap((group) => Object.values(group))
+        : [],
       createdAt: now,
       updatedAt: now,
     });
