@@ -4,13 +4,16 @@ import { Router } from "express";
 
 import { requirePermission } from "../../shared/middlewares/permission.middleware.ts";
 import { validateBodyDTO } from "../../shared/middlewares/validate-body-dto.middleware.ts";
+import { validateNumberParam } from "../../shared/middlewares/validate-number.middleware.ts";
 import { validateUUIDV7Param } from "../../shared/middlewares/validate-uuid.middleware.ts";
 import { CreateQuestionDTO } from "./dto/create-question.dto.ts";
 import { CreateQuestionTipDTO } from "./dto/create-question-tip.dto.ts";
 import { UpdateQuestionDTO } from "./dto/update-question.dto.ts";
 import { UpdateQuestionTipDTO } from "./dto/update-question-tip.dto.ts";
+import { UploadQuestionImageDTO } from "./dto/upload-question-image.dto.ts";
 import { ValidateQuestionDTO } from "./dto/validate-question.dto.ts";
 import type { GetQuestionParams } from "./params/get-question.params.ts";
+import type { GetQuestionImageParams } from "./params/get-question-image.params.ts";
 import type { GetQuestionTipParams } from "./params/get-question-tip.params.ts";
 import type { QuestionController } from "./questions.controller.ts";
 
@@ -91,6 +94,21 @@ export function createQuestionsRoutes(
     validateUUIDV7Param<GetQuestionTipParams>("id"),
     validateUUIDV7Param<GetQuestionTipParams>("tipId"),
     questionController.deleteQuestionTip,
+  );
+  router.get(
+    "/:id/:image",
+    authMiddleware,
+    validateUUIDV7Param<GetQuestionImageParams>("id"),
+    validateNumberParam<GetQuestionImageParams>("image"),
+    questionController.getQuestionImage,
+  );
+  router.post(
+    "/:id/images",
+    authMiddleware,
+    requirePermission(permissions.questions.update),
+    validateUUIDV7Param<GetQuestionParams>("id"),
+    validateBodyDTO(UploadQuestionImageDTO),
+    questionController.uploadQuestionImage,
   );
 
   return router;

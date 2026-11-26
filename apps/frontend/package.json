@@ -17,7 +17,7 @@
     "@eslint/js": "^10.0.1",
     "@iconify/svelte": "^5.2.2",
     "@mentora/permissions": "workspace:*",
-    "@sveltejs/adapter-auto": "^7.0.1",
+    "@sveltejs/adapter-node": "^5.5.8",
     "@sveltejs/kit": "^2.70.1",
     "@sveltejs/vite-plugin-svelte": "^7.2.0",
     "@tailwindcss/vite": "^4.3.3",

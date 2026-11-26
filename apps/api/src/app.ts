@@ -34,7 +34,7 @@ export function createApp(db: DB, fileStorage: IFileStorage): Express {
   const app = express();
 
   if (!config.isTest) app.use(pinoHttp({ logger }));
-  app.use(express.json({ limit: "2mb" }));
+  app.use(express.json({ limit: "10mb" }));
   app.use(cookieParser());
   app.use(
     cors({
@@ -83,6 +83,7 @@ export function createApp(db: DB, fileStorage: IFileStorage): Express {
   const questionsService = new QuestionService(
     questionRepository,
     questionTipsRepository,
+    fileStorage,
   );
   const questionsController = new QuestionController(questionsService);
   app.use(

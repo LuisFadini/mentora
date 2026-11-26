@@ -1,4 +1,6 @@
-export const API_URL = "http://localhost:3000";
+import { env } from "$env/dynamic/public";
+
+export const API_URL = env.PUBLIC_API_URL ?? "/api";
 
 export async function apiFetch(
   path: string,

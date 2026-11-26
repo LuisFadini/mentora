@@ -4,8 +4,10 @@ import type { CreateQuestionDTO } from "./dto/create-question.dto.ts";
 import type { CreateQuestionTipDTO } from "./dto/create-question-tip.dto.ts";
 import type { UpdateQuestionDTO } from "./dto/update-question.dto.ts";
 import type { UpdateQuestionTipDTO } from "./dto/update-question-tip.dto.ts";
+import type { UploadQuestionImageDTO } from "./dto/upload-question-image.dto.ts";
 import type { ValidateQuestionDTO } from "./dto/validate-question.dto.ts";
 import type { GetQuestionParams } from "./params/get-question.params.ts";
+import type { GetQuestionImageParams } from "./params/get-question-image.params.ts";
 import type { GetQuestionTipParams } from "./params/get-question-tip.params.ts";
 import type { GetQuestionTipByOrderParams } from "./params/get-question-tip-by-order.params.ts";
 import type { QuestionService } from "./questions.service.ts";
@@ -23,6 +25,23 @@ export class QuestionController {
     if (!question)
       return res.status(404).json({ message: "Question not found" });
     return res.json(question);
+  };
+
+  getQuestionImage = async (
+    req: Request<GetQuestionImageParams>,
+    res: Response,
+  ) => {
+    const imageBuffer = await this.questionService.getQuestionImage(
+      req.params.id,
+      Number(req.params.image),
+    );
+
+    if (!imageBuffer)
+      return res.status(404).json({ message: "Image not found" });
+
+    res.set("Content-Type", "image/jpeg");
+
+    return res.send(imageBuffer);
   };
 
   createQuestion = async (
@@ -111,6 +130,24 @@ export class QuestionController {
       req.body,
     );
     return res.json(result);
+  };
+
+  uploadQuestionImage = async (
+    req: Request<GetQuestionParams, unknown, UploadQuestionImageDTO>,
+    res: Response,
+  ) => {
+    const result = await this.questionService.uploadQuestionImage(
+      req.params.id,
+      req.body,
+    );
+
+    if (!result) {
+      return res.status(404).json({
+        message: "Question not found",
+      });
+    }
+
+    return res.status(201).json(result);
   };
 
   updateQuestionTip = async (
